@@ -1,5 +1,7 @@
+<!-- NouvelleDemandeForm.vue -->
 <template>
-  <main class="pl-64 bg-gray-100 min-h-screen pt-4">
+  <!-- Ici, on se contente du fond et du padding vertical puisque la gauche est déjà prise en compte par le layout -->
+  <main class="bg-gray-100 min-h-screen pt-4">
     <div class="max-w-4xl mx-auto">
       <form>
         <!-- Section : Informations de l'étudiant -->
@@ -13,7 +15,7 @@
                 Nom de l'étudiant
               </label>
               <input type="text"
-                class="border border-gray-300 rounded w-full px-2 py-1 focus:outline-none focus:ring-1 focus:ring-brandBlue" />
+                     class="border border-gray-300 rounded w-full px-2 py-1 focus:outline-none focus:ring-1 focus:ring-brandBlue" />
             </div>
             <!-- Prénom -->
             <div>
@@ -22,7 +24,7 @@
                 Prénom de l'étudiant
               </label>
               <input type="text"
-                class="border border-gray-300 rounded w-full px-2 py-1 focus:outline-none focus:ring-1 focus:ring-brandBlue" />
+                     class="border border-gray-300 rounded w-full px-2 py-1 focus:outline-none focus:ring-1 focus:ring-brandBlue" />
             </div>
             <!-- Niveau -->
             <div>
@@ -30,8 +32,7 @@
                 <font-awesome-icon :icon="['fas', 'graduation-cap']" class="text-brandBlue mr-2" />
                 Niveau
               </label>
-              <select
-                class="border border-gray-300 rounded w-full px-2 py-1 focus:outline-none focus:ring-1 focus:ring-brandBlue">
+              <select class="border border-gray-300 rounded w-full px-2 py-1 focus:outline-none focus:ring-1 focus:ring-brandBlue">
                 <option disabled selected>Sélectionner votre niveau</option>
                 <option value="L1">Licence 1</option>
                 <option value="L2">Licence 2</option>
@@ -45,7 +46,7 @@
                 Année universitaire
               </label>
               <input type="text"
-                class="border border-gray-300 rounded w-full px-2 py-1 focus:outline-none focus:ring-1 focus:ring-brandBlue" />
+                     class="border border-gray-300 rounded w-full px-2 py-1 focus:outline-none focus:ring-1 focus:ring-brandBlue" />
             </div>
           </div>
         </div>
@@ -60,8 +61,7 @@
                 <font-awesome-icon :icon="['fas', 'clipboard-list']" class="text-brandBlue mr-2" />
                 Type de demande
               </label>
-              <select
-                class="border border-gray-300 rounded w-full px-2 py-1 focus:outline-none focus:ring-1 focus:ring-brandBlue">
+              <select class="border border-gray-300 rounded w-full px-2 py-1 focus:outline-none focus:ring-1 focus:ring-brandBlue">
                 <option disabled selected>Sélectionner un type de demande</option>
                 <option value="administrative">Administratif</option>
                 <option value="technique">Technique</option>
@@ -75,7 +75,7 @@
                 Libellé de la demande
               </label>
               <input type="text"
-                class="border border-gray-300 rounded w-full px-2 py-1 focus:outline-none focus:ring-1 focus:ring-brandBlue" />
+                     class="border border-gray-300 rounded w-full px-2 py-1 focus:outline-none focus:ring-1 focus:ring-brandBlue" />
             </div>
             <!-- Fichier -->
             <div class="col-span-2">
@@ -84,7 +84,7 @@
                 Fichier
               </label>
               <input type="file"
-                class="border border-gray-300 rounded w-full px-2 py-1 focus:outline-none focus:ring-1 focus:ring-brandBlue" />
+                     class="border border-gray-300 rounded w-full px-2 py-1 focus:outline-none focus:ring-1 focus:ring-brandBlue" />
               <p class="text-sm text-gray-500 mt-1">Aucun fichier sélectionné</p>
             </div>
           </div>
@@ -92,7 +92,8 @@
 
         <!-- Bouton d'envoi aligné à droite -->
         <div class="flex justify-end">
-          <button type="submit" class="bg-brandBlue text-white px-6 py-2 rounded hover:bg-blue-700 transition-colors">
+          <button type="submit"
+                  class="bg-brandBlue text-white px-6 py-2 rounded hover:bg-blue-700 transition-colors">
             Envoyer
           </button>
         </div>

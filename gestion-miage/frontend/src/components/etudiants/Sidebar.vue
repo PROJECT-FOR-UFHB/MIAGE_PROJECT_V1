@@ -1,51 +1,61 @@
 <template>
-    <aside class="absolute top-0 left-0 h-full w-64 bg-white p-4 shadow-md">
-      <!-- Logo -->
-      <div class="mb-8 flex justify-center">
-        <img
-          src="/src/assets/logo_de_miage.png"
-          alt="Logo MIAGE"
-          class="h-20"
-        />
-      </div>
-      <!-- Navigation -->
-      <nav>
-        <ul class="space-y-4">
-          <li>
-            <a href="#" class="block text-brandBlue px-3 py-2 rounded hover:bg-gray-100 transition-colors">
-              <!-- Icône pour "Espace étudiant" (par exemple faGraduationCap) -->
-              <font-awesome-icon :icon="['fas', 'graduation-cap']" class="mr-2 text-brandBlue" />
-              Espace étudiant
-            </a>
-          </li>
-          <li>
-            <a href="#" class="block text-brandBlue-800 px-3 py-2 rounded bg-gray-100 font-semibold transition-colors">
-              <!-- Icône pour "Nouvelle demande" (faFileAlt) -->
-              <font-awesome-icon :icon="['fas', 'file-alt']" class="mr-2 text-brandBlue" />
-              Nouvelle demande
-            </a>
-          </li>
-          <li>
-            <a href="#" class="block text-brandBlue px-3 py-2 rounded hover:bg-gray-100 transition-colors">
-              <!-- Icône pour "Mes demandes" (faClipboardList) -->
-              <font-awesome-icon :icon="['fas', 'clipboard-list']" class="mr-2 text-brandBlue" />
-              Mes demandes
-            </a>
-          </li>
-          <li>
-            <a href="#" class="block text-brandBlue px-3 py-2 rounded hover:bg-gray-100 transition-colors">
-              <!-- Icône pour "Profil" (faUser) -->
-              <font-awesome-icon :icon="['fas', 'user']" class="mr-2 text-brandBlue" />
-              Profil
-            </a>
-          </li>
-        </ul>
-      </nav>
-    </aside>
-  </template>
-  
-  <script setup>
-  // Pas besoin d'ajouter d'import ici pour le composant <font-awesome-icon>
-  // puisqu'il est déjà enregistré globalement dans main.js.
-  </script>
-  
+  <aside class="absolute top-0 left-0 h-full w-64 bg-white p-4 shadow-md">
+    <div class="mb-8 flex justify-center">
+      <img
+        src="/src/assets/logo_de_miage.png"
+        alt="Logo MIAGE"
+        class="h-20"
+      />
+    </div>
+    <!-- Navigation -->
+    <nav>
+      <ul class="space-y-4">
+        <li>
+          <!-- Lien Espace étudiant -->
+          <router-link
+            to="/etudiants/espace-etudiant"
+            class="block text-brandBlue px-3 py-2 rounded hover:bg-gray-100 transition-colors flex items-center"
+            active-class="bg-gray-100 font-semibold"
+          >
+            <font-awesome-icon :icon="['fas', 'graduation-cap']" class="mr-2 text-brandBlue" />
+            Espace étudiant
+          </router-link>
+        </li>
+        <li>
+          <!-- Lien Nouvelle demande -->
+          <router-link
+            to="/etudiants/nouvelle-demande"
+            class="block text-brandBlue px-3 py-2 rounded hover:bg-gray-100 transition-colors flex items-center"
+            active-class="bg-gray-100 font-semibold"
+          >
+            <font-awesome-icon :icon="['fas', 'file-alt']" class="mr-2 text-brandBlue" />
+            Nouvelle demande
+          </router-link>
+        </li>
+        <li>
+          <!-- Lien Mes demandes -->
+          <router-link
+            to="#"
+            class="block text-brandBlue px-3 py-2 rounded hover:bg-gray-100 transition-colors flex items-center"
+          >
+            <font-awesome-icon :icon="['fas', 'clipboard-list']" class="mr-2 text-brandBlue" />
+            Mes demandes
+          </router-link>
+        </li>
+        <li>
+          <!-- Lien Profil -->
+          <router-link
+            to="#"
+            class="block text-brandBlue px-3 py-2 rounded hover:bg-gray-100 transition-colors flex items-center"
+          >
+            <font-awesome-icon :icon="['fas', 'user']" class="mr-2 text-brandBlue" />
+            Profil
+          </router-link>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+</template>
+
+<script setup>
+</script>
