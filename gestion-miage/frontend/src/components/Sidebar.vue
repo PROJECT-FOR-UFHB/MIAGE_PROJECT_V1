@@ -5,37 +5,37 @@
         <img
           src="/src/assets/logo_de_miage.png"
           alt="Logo MIAGE"
-          class="h-12"
+          class="h-20"
         />
       </div>
       <!-- Navigation -->
       <nav>
         <ul class="space-y-4">
           <li>
-            <a href="#" class="block text-gray-800 px-3 py-2 rounded hover:bg-gray-100 transition-colors">
+            <a href="#" class="block text-brandBlue px-3 py-2 rounded hover:bg-gray-100 transition-colors">
               <!-- Icône pour "Espace étudiant" (par exemple faGraduationCap) -->
-              <font-awesome-icon :icon="['fas', 'graduation-cap']" class="mr-2" />
+              <font-awesome-icon :icon="['fas', 'graduation-cap']" class="mr-2 text-brandBlue" />
               Espace étudiant
             </a>
           </li>
           <li>
-            <a href="#" class="block text-gray-800 px-3 py-2 rounded bg-gray-100 font-semibold transition-colors">
+            <a href="#" class="block text-brandBlue-800 px-3 py-2 rounded bg-gray-100 font-semibold transition-colors">
               <!-- Icône pour "Nouvelle demande" (faFileAlt) -->
-              <font-awesome-icon :icon="['fas', 'file-alt']" class="mr-2" />
+              <font-awesome-icon :icon="['fas', 'file-alt']" class="mr-2 text-brandBlue" />
               Nouvelle demande
             </a>
           </li>
           <li>
-            <a href="#" class="block text-gray-800 px-3 py-2 rounded hover:bg-gray-100 transition-colors">
+            <a href="#" class="block text-brandBlue px-3 py-2 rounded hover:bg-gray-100 transition-colors">
               <!-- Icône pour "Mes demandes" (faClipboardList) -->
-              <font-awesome-icon :icon="['fas', 'clipboard-list']" class="mr-2" />
+              <font-awesome-icon :icon="['fas', 'clipboard-list']" class="mr-2 text-brandBlue" />
               Mes demandes
             </a>
           </li>
           <li>
-            <a href="#" class="block text-gray-800 px-3 py-2 rounded hover:bg-gray-100 transition-colors">
+            <a href="#" class="block text-brandBlue px-3 py-2 rounded hover:bg-gray-100 transition-colors">
               <!-- Icône pour "Profil" (faUser) -->
-              <font-awesome-icon :icon="['fas', 'user']" class="mr-2" />
+              <font-awesome-icon :icon="['fas', 'user']" class="mr-2 text-brandBlue" />
               Profil
             </a>
           </li>
