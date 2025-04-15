@@ -1,15 +1,12 @@
 <template>
-    <header class="bg-brandBlue h-16 flex items-center px-6">
-      <!-- Logo ou titre à gauche -->
-      <h1 class="text-white text-xl font-bold">Nouvelle demande</h1>
+    <header class="bg-brandBlue h-16 flex items-center pl-64 text-white shadow">
+      <div class="ml-4">
+        <h1 class="text-xl font-semibold">Nouvelle demande</h1>
+      </div>
     </header>
   </template>
   
   <script setup>
-  // Pas de logique particulière
+  // Pas de logique particulière pour l’instant
   </script>
-  
-  <style scoped>
-  /* Pas de style perso si on se repose entièrement sur Tailwind */
-  </style>
   

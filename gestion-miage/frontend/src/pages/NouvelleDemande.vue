@@ -1,27 +1,15 @@
 <template>
-    <div class="flex flex-col min-h-screen font-sans">
-      <!-- Barre horizontale bleue -->
+    <!-- On applique un fond gris clair (bg-gray-100 ou 200) -->
+    <div class="relative min-h-screen font-sans text-gray-800 bg-gray-100">
+      <Sidebar />
       <Header />
-  
-      <!-- Contenu principal en flex -->
-      <div class="flex flex-1 bg-gray-100">
-        <!-- Sidebar blanche -->
-        <Sidebar />
-  
-        <!-- Zone form grise -->
-        <main class="flex-1 p-8">
-          <h1 class="text-2xl font-bold mb-6 text-brandBlue">
-            Nouvelle demande
-          </h1>
-          <NouvelleDemandeForm />
-        </main>
-      </div>
+      <NouvelleDemandeForm />
     </div>
   </template>
   
   <script setup>
-  import Header from '@/components/Header.vue'
-  import Sidebar from '@/components/Sidebar.vue'
-  import NouvelleDemandeForm from '@/components/NouvelleDemandeForm.vue'
+  import Sidebar from '../components/Sidebar.vue'
+  import Header from '../components/Header.vue'
+  import NouvelleDemandeForm from '../components/NouvelleDemandeForm.vue'
   </script>
   
