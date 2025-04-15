@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import NouvelleDemande from '@/pages/NouvelleDemande.vue'
+import NouvelleDemande from '@/pages/etudiants/NouvelleDemande.vue'
 
 const routes = [
   {

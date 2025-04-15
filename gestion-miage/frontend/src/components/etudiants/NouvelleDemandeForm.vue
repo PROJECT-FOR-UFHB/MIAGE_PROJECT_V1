@@ -30,8 +30,13 @@
                 <font-awesome-icon :icon="['fas', 'graduation-cap']" class="text-brandBlue mr-2" />
                 Niveau
               </label>
-              <input type="text"
-                class="border border-gray-300 rounded w-full px-2 py-1 focus:outline-none focus:ring-1 focus:ring-brandBlue" />
+              <select
+                class="border border-gray-300 rounded w-full px-2 py-1 focus:outline-none focus:ring-1 focus:ring-brandBlue">
+                <option disabled selected>Sélectionner votre niveau</option>
+                <option value="L1">Licence 1</option>
+                <option value="L2">Licence 2</option>
+                <option value="L3">Licence 3</option>
+              </select>
             </div>
             <!-- Année universitaire -->
             <div>
