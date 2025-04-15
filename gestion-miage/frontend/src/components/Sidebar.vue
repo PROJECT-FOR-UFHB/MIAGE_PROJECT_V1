@@ -12,34 +12,30 @@
       <nav>
         <ul class="space-y-4">
           <li>
-            <a
-              href="#"
-              class="block text-gray-800 px-3 py-2 rounded hover:bg-gray-100 transition-colors"
-            >
+            <a href="#" class="block text-gray-800 px-3 py-2 rounded hover:bg-gray-100 transition-colors">
+              <!-- Icône pour "Espace étudiant" (par exemple faGraduationCap) -->
+              <font-awesome-icon :icon="['fas', 'graduation-cap']" class="mr-2" />
               Espace étudiant
             </a>
           </li>
           <li>
-            <a
-              href="#"
-              class="block text-gray-800 px-3 py-2 rounded hover:bg-gray-100 transition-colors"
-            >
+            <a href="#" class="block text-gray-800 px-3 py-2 rounded bg-gray-100 font-semibold transition-colors">
+              <!-- Icône pour "Nouvelle demande" (faFileAlt) -->
+              <font-awesome-icon :icon="['fas', 'file-alt']" class="mr-2" />
               Nouvelle demande
             </a>
           </li>
           <li>
-            <a
-              href="#"
-              class="block text-gray-800 px-3 py-2 rounded hover:bg-gray-100 transition-colors"
-            >
+            <a href="#" class="block text-gray-800 px-3 py-2 rounded hover:bg-gray-100 transition-colors">
+              <!-- Icône pour "Mes demandes" (faClipboardList) -->
+              <font-awesome-icon :icon="['fas', 'clipboard-list']" class="mr-2" />
               Mes demandes
             </a>
           </li>
           <li>
-            <a
-              href="#"
-              class="block text-gray-800 px-3 py-2 rounded hover:bg-gray-100 transition-colors"
-            >
+            <a href="#" class="block text-gray-800 px-3 py-2 rounded hover:bg-gray-100 transition-colors">
+              <!-- Icône pour "Profil" (faUser) -->
+              <font-awesome-icon :icon="['fas', 'user']" class="mr-2" />
               Profil
             </a>
           </li>
@@ -49,6 +45,7 @@
   </template>
   
   <script setup>
-  // Aucun script particulier pour ce composant statique
+  // Pas besoin d'ajouter d'import ici pour le composant <font-awesome-icon>
+  // puisqu'il est déjà enregistré globalement dans main.js.
   </script>
   
