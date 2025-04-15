@@ -13,12 +13,13 @@ import {
   faUser,
   faCalendar,
   faInfoCircle,
-  faPaperclip
+  faPaperclip,
+  faChartSimple
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 // Ajouter les icônes à la librairie
-library.add(faGraduationCap, faFileAlt, faClipboardList, faUser, faCalendar, faInfoCircle, faPaperclip)
+library.add(faGraduationCap, faFileAlt, faClipboardList, faUser, faCalendar, faInfoCircle, faPaperclip, faChartSimple)
 
 const app = createApp(App)
 
