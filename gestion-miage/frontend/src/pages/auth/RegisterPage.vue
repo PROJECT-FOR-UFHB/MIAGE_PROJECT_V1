@@ -96,9 +96,9 @@ const form = reactive({
   prenom: '',
   email: '',
   password: '',
-  id_role: 1, // Rôle étudiant
-  id_statut: 1 // Statut par défaut
+  id_role: 'ETU',  // <- Attention ici : ce doit être une chaîne de caractères
 })
+
 
 const register = async () => {
   loading.value = true
