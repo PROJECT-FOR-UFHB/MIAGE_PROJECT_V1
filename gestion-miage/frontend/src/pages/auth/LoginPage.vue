@@ -80,7 +80,7 @@ const login = async () => {
   error.value = ''
   
   try {
-    const response = await authService.login(form)
+    const response = await authService.login(form.email, form.password)
     
     // Redirection basée sur le rôle
     const userRole = response.role
