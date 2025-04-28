@@ -21,18 +21,28 @@
           <td class="p-3 border-b">{{ demande.libelle }}</td>
           <td class="p-3 border-b">{{ demande.date }}</td>
           <td class="p-3 border-b">
-            <button class="bg-brandBlue text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors">
+            <button @click="ouvrirModal(demande)"
+              class="bg-brandBlue text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors">
               Voir détails
             </button>
+
           </td>
         </tr>
       </tbody>
     </table>
   </div>
+  <DemandeModal v-if="demandeSelectionnee" :demande="demandeSelectionnee" @fermer="fermerModal"
+  @valider="validerDemande" />
 </template>
 
+
+
+
 <script setup>
-const demandes = [
+import { ref } from 'vue'
+import DemandeModal from '@/components/secretariat/DemandeModal.vue'
+// Liste des demandes (mock pour le moment)
+const demandes = ref([
   {
     numero: 'N°AT001',
     nomEtudiant: 'KOUADIO ANGE',
@@ -40,6 +50,34 @@ const demandes = [
     libelle: 'Attestation de fréquentation',
     date: '20/03/2025'
   },
-  // Autres demandes...
-]
+
+  {
+    numero: 'N°AT002',
+    nomEtudiant: 'WILLIAMS ANGEL',
+    niveau: 'M1',
+    libelle: 'Attestation de fréquentation',
+    date: '20/03/2025'
+  },
+  // Tu peux ajouter d'autres demandes ici
+])
+// Variable pour stocker la demande actuellement sélectionnée
+const demandeSelectionnee = ref(null)
+
+// Fonction pour ouvrir le modal
+function ouvrirModal(demande) {
+  demandeSelectionnee.value = demande
+}
+
+// Fonction pour fermer le modal
+function fermerModal() {
+  demandeSelectionnee.value = null
+}
+
+// Fonction pour valider une demande
+function validerDemande() {
+  if (demandeSelectionnee.value) {
+    demandes.value = demandes.value.filter(d => d.numero !== demandeSelectionnee.value.numero)
+    demandeSelectionnee.value = null
+  }
+}
 </script>
