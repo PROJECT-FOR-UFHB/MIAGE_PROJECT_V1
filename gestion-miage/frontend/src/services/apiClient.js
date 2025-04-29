@@ -18,10 +18,14 @@ apiClient.interceptors.request.use(
     // Si un token existe, on l'ajoute dans les headers
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
+      console.log('🔑 Token trouvé:', token.substring(0, 10) + '...')
+    } else {
+      console.warn('⚠️ Aucun token trouvé dans le localStorage')
     }
     
     // Logger pour déboguer
-    console.log('🚀 Requête API:', config.method.toUpperCase(), config.url, config.baseURL)
+    console.log('🚀 Requête API:', config.method.toUpperCase(), config.url)
+    console.log('📋 Headers:', config.headers)
     
     return config
   },
@@ -44,9 +48,11 @@ apiClient.interceptors.response.use(
     
     // Si erreur 401 (non authentifié), on peut rediriger vers la page de login
     if (error.response && error.response.status === 401) {
+      console.warn('🔒 Session expirée ou invalide')
       // On peut supprimer le token et rediriger vers la page de login
       localStorage.removeItem('auth_token')
       localStorage.removeItem('user')
+      localStorage.removeItem('user_role')
       
       // Si vous utilisez Vue Router, vous pouvez rediriger vers la page de login
       // router.push('/login')

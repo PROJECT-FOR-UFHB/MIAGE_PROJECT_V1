@@ -51,14 +51,14 @@
                 Niveau
               </label>
               <select 
-                v-model="form.niveau"
+                v-model="form.id_niveau"
                 class="border border-gray-300 rounded w-full px-2 py-1 focus:outline-none focus:ring-1 focus:ring-brandBlue"
                 :disabled="loading"
               >
                 <option disabled value="">Sélectionner votre niveau</option>
-                <option value="L1">Licence 1</option>
-                <option value="L2">Licence 2</option>
                 <option value="L3">Licence 3</option>
+                <option value="M1">Master 1</option>
+                <option value="M2">Master 2</option>
               </select>
             </div>
             <!-- Année universitaire -->
@@ -68,7 +68,7 @@
                 Année universitaire
               </label>
               <input 
-                v-model="form.annee_universitaire"
+                v-model="form.annee_document_demande"
                 type="text"
                 class="border border-gray-300 rounded w-full px-2 py-1 focus:outline-none focus:ring-1 focus:ring-brandBlue" 
                 :disabled="loading"
@@ -88,14 +88,14 @@
                 Type de demande
               </label>
               <select 
-                v-model="form.id_type_demande"
+                v-model="form.id_type_de_demande"
                 class="border border-gray-300 rounded w-full px-2 py-1 focus:outline-none focus:ring-1 focus:ring-brandBlue"
                 :disabled="loading"
                 @change="loadRequiredFiles"
               >
                 <option disabled value="">Sélectionner un type de demande</option>
-                <option v-for="type in requestTypes" :key="type.id" :value="type.id">
-                  {{ type.nom }}
+                <option v-for="type in requestTypes" :key="type.id_type_de_demande" :value="type.id_type_de_demande">
+                  {{ type.lib_type_de_demande }}
                 </option>
               </select>
             </div>
@@ -133,15 +133,14 @@
               <div v-for="(fileType, index) in requiredFiles" :key="index" class="mb-4">
                 <label class="block mb-1 font-medium flex items-center">
                   <font-awesome-icon :icon="['fas', 'paperclip']" class="text-brandBlue mr-2" />
-                  {{ fileType.nom }} <span class="text-red-500 ml-1">*</span>
+                  {{ fileType.lib_type_de_piece_jointe }} <span class="text-red-500 ml-1">*</span>
                 </label>
                 <input 
                   type="file"
-                  @change="(e) => handleFileChange(e, fileType.id)"
+                  @change="(e) => handleFileChange(e, fileType.id_type_de_piece_jointe)"
                   class="border border-gray-300 rounded w-full px-2 py-1 focus:outline-none focus:ring-1 focus:ring-brandBlue"
                   :disabled="loading"
                 />
-                <p class="text-sm text-gray-500 mt-1">{{ fileType.description }}</p>
               </div>
             </div>
             
@@ -187,9 +186,9 @@ import { requestService, fileService, authService } from '@/services'
 const form = reactive({
   nom: '',
   prenom: '',
-  niveau: '',
-  annee_universitaire: '',
-  id_type_demande: '',
+  id_niveau: '',
+  annee_document_demande: '',
+  id_type_de_demande: '',
   titre: '',
   description: ''
 })
@@ -204,15 +203,6 @@ const files = reactive({
   required: {},
   other: []
 })
-
-// Données de secours pour les types de demande
-const mockRequestTypes = [
-  { id: 1, nom: "Attestation de scolarité" },
-  { id: 2, nom: "Demande de stage" },
-  { id: 3, nom: "Demande d'absence" },
-  { id: 4, nom: "Demande de bourse" },
-  { id: 5, nom: "Autre demande" }
-]
 
 // Charger les types de demandes lors du montage du composant
 onMounted(async () => {
@@ -229,27 +219,21 @@ onMounted(async () => {
     } else if (response.data && Array.isArray(response.data)) {
       // Format alternatif: directement un tableau
       requestTypes.value = response.data
-    } else {
-      // Utiliser les données mockées en cas de format non reconnu
-      console.warn('Format de réponse non reconnu, utilisation des données mockées')
-      requestTypes.value = mockRequestTypes
     }
     
     // Récupérer les informations de l'utilisateur connecté
     const user = authService.getUser()
     if (user) {
-      form.nom = user.nom || user.last_name || ''
-      form.prenom = user.prenom || user.first_name || ''
+      form.nom = user.nom || ''
+      form.prenom = user.prenom || ''
     }
     
     // Mettre l'année universitaire actuelle par défaut
     const currentYear = new Date().getFullYear()
-    form.annee_universitaire = `${currentYear}-${currentYear + 1}`
+    form.annee_document_demande = `${currentYear}-${currentYear + 1}`
     
   } catch (err) {
     console.error('Erreur lors du chargement des types de demande:', err)
-    // Utiliser les données mockées en cas d'erreur
-    requestTypes.value = mockRequestTypes
     error.value = 'Erreur lors du chargement des types de demande'
   } finally {
     loading.value = false
@@ -258,11 +242,11 @@ onMounted(async () => {
 
 // Charger les fichiers requis pour un type de demande
 const loadRequiredFiles = async () => {
-  if (!form.id_type_demande) return
+  if (!form.id_type_de_demande) return
   
   try {
     loading.value = true
-    const response = await requestService.getRequiredFileTypes(form.id_type_demande)
+    const response = await requestService.getRequiredFileTypes(form.id_type_de_demande)
     
     // Vérifier le format de la réponse
     if (response.data && response.data.status && response.data.data) {
@@ -306,7 +290,7 @@ const submitRequest = async () => {
   
   try {
     // Vérification des champs obligatoires
-    if (!form.titre || !form.description || !form.id_type_demande || !form.niveau) {
+    if (!form.titre || !form.description || !form.id_type_de_demande || !form.id_niveau) {
       error.value = 'Veuillez remplir tous les champs obligatoires'
       loading.value = false
       return
@@ -316,9 +300,9 @@ const submitRequest = async () => {
     const requestData = {
       titre: form.titre,
       description: form.description,
-      id_type_demande: form.id_type_demande,
-      niveau: form.niveau,
-      annee_universitaire: form.annee_universitaire
+      id_type_de_demande: form.id_type_de_demande,
+      id_niveau: form.id_niveau,
+      annee_document_demande: form.annee_document_demande
     }
     
     const requestResponse = await requestService.createRequest(requestData)
@@ -328,14 +312,14 @@ const submitRequest = async () => {
       throw new Error('Format de réponse incorrect lors de la création de la demande')
     }
     
-    const requestId = requestResponse.data.data.id
+    const requestId = requestResponse.data.data.id_demande
     
     // 2. Télécharger les fichiers requis
     for (const [fileTypeId, file] of Object.entries(files.required)) {
       const formData = new FormData()
       formData.append('file', file)
-      formData.append('id_request', requestId)
-      formData.append('id_type_fichier', fileTypeId)
+      formData.append('id_demande', requestId)
+      formData.append('id_type_de_piece_jointe', fileTypeId)
       
       await fileService.uploadFile(formData)
     }
@@ -344,14 +328,14 @@ const submitRequest = async () => {
     for (const file of files.other) {
       const formData = new FormData()
       formData.append('file', file)
-      formData.append('id_request', requestId)
+      formData.append('id_demande', requestId)
       
       await fileService.uploadFile(formData)
     }
     
     // Réinitialiser le formulaire après le succès
     Object.keys(form).forEach(key => {
-      if (key !== 'nom' && key !== 'prenom' && key !== 'annee_universitaire') {
+      if (key !== 'nom' && key !== 'prenom' && key !== 'annee_document_demande') {
         form[key] = ''
       }
     })

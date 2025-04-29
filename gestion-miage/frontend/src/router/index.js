@@ -120,9 +120,9 @@ const routes = [
       // Si l'utilisateur est authentifié, le rediriger vers la page appropriée en fonction de son rôle
       if (authService.isAuthenticated()) {
         const role = authService.getUserRole()
-        if (role === 'student') {
+        if (role === 'Étudiant') {
           return '/etudiants/espace-etudiant'
-        } else if (role === 'secretary') {
+        } else if (role === 'Secrétaire') {
           return '/secretariat/tableau-de-bord'
         }
       }
@@ -159,14 +159,23 @@ router.beforeEach((to, from, next) => {
   }
   
   // Routes nécessitant un rôle spécifique
-  if (to.meta.requiresRole && isAuthenticated && to.meta.requiresRole !== userRole) {
-    // Rediriger vers la page appropriée en fonction du rôle
-    if (userRole === 'student') {
-      return next('/etudiants/espace-etudiant')
-    } else if (userRole === 'secretary') {
-      return next('/secretariat/tableau-de-bord')
+  if (to.meta.requiresRole && isAuthenticated) {
+    const requiredRole = to.meta.requiresRole
+    
+    // Vérification spéciale pour le rôle étudiant
+    if (requiredRole === 'student' && userRole === 'Étudiant') {
+      return next()
     }
-    return next('/')
+    
+    if (requiredRole !== userRole) {
+      // Rediriger vers la page appropriée en fonction du rôle
+      if (userRole === 'Étudiant') {
+        return next('/etudiants/espace-etudiant')
+      } else if (userRole === 'Secrétaire') {
+        return next('/secretariat/tableau-de-bord')
+      }
+      return next('/')
+    }
   }
   
   next()

@@ -23,7 +23,9 @@ import {
   faCheck,
   faTimes,
   faInbox,
-  faThumbsUp
+  faThumbsUp,
+  faQuestion,
+  faBell
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
@@ -45,7 +47,9 @@ library.add(
   faCheck,
   faTimes,
   faInbox,
-  faThumbsUp
+  faThumbsUp,
+  faQuestion,
+  faBell
 )
 
 const app = createApp(App)

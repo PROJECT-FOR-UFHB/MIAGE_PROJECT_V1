@@ -5,7 +5,8 @@
       <font-awesome-icon :icon="icon" class="mr-2 text-brandGreen" />
       <h1 class="text-xl font-semibold">{{ title }}</h1>
     </div>
-    <div class="flex items-center">
+    <div class="flex items-center space-x-4">
+      <NotificationBadge />
       <LogoutButton />
     </div>
   </header>
@@ -13,6 +14,7 @@
 
 <script setup>
 import LogoutButton from '@/components/auth/LogoutButton.vue'
+import NotificationBadge from '@/components/NotificationBadge.vue'
 
 const props = defineProps({
   title: {
