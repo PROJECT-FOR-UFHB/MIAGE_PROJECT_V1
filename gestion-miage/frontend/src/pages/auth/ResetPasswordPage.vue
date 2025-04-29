@@ -42,7 +42,7 @@
           </label>
           <input 
             id="password_confirmation" 
-            v-model="form.password_confirmation" 
+            v-model="form.email" 
             type="password" 
             class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
             placeholder="Confirmez votre nouveau mot de passe"
@@ -82,24 +82,20 @@ const error = ref('')
 const success = ref('')
 
 const form = reactive({
-  token: '',
+  
   email: '',
-  password: '',
-  password_confirmation: ''
+ 
 })
 
 onMounted(() => {
   // Récupérer le token depuis les paramètres de l'URL
   const token = route.query.token
-  const email = route.query.email
-  
   if (token) {
     form.token = token
   }
   
-  if (email) {
-    form.email = email
-  }
+  
+
 })
 
 const resetPassword = async () => {
@@ -113,7 +109,7 @@ const resetPassword = async () => {
   }
   
   try {
-    await authService.resetPassword(form)
+    await authService.requestPasswordReset(form)
     success.value = 'Votre mot de passe a été réinitialisé avec succès.'
   } catch (err) {
     if (err.response && err.response.data) {

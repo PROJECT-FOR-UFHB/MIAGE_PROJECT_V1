@@ -73,7 +73,7 @@ const authService = {
    * @returns {Promise} - Promesse avec le statut de la demande
    */
   requestPasswordReset(email) {
-    return apiClient.post('/auth/password/reset-request', { email })
+    return apiClient.post('/auth/password/reset-request', { email:email })
   },
 
   /**

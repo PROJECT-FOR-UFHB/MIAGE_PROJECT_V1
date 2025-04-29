@@ -8,7 +8,7 @@ import LoginPage from '@/pages/auth/LoginPage.vue'
 import RegisterPage from '@/pages/auth/RegisterPage.vue'
 import RequestPasswordResetPage from '@/pages/auth/RequestPasswordResetPage.vue'
 import ResetPasswordPage from '@/pages/auth/ResetPasswordPage.vue'
-
+import ConfirmCode from '@/pages/auth/confirmCode.vue'
 // Import du service d'authentification pour les gardes de navigation
 import { authService } from '@/services'
 
@@ -39,6 +39,12 @@ const routes = [
         path: 'reset-password',
         name: 'ResetPassword',
         component: ResetPasswordPage,
+        meta: { requiresGuest: true }
+      },
+      {
+        path: 'confirm-code',
+        name: 'ConfirmCode',
+        component: ConfirmCode,
         meta: { requiresGuest: true }
       }
     ]
