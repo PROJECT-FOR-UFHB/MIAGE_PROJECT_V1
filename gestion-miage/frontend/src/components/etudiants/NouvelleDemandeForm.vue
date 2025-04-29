@@ -48,9 +48,11 @@
                 class="border border-gray-300 rounded w-full px-2 py-1 focus:outline-none focus:ring-1 focus:ring-brandBlue"
                 :disabled="loading">
                 <option disabled value="">Sélectionner votre niveau</option>
-                <option value="L1">Licence 1</option>
-                <option value="L2">Licence 2</option>
-                <option value="L3">Licence 3</option>
+
+                <!-- itération dynamique -->
+                <option v-for="niv in niveaux" :key="niv.id_niveau" :value="niv.id_niveau">
+                  {{ niv.nom }}
+                </option>
               </select>
             </div>
             <!-- Année universitaire -->
@@ -80,9 +82,10 @@
                 class="border border-gray-300 rounded w-full px-2 py-1 focus:outline-none focus:ring-1 focus:ring-brandBlue"
                 :disabled="loading" @change="loadRequiredFiles">
                 <option disabled value="">Sélectionner un type de demande</option>
-                <option v-for="type in requestTypes" :key="type.id" :value="type.id">
+                <option v-for="type in requestTypes" :key="type.id_type_de_demande" :value="type.id_type_de_demande">
                   {{ type.nom }}
                 </option>
+
               </select>
             </div>
             <!-- Libellé de la demande -->
@@ -165,17 +168,15 @@ const form = reactive({
 })
 
 // Autres états
-const loading = ref(false)
-const error = ref('')
-const success = ref('')
-const requestTypes = ref([])
+const loading       = ref(false)
+const error         = ref('')
+const success       = ref('')
+const requestTypes  = ref([])
+const niveaux       = ref([])    // ← état pour les niveaux
 const requiredFiles = ref([])
-const files = reactive({
-  required: {},
-  other: []
-})
+const files         = reactive({ required: {}, other: [] })
 
-// Données de secours pour les types de demande
+// Données mock au besoin
 const mockRequestTypes = [
   { id: 1, nom: "Attestation de scolarité" },
   { id: 2, nom: "Demande de stage" },
@@ -184,169 +185,149 @@ const mockRequestTypes = [
   { id: 5, nom: "Autre demande" }
 ]
 
-// Charger les types de demandes lors du montage du composant
 onMounted(async () => {
+  loading.value = true
   try {
-    loading.value = true
-
-    // Récupérer les types de demandes
-    const response = await requestService.getRequestTypes()
-
-    // Vérifier le format de la réponse selon l'API
-    if (response.data && response.data.status && response.data.data) {
-      // Format standard de l'API: { status: true, data: [...] }
-      requestTypes.value = response.data.data
-    } else if (response.data && Array.isArray(response.data)) {
-      // Format alternatif: directement un tableau
-      requestTypes.value = response.data
+    // Charger les types de demandes
+    const respTypes = await requestService.getRequestTypes()
+    if (respTypes.data?.status && Array.isArray(respTypes.data.data)) {
+      requestTypes.value = respTypes.data.data
+    } else if (Array.isArray(respTypes.data)) {
+      requestTypes.value = respTypes.data
     } else {
-      // Utiliser les données mockées en cas de format non reconnu
-      console.warn('Format de réponse non reconnu, utilisation des données mockées')
+      console.warn('Mock types used')
       requestTypes.value = mockRequestTypes
     }
 
-    // Récupérer les informations de l'utilisateur connecté
+    // Charger les niveaux
+    const respNiv = await requestService.getLevels()
+    if (respNiv.data?.status && Array.isArray(respNiv.data.data)) {
+      niveaux.value = respNiv.data.data
+    } else if (Array.isArray(respNiv.data)) {
+      niveaux.value = respNiv.data
+    } else {
+      console.warn('No niveaux returned, using empty list')
+      niveaux.value = []
+    }
+
+    // Pré-remplir nom/prenom
     const user = authService.getUser()
     if (user) {
-      form.nom = user.nom || user.last_name || ''
+      form.nom    = user.nom    || user.last_name  || ''
       form.prenom = user.prenom || user.first_name || ''
     }
 
-    // Mettre l'année universitaire actuelle par défaut
-    const currentYear = new Date().getFullYear()
-    form.annee_universitaire = `${currentYear}-${currentYear + 1}`
+    // Par défaut année universitaire
+    const y = new Date().getFullYear()
+    form.annee_universitaire = `${y}-${y+1}`
 
   } catch (err) {
-    console.error('Erreur lors du chargement des types de demande:', err)
-    // Utiliser les données mockées en cas d'erreur
-    requestTypes.value = mockRequestTypes
-    error.value = 'Erreur lors du chargement des types de demande'
+    console.error(err)
+    error.value = 'Erreur lors du chargement des données'
   } finally {
     loading.value = false
   }
 })
 
-// Charger les fichiers requis pour un type de demande
+// Charger les fichiers requis
 const loadRequiredFiles = async () => {
   if (!form.id_type_demande) return
-
+  loading.value = true
   try {
-    loading.value = true
-    const response = await requestService.getRequiredFileTypes(form.id_type_demande)
-
-    // Vérifier le format de la réponse
-    if (response.data && response.data.status && response.data.data) {
-      // Format standard API
-      requiredFiles.value = response.data.data
-    } else if (response.data && Array.isArray(response.data)) {
-      // Format alternatif
-      requiredFiles.value = response.data
+    const resp = await requestService.getRequiredFileTypes(form.id_type_demande)
+    if (resp.data?.status && Array.isArray(resp.data.data)) {
+      requiredFiles.value = resp.data.data
+    } else if (Array.isArray(resp.data)) {
+      requiredFiles.value = resp.data
     } else {
       requiredFiles.value = []
     }
-  } catch (err) {
-    console.error('Erreur lors du chargement des fichiers requis:', err)
-    error.value = 'Erreur lors du chargement des types de fichiers requis'
+  } catch {
+    error.value = 'Erreur lors du chargement des fichiers requis'
     requiredFiles.value = []
   } finally {
     loading.value = false
   }
 }
 
-// Gérer le changement d'un fichier requis
-const handleFileChange = (event, fileTypeId) => {
-  if (event.target.files.length > 0) {
-    files.required[fileTypeId] = event.target.files[0]
+// Gestion fichiers requis
+const handleFileChange = (e, typeId) => {
+  if (e.target.files.length) {
+    files.required[typeId] = e.target.files[0]
   } else {
-    delete files.required[fileTypeId]
+    delete files.required[typeId]
   }
 }
 
-// Gérer le changement des autres fichiers
-const handleOtherFilesChange = (event) => {
-  files.other = Array.from(event.target.files)
+// Gestion autres fichiers
+const handleOtherFilesChange = e => {
+  files.other = Array.from(e.target.files)
 }
 
 // Soumettre la demande
 const submitRequest = async () => {
-  // Réinitialiser les messages
   error.value = ''
   success.value = ''
   loading.value = true
 
-  try {
-    // Vérification des champs obligatoires
-    if (!form.titre || !form.description || !form.id_type_demande || !form.niveau) {
-      error.value = 'Veuillez remplir tous les champs obligatoires'
-      loading.value = false
-      return
-    }
+  // validation
+  if (!form.titre || !form.description || !form.id_type_demande || !form.niveau) {
+    error.value = 'Veuillez remplir tous les champs obligatoires'
+    loading.value = false
+    return
+  }
 
-    // 1. Créer la demande selon le format API
-    const requestData = {
+  try {
+    // Création de la demande
+    const payload = {
       id_type_de_demande: form.id_type_demande,
       id_niveau: form.niveau,
       annee_document_demande: form.annee_universitaire
     }
-
-
-    const requestResponse = await requestService.createRequest(requestData)
-
-    // Vérifier la réponse selon le format API
-    if (!requestResponse.data || !requestResponse.data.status || !requestResponse.data.data) {
-      throw new Error('Format de réponse incorrect lors de la création de la demande')
+    const resp = await requestService.createRequest(payload)
+    if (!resp.data?.status || !resp.data.data) {
+      throw new Error('Format réponse création incorrect')
     }
 
-    const requestId = requestResponse.data.data.id
+    const reqId = resp.data.data.id
 
-    // 2. Télécharger les fichiers requis
-    for (const [fileTypeId, file] of Object.entries(files.required)) {
-      const formData = new FormData()
-      formData.append('file', file)
-      formData.append('id_request', requestId)
-      formData.append('id_type_fichier', fileTypeId)
-
-      await fileService.uploadFile(formData)
+    // Upload fichiers requis
+    for (const [tId, f] of Object.entries(files.required)) {
+      const fd = new FormData()
+      fd.append('file', f)
+      fd.append('id_request', reqId)
+      fd.append('id_type_fichier', tId)
+      await fileService.uploadFile(fd)
     }
 
-    // 3. Télécharger les autres fichiers
-    for (const file of files.other) {
-      const formData = new FormData()
-      formData.append('file', file)
-      formData.append('id_request', requestId)
-
-      await fileService.uploadFile(formData)
+    // Upload autres fichiers
+    for (const f of files.other) {
+      const fd = new FormData()
+      fd.append('file', f)
+      fd.append('id_request', reqId)
+      await fileService.uploadFile(fd)
     }
 
-    // Réinitialiser le formulaire après le succès
-    Object.keys(form).forEach(key => {
-      if (key !== 'nom' && key !== 'prenom' && key !== 'annee_universitaire') {
-        form[key] = ''
+    // Reset form
+    Object.keys(form).forEach(k => {
+      if (!['nom','prenom','annee_universitaire'].includes(k)) {
+        form[k] = ''
       }
     })
-
     files.required = {}
-    files.other = []
+    files.other    = []
     requiredFiles.value = []
 
     success.value = 'Votre demande a été soumise avec succès'
-
   } catch (err) {
-    console.error('Erreur lors de la soumission de la demande:', err)
-
-    if (err.response && err.response.data) {
-      if (err.response.data.errors) {
-        // Gestion des erreurs de validation selon l'API
-        const errorMessages = Object.values(err.response.data.errors).flat()
-        error.value = errorMessages.join(', ')
-      } else if (err.response.data.message) {
-        // Message d'erreur standard de l'API
-        error.value = err.response.data.message
-      } else {
-        error.value = 'Erreur lors de la soumission de la demande'
-      }
+    console.error(err)
+    const d = err.response?.data
+    if (d?.errors) {
+      error.value = Object.values(d.errors).flat().join(', ')
+    } else if (d?.message) {
+      error.value = d.message
     } else {
-      error.value = 'Erreur de connexion au serveur'
+      error.value = 'Erreur de soumission'
     }
   } finally {
     loading.value = false

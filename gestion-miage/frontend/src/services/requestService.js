@@ -125,7 +125,7 @@ const requestService = {
   validateRequest(validationData) {
     return apiClient.post('/validations', validationData)
   },
-  
+
   /**
    * Obtenir le tableau de bord étudiant
    * @returns {Promise} - Promesse avec les données du tableau de bord
@@ -133,7 +133,7 @@ const requestService = {
   getStudentDashboard() {
     return apiClient.get('/students/dashboard');
   },
-  
+
   /**
    * Obtenir le profil étudiant
    * @returns {Promise} - Promesse avec les données du profil
@@ -141,7 +141,15 @@ const requestService = {
   getStudentProfile() {
     return apiClient.get('/students/profile');
   },
-  
+
+  /**
+ * Obtenir la liste des niveaux
+ * @returns {Promise}
+ */
+  getLevels() {
+    return apiClient.get('/niveaux')
+  },
+
   /**
    * Mettre à jour le profil étudiant
    * @param {Object} profileData - Les données du profil
@@ -150,6 +158,7 @@ const requestService = {
   updateStudentProfile(profileData) {
     return apiClient.put('/students/profile', profileData);
   }
+
 }
 
 export default requestService 
