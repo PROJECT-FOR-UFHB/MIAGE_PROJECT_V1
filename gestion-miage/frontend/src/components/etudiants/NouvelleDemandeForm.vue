@@ -7,12 +7,12 @@
       <div v-if="success" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
         {{ success }}
       </div>
-      
+
       <!-- Message d'erreur -->
       <div v-if="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
         {{ error }}
       </div>
-      
+
       <form @submit.prevent="submitRequest">
         <!-- Section : Informations de l'étudiant -->
         <div class="bg-white p-6 rounded shadow mb-8">
@@ -24,12 +24,9 @@
                 <font-awesome-icon :icon="['fas', 'user']" class="text-brandBlue mr-2" />
                 Nom de l'étudiant
               </label>
-              <input 
-                v-model="form.nom"
-                type="text"
-                class="border border-gray-300 rounded w-full px-2 py-1 focus:outline-none focus:ring-1 focus:ring-brandBlue" 
-                :disabled="loading"
-              />
+              <input v-model="form.nom" type="text"
+                class="border border-gray-300 rounded w-full px-2 py-1 focus:outline-none focus:ring-1 focus:ring-brandBlue"
+                :disabled="loading" />
             </div>
             <!-- Prénom -->
             <div>
@@ -37,12 +34,9 @@
                 <font-awesome-icon :icon="['fas', 'user']" class="text-brandBlue mr-2" />
                 Prénom de l'étudiant
               </label>
-              <input 
-                v-model="form.prenom"
-                type="text"
-                class="border border-gray-300 rounded w-full px-2 py-1 focus:outline-none focus:ring-1 focus:ring-brandBlue" 
-                :disabled="loading"
-              />
+              <input v-model="form.prenom" type="text"
+                class="border border-gray-300 rounded w-full px-2 py-1 focus:outline-none focus:ring-1 focus:ring-brandBlue"
+                :disabled="loading" />
             </div>
             <!-- Niveau -->
             <div>
@@ -50,11 +44,9 @@
                 <font-awesome-icon :icon="['fas', 'graduation-cap']" class="text-brandBlue mr-2" />
                 Niveau
               </label>
-              <select 
-                v-model="form.niveau"
+              <select v-model="form.niveau"
                 class="border border-gray-300 rounded w-full px-2 py-1 focus:outline-none focus:ring-1 focus:ring-brandBlue"
-                :disabled="loading"
-              >
+                :disabled="loading">
                 <option disabled value="">Sélectionner votre niveau</option>
                 <option value="L1">Licence 1</option>
                 <option value="L2">Licence 2</option>
@@ -67,12 +59,9 @@
                 <font-awesome-icon :icon="['fas', 'calendar']" class="text-brandBlue mr-2" />
                 Année universitaire
               </label>
-              <input 
-                v-model="form.annee_universitaire"
-                type="text"
-                class="border border-gray-300 rounded w-full px-2 py-1 focus:outline-none focus:ring-1 focus:ring-brandBlue" 
-                :disabled="loading"
-              />
+              <input v-model="form.annee_universitaire" type="text"
+                class="border border-gray-300 rounded w-full px-2 py-1 focus:outline-none focus:ring-1 focus:ring-brandBlue"
+                :disabled="loading" />
             </div>
           </div>
         </div>
@@ -87,12 +76,9 @@
                 <font-awesome-icon :icon="['fas', 'clipboard-list']" class="text-brandBlue mr-2" />
                 Type de demande
               </label>
-              <select 
-                v-model="form.id_type_demande"
+              <select v-model="form.id_type_demande"
                 class="border border-gray-300 rounded w-full px-2 py-1 focus:outline-none focus:ring-1 focus:ring-brandBlue"
-                :disabled="loading"
-                @change="loadRequiredFiles"
-              >
+                :disabled="loading" @change="loadRequiredFiles">
                 <option disabled value="">Sélectionner un type de demande</option>
                 <option v-for="type in requestTypes" :key="type.id" :value="type.id">
                   {{ type.nom }}
@@ -105,28 +91,22 @@
                 <font-awesome-icon :icon="['fas', 'info-circle']" class="text-brandBlue mr-2" />
                 Libellé de la demande
               </label>
-              <input 
-                v-model="form.titre"
-                type="text"
-                class="border border-gray-300 rounded w-full px-2 py-1 focus:outline-none focus:ring-1 focus:ring-brandBlue" 
-                :disabled="loading"
-              />
+              <input v-model="form.titre" type="text"
+                class="border border-gray-300 rounded w-full px-2 py-1 focus:outline-none focus:ring-1 focus:ring-brandBlue"
+                :disabled="loading" />
             </div>
-            
+
             <!-- Description de la demande -->
             <div class="col-span-2">
               <label class="block mb-1 font-medium flex items-center">
                 <font-awesome-icon :icon="['fas', 'info-circle']" class="text-brandBlue mr-2" />
                 Description de la demande
               </label>
-              <textarea 
-                v-model="form.description"
-                rows="4"
+              <textarea v-model="form.description" rows="4"
                 class="border border-gray-300 rounded w-full px-2 py-1 focus:outline-none focus:ring-1 focus:ring-brandBlue"
-                :disabled="loading"
-              ></textarea>
+                :disabled="loading"></textarea>
             </div>
-            
+
             <!-- Fichiers requis -->
             <div v-if="requiredFiles.length > 0" class="col-span-2 mt-4">
               <h3 class="text-md font-semibold mb-2">Documents requis</h3>
@@ -135,29 +115,22 @@
                   <font-awesome-icon :icon="['fas', 'paperclip']" class="text-brandBlue mr-2" />
                   {{ fileType.nom }} <span class="text-red-500 ml-1">*</span>
                 </label>
-                <input 
-                  type="file"
-                  @change="(e) => handleFileChange(e, fileType.id)"
+                <input type="file" @change="(e) => handleFileChange(e, fileType.id)"
                   class="border border-gray-300 rounded w-full px-2 py-1 focus:outline-none focus:ring-1 focus:ring-brandBlue"
-                  :disabled="loading"
-                />
+                  :disabled="loading" />
                 <p class="text-sm text-gray-500 mt-1">{{ fileType.description }}</p>
               </div>
             </div>
-            
+
             <!-- Autres fichiers -->
             <div class="col-span-2">
               <label class="block mb-1 font-medium flex items-center">
                 <font-awesome-icon :icon="['fas', 'paperclip']" class="text-brandBlue mr-2" />
                 Autres documents
               </label>
-              <input 
-                type="file"
-                multiple
-                @change="handleOtherFilesChange"
-                class="border border-gray-300 rounded w-full px-2 py-1 focus:outline-none focus:ring-1 focus:ring-brandBlue" 
-                :disabled="loading"
-              />
+              <input type="file" multiple @change="handleOtherFilesChange"
+                class="border border-gray-300 rounded w-full px-2 py-1 focus:outline-none focus:ring-1 focus:ring-brandBlue"
+                :disabled="loading" />
               <p class="text-sm text-gray-500 mt-1">Vous pouvez ajouter plusieurs fichiers</p>
             </div>
           </div>
@@ -165,11 +138,8 @@
 
         <!-- Bouton d'envoi aligné à droite -->
         <div class="flex justify-end">
-          <button 
-            type="submit"
-            class="bg-brandBlue text-white px-6 py-2 rounded hover:bg-blue-700 transition-colors"
-            :disabled="loading"
-          >
+          <button type="submit" class="bg-brandBlue text-white px-6 py-2 rounded hover:bg-blue-700 transition-colors"
+            :disabled="loading">
             <span v-if="loading">Traitement en cours...</span>
             <span v-else>Envoyer la demande</span>
           </button>
@@ -218,10 +188,10 @@ const mockRequestTypes = [
 onMounted(async () => {
   try {
     loading.value = true
-    
+
     // Récupérer les types de demandes
     const response = await requestService.getRequestTypes()
-    
+
     // Vérifier le format de la réponse selon l'API
     if (response.data && response.data.status && response.data.data) {
       // Format standard de l'API: { status: true, data: [...] }
@@ -234,18 +204,18 @@ onMounted(async () => {
       console.warn('Format de réponse non reconnu, utilisation des données mockées')
       requestTypes.value = mockRequestTypes
     }
-    
+
     // Récupérer les informations de l'utilisateur connecté
     const user = authService.getUser()
     if (user) {
       form.nom = user.nom || user.last_name || ''
       form.prenom = user.prenom || user.first_name || ''
     }
-    
+
     // Mettre l'année universitaire actuelle par défaut
     const currentYear = new Date().getFullYear()
     form.annee_universitaire = `${currentYear}-${currentYear + 1}`
-    
+
   } catch (err) {
     console.error('Erreur lors du chargement des types de demande:', err)
     // Utiliser les données mockées en cas d'erreur
@@ -259,11 +229,11 @@ onMounted(async () => {
 // Charger les fichiers requis pour un type de demande
 const loadRequiredFiles = async () => {
   if (!form.id_type_demande) return
-  
+
   try {
     loading.value = true
     const response = await requestService.getRequiredFileTypes(form.id_type_demande)
-    
+
     // Vérifier le format de la réponse
     if (response.data && response.data.status && response.data.data) {
       // Format standard API
@@ -303,7 +273,7 @@ const submitRequest = async () => {
   error.value = ''
   success.value = ''
   loading.value = true
-  
+
   try {
     // Vérification des champs obligatoires
     if (!form.titre || !form.description || !form.id_type_demande || !form.niveau) {
@@ -311,60 +281,59 @@ const submitRequest = async () => {
       loading.value = false
       return
     }
-    
+
     // 1. Créer la demande selon le format API
     const requestData = {
-      titre: form.titre,
-      description: form.description,
-      id_type_demande: form.id_type_demande,
-      niveau: form.niveau,
-      annee_universitaire: form.annee_universitaire
+      id_type_de_demande: form.id_type_demande,
+      id_niveau: form.niveau,
+      annee_document_demande: form.annee_universitaire
     }
-    
+
+
     const requestResponse = await requestService.createRequest(requestData)
-    
+
     // Vérifier la réponse selon le format API
     if (!requestResponse.data || !requestResponse.data.status || !requestResponse.data.data) {
       throw new Error('Format de réponse incorrect lors de la création de la demande')
     }
-    
+
     const requestId = requestResponse.data.data.id
-    
+
     // 2. Télécharger les fichiers requis
     for (const [fileTypeId, file] of Object.entries(files.required)) {
       const formData = new FormData()
       formData.append('file', file)
       formData.append('id_request', requestId)
       formData.append('id_type_fichier', fileTypeId)
-      
+
       await fileService.uploadFile(formData)
     }
-    
+
     // 3. Télécharger les autres fichiers
     for (const file of files.other) {
       const formData = new FormData()
       formData.append('file', file)
       formData.append('id_request', requestId)
-      
+
       await fileService.uploadFile(formData)
     }
-    
+
     // Réinitialiser le formulaire après le succès
     Object.keys(form).forEach(key => {
       if (key !== 'nom' && key !== 'prenom' && key !== 'annee_universitaire') {
         form[key] = ''
       }
     })
-    
+
     files.required = {}
     files.other = []
     requiredFiles.value = []
-    
+
     success.value = 'Votre demande a été soumise avec succès'
-    
+
   } catch (err) {
     console.error('Erreur lors de la soumission de la demande:', err)
-    
+
     if (err.response && err.response.data) {
       if (err.response.data.errors) {
         // Gestion des erreurs de validation selon l'API
