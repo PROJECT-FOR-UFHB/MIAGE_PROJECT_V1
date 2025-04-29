@@ -66,7 +66,9 @@
 <script setup>
 import { ref } from 'vue'
 import { authService } from '@/services'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const email = ref('')
 const loading = ref(false)
 const error = ref('')
@@ -79,9 +81,14 @@ const requestReset = async () => {
   error.value = ''
   success.value = ''
   try {
-    await authService.requestPasswordReset({ email: email.value })
+    await authService.requestPasswordReset(email.value )
+    
     success.value = 'Un lien de réinitialisation a été envoyé à votre adresse email.'
     email.value = ''
+    router.push({ 
+  path: '/auth/confirmCode', 
+  query: { email: email.value } 
+})
   } catch (err) {
     error.value = err.response?.data?.message || 'Erreur lors de la demande de réinitialisation'
   } finally {

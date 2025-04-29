@@ -107,43 +107,61 @@
   </div>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      form: { email: '', password: '' },
-      error: null,
-      loading: false,
-      faceState: 'neutral', // 'neutral' | 'smile' | 'stare'
-      passwordVisible: false,
-    };
-  },
-  methods: {
-    onEmailFocus() {
-      this.faceState = 'smile';
-    },
-    onEmailInput() {
-      this.faceState = 'smile';
-    },
-    onEmailBlur() {
-      this.faceState = 'stare';
-    },
-    togglePassword() {
-      this.passwordVisible = !this.passwordVisible;
-    },
-    async login() {
-      this.loading = true;
-      try {
-        // appel API de connexion
-      } catch (err) {
-        this.error = err.message;
-        this.faceState = 'shake';
-      } finally {
-        this.loading = false;
-      }
+<script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { authService } from '@/services'
+
+const router = useRouter()
+const form = ref({ email: '', password: '' })
+const error = ref(null)
+const loading = ref(false)
+const faceState = ref('neutral') // 'neutral' | 'smile' | 'stare'
+const passwordVisible = ref(false)
+
+const onEmailFocus = () => {
+  faceState.value = 'smile'
+}
+
+const onEmailInput = () => {
+  faceState.value = 'smile'
+}
+
+const onEmailBlur = () => {
+  faceState.value = 'stare'
+}
+
+const togglePassword = () => {
+  passwordVisible.value = !passwordVisible.value
+}
+
+const login = async () => {
+  loading.value = true
+  error.value = ''
+  
+  try {
+    const response = await authService.login(form.value.email, form.value.password)
+    
+    // Redirection basée sur le rôle
+    const userRole = response.role
+    if (userRole === 'student') {
+      router.push('/etudiants/espace-etudiant')
+    } else if (userRole === 'secretary') {
+      router.push('/secretariat/tableau-de-bord')
+    } else {
+      // Autres rôles
+      router.push('/')
     }
+  } catch (err) {
+    if (err.response && err.response.data) {
+      error.value = err.response.data.message || 'Erreur de connexion'
+    } else {
+      error.value = 'Erreur de connexion au serveur'
+    }
+  } finally {
+    loading.value = false
   }
-};
+}
 </script>
 
 <style scoped>

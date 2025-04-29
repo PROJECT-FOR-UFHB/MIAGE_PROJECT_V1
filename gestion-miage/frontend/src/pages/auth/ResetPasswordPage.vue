@@ -21,6 +21,7 @@
             class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
             placeholder="votre.email@example.com"
             required
+            :readonly="!!route.query.email"
           />
         </div>
         
@@ -42,7 +43,7 @@
           </label>
           <input 
             id="password_confirmation" 
-            v-model="form.email" 
+            v-model="form.password_confirmation" 
             type="password" 
             class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
             placeholder="Confirmez votre nouveau mot de passe"
@@ -82,25 +83,35 @@ const error = ref('')
 const success = ref('')
 
 const form = reactive({
-  
+  token: '',
   email: '',
- 
+  password: '',
+  password_confirmation: ''
 })
 
 onMounted(() => {
   // Récupérer le token depuis les paramètres de l'URL
   const token = route.query.token
+  const email = route.query.email
+  
   if (token) {
     form.token = token
   }
   
-  
-
+  if (email) {
+    form.email = email
+  }
 })
 
 const resetPassword = async () => {
   loading.value = true
   error.value = ''
+  
+  if (!form.token) {
+    error.value = 'Le token de réinitialisation est manquant.'
+    loading.value = false
+    return
+  }
   
   if (form.password !== form.password_confirmation) {
     error.value = 'Les mots de passe ne correspondent pas.'
@@ -108,8 +119,14 @@ const resetPassword = async () => {
     return
   }
   
+  if (form.password.length < 8) {
+    error.value = 'Le mot de passe doit contenir au moins 8 caractères.'
+    loading.value = false
+    return
+  }
+  
   try {
-    await authService.requestPasswordReset(form)
+    await authService.resetPassword(form)
     success.value = 'Votre mot de passe a été réinitialisé avec succès.'
   } catch (err) {
     if (err.response && err.response.data) {

@@ -75,7 +75,12 @@ const authService = {
   requestPasswordReset(email) {
     return apiClient.post('/auth/password/reset-request', { email:email })
   },
-
+  verifyCode(code, email) {
+    return apiClient.post('auth/verify-reset-code', { code:code, email:email })
+  },
+  changePassword(password, email) { // pour le changement de mot de passe 
+    return apiClient.post('auth/change-password', { password:password, email:email })
+  },    
   /**
    * Réinitialisation de mot de passe
    * @param {Object} resetData - Données de réinitialisation
@@ -85,9 +90,9 @@ const authService = {
    * @param {string} resetData.password_confirmation - Confirmation du nouveau mot de passe
    * @returns {Promise} - Promesse avec le statut de la réinitialisation
    */
-  resetPassword(resetData) {
-    return apiClient.post('/auth/password/reset', resetData)
-  },
+  // resetPassword(resetData) {
+  //   return apiClient.post('/auth/password/reset', resetData)
+  // },
 
   /**
    * Vérifier si l'utilisateur est authentifié

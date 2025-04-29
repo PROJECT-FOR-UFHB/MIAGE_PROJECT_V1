@@ -41,6 +41,9 @@
   
   <script setup>
   import { ref, nextTick } from 'vue'
+  import { authService } from '@/services'
+  import { useRouter } from 'vue-router'
+  const router = useRouter()
   
   // Reactive array for 6-digit code
   const code = ref(Array(6).fill(''))
@@ -48,7 +51,7 @@
   const focused = ref(-1)
   // Refs to input elements
   const inputRefs = ref([])
-  
+  const email=router.query.email
   // Handle input and auto-focus next
   function onInput(idx, event) {
     const value = event.target.value.slice(-1)
@@ -61,10 +64,12 @@
   }
   
   // Submission handler
-  function submitCode() {
+  const submitCode = async () => {
     const entered = code.value.join('')
     console.log('Code saisi :', entered)
     // TODO: appel API de confirmation
+    await authService.verifyCode(entered, email)
+    router.push({ path: '/auth/change-password', query: { email: email } })
   }
   </script>
   

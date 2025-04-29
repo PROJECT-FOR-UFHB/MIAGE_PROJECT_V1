@@ -46,6 +46,12 @@ const routes = [
         name: 'ConfirmCode',
         component: ConfirmCode,
         meta: { requiresGuest: true }
+      },
+      {
+        path: 'change-password',
+        name: 'ChangePassword',
+        component: ChangePassword,
+        meta: { requiresGuest: true }
       }
     ]
   },
