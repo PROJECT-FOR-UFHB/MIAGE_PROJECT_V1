@@ -9,6 +9,7 @@ import RegisterPage from '@/pages/auth/RegisterPage.vue'
 import RequestPasswordResetPage from '@/pages/auth/RequestPasswordResetPage.vue'
 import ResetPasswordPage from '@/pages/auth/ResetPasswordPage.vue'
 import ConfirmCode from '@/pages/auth/confirmCode.vue'
+import ChangePassword from '@/pages/auth/ChangePassword.vue'
 // Import du service d'authentification pour les gardes de navigation
 import { authService } from '@/services'
 

@@ -79,7 +79,7 @@ const authService = {
     return apiClient.post('auth/verify-reset-code', { code:code, email:email })
   },
   changePassword(password, email) { // pour le changement de mot de passe 
-    return apiClient.post('auth/change-password', { password:password, email:email })
+    return apiClient.post('auth/password/reset', { password:password, email:email })
   },    
   /**
    * Réinitialisation de mot de passe

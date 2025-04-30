@@ -10,6 +10,18 @@
         <h2 class="text-2xl font-bold text-center mb-4 text-gray-800">Code de confirmation</h2>
         <p class="text-center text-gray-600 mb-6">Entrez le code à 6 chiffres envoyé par email</p>
   
+        <!-- Message d'erreur animé -->
+        <div v-if="formState.errorMessage" class="mb-6 error-message-container">
+          <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded shadow-md error-message">
+            <div class="flex items-center">
+              <svg class="w-6 h-6 mr-2 error-icon" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+              </svg>
+              <span>{{ formState.errorMessage }}</span>
+            </div>
+          </div>
+        </div>
+  
         <div class="flex justify-between space-x-3 mb-8">
           <input
             v-for="(digit, idx) in code"
@@ -26,6 +38,7 @@
                    border-gray-400
                    focus:border-indigo-400 focus:shadow-lg focus:scale-110
                    input-float"
+            :class="{ 'border-red-500 shake': formState.errorMessage }"
           />
         </div>
   
@@ -40,10 +53,12 @@
   </template>
   
   <script setup>
-  import { ref, nextTick } from 'vue'
+  import { ref, reactive, nextTick, onMounted } from 'vue'
   import { authService } from '@/services'
-  import { useRouter } from 'vue-router'
+  import { useRouter, useRoute } from 'vue-router'
+  
   const router = useRouter()
+  const route = useRoute()
   
   // Reactive array for 6-digit code
   const code = ref(Array(6).fill(''))
@@ -51,7 +66,24 @@
   const focused = ref(-1)
   // Refs to input elements
   const inputRefs = ref([])
-  const email=router.query.email
+  
+  // État du formulaire incluant le message d'erreur et l'email
+  const formState = reactive({
+    errorMessage: '',
+    email: ''
+  })
+  
+  // Récupérer l'email depuis sessionStorage au chargement du composant
+  onMounted(() => {
+    formState.email = sessionStorage.getItem('resetEmail') || ''
+    
+    // Rediriger si aucun email n'est trouvé
+    if (!formState.email) {
+      router.push('/auth/request-password-reset')
+      formState.errorMessage = "Session expirée. Veuillez recommencer le processus de réinitialisation."
+    }
+  })
+  
   // Handle input and auto-focus next
   function onInput(idx, event) {
     const value = event.target.value.slice(-1)
@@ -63,13 +95,42 @@
     }
   }
   
+  // Réinitialiser le code
+  function resetCode() {
+    code.value = Array(6).fill('')
+    nextTick(() => {
+      inputRefs.value[0]?.focus()
+    })
+  }
+  
   // Submission handler
   const submitCode = async () => {
     const entered = code.value.join('')
     console.log('Code saisi :', entered)
-    // TODO: appel API de confirmation
-    await authService.verifyCode(entered, email)
-    router.push({ path: '/auth/change-password', query: { email: email } })
+    
+    try {
+      // Effacer tout message d'erreur précédent
+      formState.errorMessage = ''
+      
+      // Utilisation de try/catch pour gérer les erreurs potentielles
+      if (!formState.email) {
+        throw new Error("Email manquant. Veuillez recommencer le processus de réinitialisation.")
+      }
+      
+      await authService.verifyCode(entered, formState.email)
+      
+      // Transmettre l'email à la page suivante via sessionStorage (pas dans l'URL)
+      router.push('/auth/change-password')
+    } catch (error) {
+      console.error("Erreur lors de la vérification du code:", error)
+      formState.errorMessage = "Code incorrect. Veuillez réessayer."
+      resetCode()
+      
+      // Masquer le message d'erreur après 5 secondes
+      setTimeout(() => {
+        formState.errorMessage = ''
+      }, 5000)
+    }
   }
   </script>
   
@@ -92,6 +153,50 @@
   }
   .input-float {
     animation: float 5s ease-in-out infinite;
+  }
+  
+  /* Animation pour le message d'erreur */
+  .error-message-container {
+    animation: slideIn 0.5s ease forwards;
+  }
+  
+  .error-message {
+    animation: pulse 2s infinite;
+  }
+  
+  .error-icon {
+    animation: rotate 1s ease-in-out;
+  }
+  
+  /* Animation de secousse pour les inputs en cas d'erreur */
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+  }
+  
+  .shake {
+    animation: shake 0.5s ease-in-out;
+  }
+  
+  @keyframes slideIn {
+    0% { transform: translateY(-20px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+  }
+  
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
+  }
+  
+  @keyframes rotate {
+    0% { transform: rotate(0deg); }
+    15% { transform: rotate(-20deg); }
+    30% { transform: rotate(20deg); }
+    45% { transform: rotate(-15deg); }
+    60% { transform: rotate(15deg); }
+    75% { transform: rotate(-5deg); }
+    100% { transform: rotate(0deg); }
   }
   
   /* Responsive adjustments */

@@ -81,14 +81,17 @@ const requestReset = async () => {
   error.value = ''
   success.value = ''
   try {
-    await authService.requestPasswordReset(email.value )
+    await authService.requestPasswordReset(email.value)
     
     success.value = 'Un lien de réinitialisation a été envoyé à votre adresse email.'
+    
+    // Stocker l'email dans sessionStorage au lieu de le passer dans l'URL
+    sessionStorage.setItem('resetEmail', email.value)
+    
+    // Rediriger sans paramètre d'URL
+    router.push('/auth/confirm-code')
+    
     email.value = ''
-    router.push({ 
-  path: '/auth/confirmCode', 
-  query: { email: email.value } 
-})
   } catch (err) {
     error.value = err.response?.data?.message || 'Erreur lors de la demande de réinitialisation'
   } finally {

@@ -61,14 +61,14 @@
         <form @submit.prevent="handleSubmit" class="grid grid-cols-1 gap-8">
           <div>
             <div class="relative mb-4">
-              <label for="currentPassword" class="block text-gray-700 text-sm sm:text-base font-semibold mb-2">Mot de passe actuel</label>
+              <label for="newPassword" class="block text-gray-700 text-sm sm:text-base font-semibold mb-2">Nouveau mot de passe</label>
               <input
                 :type="passwordVisible ? 'text' : 'password'"
-                id="currentPassword"
-                v-model="form.currentPassword"
-                @input="validateField('currentPassword'); checkSlide()"
+                id="newPassword"
+                v-model="form.newPassword"
+                @input="validateField('newPassword'); validatePasswordMatch(); checkSlide()"
                 class="w-full px-3 py-2 sm:py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 placeholder-gray-400 text-sm sm:text-base"
-                placeholder="Votre mot de passe actuel"
+                placeholder="Votre nouveau mot de passe"
                 required
               />
               <button
@@ -86,19 +86,6 @@
                   </svg>
                 </div>
               </button>
-            </div>
-            
-            <div class="relative mb-4">
-              <label for="newPassword" class="block text-gray-700 text-sm sm:text-base font-semibold mb-2">Nouveau mot de passe</label>
-              <input
-                :type="passwordVisible ? 'text' : 'password'"
-                id="newPassword"
-                v-model="form.newPassword"
-                @input="validateField('newPassword'); validatePasswordMatch(); checkSlide()"
-                class="w-full px-3 py-2 sm:py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-300 focus:border-blue-500 transition-all duration-300 placeholder-gray-400 text-sm sm:text-base"
-                placeholder="Votre nouveau mot de passe"
-                required
-              />
             </div>
             
             <div class="relative mb-4">
@@ -153,14 +140,15 @@
   </template>
   
   <script setup>
-  import { ref, reactive, computed } from 'vue'
+  import { ref, reactive, computed, onMounted } from 'vue'
   import { useRouter } from 'vue-router'
   import { authService } from '@/services'
   
   const router = useRouter()
   const loading = ref(false)
   const error = ref('')
-  const form = reactive({ currentPassword: '', newPassword: '', passwordConfirm: '' })
+  const form = reactive({ newPassword: '', passwordConfirm: '' })
+  const email = ref('')
   
   // Animation states
   const faceState = ref('neutral')   // neutral | smile | stare | joy | shake
@@ -169,18 +157,28 @@
   const submitState = ref('')        // '' or 'bounce'
   const passwordsMatch = ref(null)   // true | false | null
   
+  // Récupérer l'email depuis sessionStorage au chargement du composant
+  onMounted(() => {
+    email.value = sessionStorage.getItem('resetEmail') || ''
+    
+    // Rediriger si aucun email n'est trouvé
+    if (!email.value) {
+      router.push('/auth/request-password-reset')
+      error.value = "Session expirée. Veuillez recommencer le processus de réinitialisation."
+    }
+  })
+  
   // Helpers to validate format
   const validPassword = pwd => pwd.length >= 6
   
   // Computed property to check if form can be submitted
   const canSubmit = computed(() => {
-    return validFields.currentPassword && 
-           validFields.newPassword && 
+    return validFields.newPassword && 
            passwordsMatch.value === true
   })
   
   // Field validation for CSS
-  const validFields = reactive({ currentPassword: false, newPassword: false })
+  const validFields = reactive({ newPassword: false })
   function validateField(field) {
     validFields[field] = validPassword(form[field])
   }
@@ -204,7 +202,7 @@
   
   // Check slide when right panel valid
   function checkSlide() {
-    if (validFields.currentPassword && validFields.newPassword && passwordsMatch.value === true) {
+    if (validFields.newPassword && passwordsMatch.value === true) {
       panelState.value = 'slide'
     } else if (panelState.value === 'slide') {
       panelState.value = ''
@@ -231,8 +229,12 @@
     loading.value = true
     error.value = ''
     try {
-      const { currentPassword, newPassword } = form
-      await authService.changePassword({ currentPassword, newPassword })
+      const { newPassword } = form
+      await authService.changePassword( newPassword,  email.value )
+      
+      // Nettoyer sessionStorage après une réinitialisation réussie
+      sessionStorage.removeItem('resetEmail')
+      
       router.push('/dashboard')
     } catch (err) {
       error.value = err.response?.data?.message || 'Erreur lors du changement de mot de passe'
