@@ -1,7 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import BaseLayout from '@/components/BaseLayout.vue'
+
+// Pages étudiants
 import NouvelleDemande from '@/pages/etudiants/NouvelleDemande.vue'
 import EspaceEtudiant from '@/pages/etudiants/EspaceEtudiant.vue'
+
+// Pages secrétariat
 import DemandesRecues from '@/pages/secretariat/DemandesRecues.vue'
 import Dashboard from '@/pages/secretariat/Dashboard.vue'
 
@@ -29,10 +33,10 @@ const routes = [
           headerIcon: ['fas', 'file-alt']
         }
       },
-      // Routes pour la secrétaire (exemples)
+      // Routes pour la secrétaire
       {
         path: 'secretariat/tableau-de-bord',
-        name: 'SecretaryDashboard',
+        name: 'DashboardSecretaire',
         component: Dashboard,
         meta: {
           headerTitle: 'Tableau de bord',
@@ -58,7 +62,7 @@ const routes = [
 
 const router = createRouter({
   history: createWebHistory(),
-  routes,
+  routes
 })
 
 export default router

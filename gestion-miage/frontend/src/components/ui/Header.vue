@@ -11,11 +11,11 @@
   const props = defineProps({
     title: {
       type: String,
-      default: 'Mon Application'
+      required: true
     },
     icon: {
       type: Array,
-      default: () => ['fas', 'question']
+      required: true
     }
   })
   </script>
