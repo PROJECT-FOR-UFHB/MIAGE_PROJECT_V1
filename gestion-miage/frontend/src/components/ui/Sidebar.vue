@@ -24,6 +24,9 @@ const links = computed(() => {
 
   return []
 })
+
+// Fonction pour savoir si un lien est actif (exact match ou beginsWith si besoin)
+const isActive = (path) => route.path === path
 </script>
 
 <template>
@@ -36,8 +39,10 @@ const links = computed(() => {
         <li v-for="(link, index) in links" :key="index">
           <router-link
             :to="link.to"
-            class="block text-brandBlue px-3 py-2 rounded hover:bg-gray-100 transition-colors flex items-center"
-            active-class="bg-gray-100 font-semibold"
+            class="block px-3 py-2 rounded transition-colors flex items-center"
+            :class="[
+              isActive(link.to) ? 'bg-gray-100 font-semibold text-brandBlue' : 'text-brandBlue hover:bg-gray-100'
+            ]"
           >
             <font-awesome-icon :icon="link.icon" class="mr-2 text-brandBlue" />
             {{ link.label }}
