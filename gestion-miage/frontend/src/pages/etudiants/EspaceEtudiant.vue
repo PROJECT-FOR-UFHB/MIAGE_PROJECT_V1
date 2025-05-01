@@ -69,31 +69,29 @@
           <table class="min-w-full bg-white">
             <thead>
               <tr class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
-                <th class="py-3 px-4 text-left">ID</th>
-                <th class="py-3 px-4 text-left">Type</th>
-                <th class="py-3 px-4 text-left">Titre</th>
-                <th class="py-3 px-4 text-left">Date</th>
+                <th class="py-3 px-4 text-left">ID Demande</th>
+                <th class="py-3 px-4 text-left">Type de demande</th>
+                <th class="py-3 px-4 text-left">Pour l'année</th>
                 <th class="py-3 px-4 text-left">Statut</th>
                 <th class="py-3 px-4 text-left">Actions</th>
               </tr>
             </thead>
             <tbody class="text-gray-600 text-sm">
               <tr v-for="request in requests" :key="request.id" class="border-b border-gray-200 hover:bg-gray-50">
-                <td class="py-3 px-4">#{{ request.id }}</td>
-                <td class="py-3 px-4">{{ request.type_demande?.nom || 'N/A' }}</td>
-                <td class="py-3 px-4">{{ request.titre }}</td>
+                <td class="py-3 px-4">{{ request.id_demande }}</td>
+                <td class="py-3 px-4">{{ request.type_de_demande?.lib_type_de_demande || 'N/A' }}</td>
                 <td class="py-3 px-4">{{ formatDate(request.created_at) }}</td>
                 <td class="py-3 px-4">
                   <span 
                     class="px-2 py-1 rounded text-xs font-semibold"
                     :class="getStatusClass(request.statut)"
                   >
-                    {{ request.statut }}
+                    {{ request.statut.statut }}
                   </span>
                 </td>
                 <td class="py-3 px-4">
                   <button 
-                    @click="viewRequest(request.id)"
+                    @click="viewRequest(request.id_demande)"
                     class="text-blue-500 hover:text-blue-700 mr-2"
                   >
                     Voir
@@ -221,7 +219,7 @@ const formatDate = (dateString) => {
 const getStatusClass = (status) => {
   if (!status) return 'bg-gray-200 text-gray-800'
   
-  switch (status.toLowerCase()) {
+  switch (status) {
     case 'en attente':
       return 'bg-yellow-100 text-yellow-800'
     case 'validée':
