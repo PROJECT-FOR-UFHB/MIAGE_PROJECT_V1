@@ -25,13 +25,16 @@ const logout = async () => {
     await authService.logout()
     // Redirection vers la page de connexion
     router.push('/auth/login')
+    
   } catch (error) {
     console.error('Erreur lors de la déconnexion:', error)
+
     // En cas d'erreur, on force la déconnexion côté client
     localStorage.removeItem('auth_token')
     localStorage.removeItem('user')
     localStorage.removeItem('user_role')
     router.push('/auth/login')
+
   } finally {
     loading.value = false
   }

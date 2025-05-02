@@ -1,3 +1,7 @@
+/**
+ * Ce code crée une instance personnalisée d’Axios pour interagir avec une API, avec des intercepteurs de requêtes et de réponses
+ */
+
 import axios from 'axios'
 
 // Création d'une instance axios avec l'URL de base
@@ -9,24 +13,25 @@ const apiClient = axios.create({
   }
 })
 
-// Ajout d'un intercepteur pour les requêtes
+// Avant que chaque requête parte, cet intercepteur :
+// Récupère le token du localStorage.
+// L’ajoute automatiquement aux en-têtes (Authorization: Bearer <token>).
+
 apiClient.interceptors.request.use(
   config => {
-    // Récupération du token depuis localStorage
+
     const token = localStorage.getItem('auth_token')
     
-    // Si un token existe, on l'ajoute dans les headers
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
     }
     
-    // Logger pour déboguer
-    console.log('🚀 Requête API:', config.method.toUpperCase(), config.url, config.baseURL)
+    console.log(' Requête API:', config.method.toUpperCase(), config.url, config.baseURL)
     
     return config
   },
   error => {
-    console.error('❌ Erreur de requête:', error)
+    console.error('Erreur de requête:', error)
     return Promise.reject(error)
   }
 )
@@ -35,12 +40,12 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   response => {
     // Logger pour déboguer
-    console.log('✅ Réponse API:', response.status, response.config.url)
+    console.log('Réponse API:', response.status, response.config.url)
     return response
   },
   error => {
     // Logger pour déboguer
-    console.error('❌ Erreur de réponse:', error.response?.status, error.response?.data, error.config?.url)
+    console.error('Erreur de réponse:', error.response?.status, error.response?.data, error.config?.url)
     
     // Si erreur 401 (non authentifié), on peut rediriger vers la page de login
     if (error.response && error.response.status === 401) {

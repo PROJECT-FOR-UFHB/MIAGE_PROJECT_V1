@@ -3,9 +3,12 @@
     <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
       <h1 class="text-2xl font-bold text-center mb-6">Connexion</h1>
       
+      <!--Cette ligne va afficher les erreurs provenant du serveur backend-->
       <div v-if="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
         {{ error }}
       </div>
+
+      <!--FORMULAIRE DE CONNEXION-->
 
       <form @submit.prevent="login">
         <!-- Email -->
@@ -55,12 +58,17 @@
         <div class="text-center">
           <p class="text-sm">
             Vous n'avez pas de compte ?
+
             <router-link to="/auth/register" class="text-blue-500 hover:underline">
               Inscrivez-vous
             </router-link>
+
           </p>
         </div>
       </form>
+
+      <!--FIN FORMULAIRE DE CONNEXION-->
+
     </div>
   </div>
 </template>
@@ -74,11 +82,15 @@ const router  = useRouter()
 const loading = ref(false)
 const error   = ref('')
 
+//form.email et form.password sont réactifs, donc toute modification de leurs valeurs entraînera la mise à jour automatique des composants ou effets qui les utilisent.
 const form = reactive({
   email: '',
   password: ''
 })
 
+/**
+ * Section de code qui communique avec le backend
+ */
 const login = async () => {
   loading.value = true
   error.value   = ''

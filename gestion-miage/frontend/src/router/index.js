@@ -11,6 +11,7 @@ import ResetPasswordPage        from '@/pages/auth/ResetPasswordPage.vue'
 import authService              from '@/services/authService'
 
 const routes = [
+  //
   {
     path: '/auth',
     children: [
@@ -22,8 +23,8 @@ const routes = [
   },
   {
     path: '/',
-    component: BaseLayout,
-    meta: { requiresAuth: true },
+    component: BaseLayout,//
+    meta: { requiresAuth: true },//Assure qu'un utilisateur doit être authentifié avant d'accéder à cette page
     children: [
       // Espace étudiant (code ETU)
       {
