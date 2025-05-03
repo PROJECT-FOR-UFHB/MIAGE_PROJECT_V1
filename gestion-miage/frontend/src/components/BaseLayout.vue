@@ -1,57 +1,49 @@
-<!--BaseLayout est un template qui change :
-  - Sidebar
-  - Header
-en fonction des utilisateurs-->
-
-<!-- BaseLayout.vue -->
 <template>
-    <div class="relative min-h-screen font-sans text-gray-800 bg-gray-100">
+  <div class="relative min-h-screen font-sans text-gray-800 bg-gray-100">
+    
+    <!-- ✅ Insertion de la bonne sidebar selon le rôle ou l'URL -->
+    <component :is="selectedSidebar" />
 
-      <!--Espace d'insertion de la sidebar-->
-      <component :is="selectedSidebar" />
+    <!-- ✅ Insertion du bon header dynamique avec icône et titre -->
+    <component :is="selectedHeader" :title="headerTitle" :icon="headerIcon" />
 
-      <!--Espace d'insertion du header (Avec des arguments dans l'instanciation du component)-->
-      <component :is="selectedHeader" :title="headerTitle" :icon="headerIcon" />
+    <!-- ✅ Zone principale de contenu des pages -->
+    <main class="pl-64 pt-6">
+      <router-view />
+    </main>
+  </div>
+</template>
 
-      <main class="pl-64 pt-6">
-        <router-view />
-      </main>
-    </div>
-  </template>
-  
-  <script setup>
-  import { computed } from 'vue'
-  import { useRoute } from 'vue-router'
-  import StudentSidebar from '@/components/etudiants/Sidebar.vue'
-  import StudentHeader from '@/components/etudiants/Header.vue'
-  import SecretarySidebar from '@/components/secretariat/Sidebar.vue'
-  import SecretaryHeader from '@/components/secretariat/Header.vue'
-  
-  const route = useRoute()
-  
-  // Sélection de la bonne sidebar/header
-  /**  
-   * La variable selectedSidebar va récupérer le composant Sidebar
-   * En fonction de l'url (!Normalement ça devrait le faire en fontion du rôle de l'utilisateur)
-   */
-  const selectedSidebar = computed(() => {
+<script setup>
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 
-    if (route.path.includes('/secretariat')) return SecretarySidebar
+// 🧩 Imports des sidebars selon les rôles
+import StudentSidebar    from '@/components/etudiants/Sidebar.vue'
+import StudentHeader     from '@/components/etudiants/Header.vue'
+import SecretarySidebar  from '@/components/secretariat/Sidebar.vue'
+import SecretaryHeader   from '@/components/secretariat/Header.vue'
+import SecAdminSidebar   from '@/components/secAdmin/Sidebar.vue'
+import SecAdminHeader    from '@/components/secAdmin/Header.vue'
 
-    return StudentSidebar
+// Récupération de l'URL courante
+const route = useRoute()
 
-  })
+// 📦 Choix dynamique de la sidebar selon le chemin
+const selectedSidebar = computed(() => {
+  if (route.path.includes('/sec-admin'))    return SecAdminSidebar
+  if (route.path.includes('/secretariat'))  return SecretarySidebar
+  return StudentSidebar
+})
 
-  const selectedHeader = computed(() => {
-    if (route.path.includes('/secretariat')) return SecretaryHeader
+// 📦 Choix dynamique du header
+const selectedHeader = computed(() => {
+  if (route.path.includes('/sec-admin'))    return SecAdminHeader
+  if (route.path.includes('/secretariat'))  return SecretaryHeader
+  return StudentHeader
+})
 
-    return StudentHeader
-
-  })
-  
-  // Récupération du titre et de l’icône via meta
-  const headerTitle = computed(() => route.meta.headerTitle || 'Mon Application')
-  const headerIcon = computed(() => route.meta.headerIcon || ['fas', 'question'])
-
-  </script>
-  
+// 🎯 Titre & icône dynamiques via meta dans le routeur
+const headerTitle = computed(() => route.meta.headerTitle || 'Mon Application')
+const headerIcon  = computed(() => route.meta.headerIcon  || ['fas', 'question'])
+</script>
