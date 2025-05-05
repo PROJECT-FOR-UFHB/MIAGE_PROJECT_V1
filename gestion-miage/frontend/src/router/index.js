@@ -1,110 +1,79 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-// Layout principal qui gère sidebar/header dynamiques
+// 🧱 Layout principal avec Sidebar/Header dynamiques
 import BaseLayout from '@/components/BaseLayout.vue'
 
-// Étudiant
-import NouvelleDemande    from '@/pages/etudiants/NouvelleDemande.vue'
-import EspaceEtudiant     from '@/pages/etudiants/EspaceEtudiant.vue'
+// 🎓 Étudiant
+import NouvelleDemande from '@/pages/etudiants/NouvelleDemande.vue'
+import EspaceEtudiant from '@/pages/etudiants/EspaceEtudiant.vue'
 
-// Secrétaire pédagogique
-import DemandesRecues     from '@/pages/secretariat/DemandesRecues.vue'
-import Dashboard          from '@/pages/secretariat/Dashboard.vue'
+// 🗂 Secrétaire pédagogique
+import DemandesRecues from '@/pages/secretariat/DemandesRecues.vue'
+import Dashboard from '@/pages/secretariat/Dashboard.vue'
 
-// Authentification
-import LoginPage                from '@/pages/auth/LoginPage.vue'
-import RegisterPage             from '@/pages/auth/RegisterPage.vue'
+// 🔐 Auth
+import LoginPage from '@/pages/auth/LoginPage.vue'
+import RegisterPage from '@/pages/auth/RegisterPage.vue'
 import RequestPasswordResetPage from '@/pages/auth/RequestPasswordResetPage.vue'
-import ResetPasswordPage        from '@/pages/auth/ResetPasswordPage.vue'
+import ResetPasswordPage from '@/pages/auth/ResetPasswordPage.vue'
 
-// Services
+// 🛡 Service auth
 import authService from '@/services/authService'
 
 const routes = [
-  // Routes d'authentification
   {
     path: '/auth',
     children: [
-      { path: 'login',                  name: 'Login',                component: LoginPage,               meta: { requiresGuest: true } },
-      { path: 'register',               name: 'Register',             component: RegisterPage,            meta: { requiresGuest: true } },
+      { path: 'login', name: 'Login', component: LoginPage, meta: { requiresGuest: true } },
+      { path: 'register', name: 'Register', component: RegisterPage, meta: { requiresGuest: true } },
       { path: 'request-password-reset', name: 'RequestPasswordReset', component: RequestPasswordResetPage, meta: { requiresGuest: true } },
-      { path: 'reset-password',         name: 'ResetPassword',        component: ResetPasswordPage,       meta: { requiresGuest: true } },
+      { path: 'reset-password', name: 'ResetPassword', component: ResetPasswordPage, meta: { requiresGuest: true } },
     ]
   },
 
-  // Layout général avec header/sidebar dynamiques selon rôle
   {
     path: '/',
     component: BaseLayout,
-    meta: { requiresAuth: true }, // Tous les enfants doivent être connectés
+    meta: { requiresAuth: true },
     children: [
-      // ---------------------
-      // Espace ÉTUDIANT (ETU)
-      // ---------------------
+      // 🎓 Étudiant
       {
         path: 'etudiants/espace-etudiant',
-        alias: '/student/dashboard',
         name: 'EspaceEtudiant',
         component: EspaceEtudiant,
-        meta: {
-          headerTitle: 'Espace étudiant',
-          headerIcon: ['fas', 'graduation-cap'],
-          requiresRole: 'ETU'
-        }
+        meta: { headerTitle: 'Espace étudiant', headerIcon: ['fas', 'graduation-cap'], requiresRole: 'ETU' }
       },
       {
         path: 'etudiants/nouvelle-demande',
         name: 'NouvelleDemande',
         component: NouvelleDemande,
-        meta: {
-          headerTitle: 'Nouvelle demande',
-          headerIcon: ['fas', 'file-alt'],
-          requiresRole: 'ETU'
-        }
+        meta: { headerTitle: 'Nouvelle demande', headerIcon: ['fas', 'file-alt'], requiresRole: 'ETU' }
       },
       {
         path: 'etudiants/demandes/:id',
         name: 'DetailsDemande',
         component: () => import('@/pages/etudiants/DetailsDemande.vue'),
-        meta: {
-          headerTitle: 'Détails de la demande',
-          headerIcon: ['fas', 'clipboard-list'],
-          requiresRole: 'ETU'
-        }
+        meta: { headerTitle: 'Détails de la demande', headerIcon: ['fas', 'clipboard-list'], requiresRole: 'ETU' }
       },
 
-      // ---------------------
-      // Espace SECRÉTAIRE (SEC)
-      // ---------------------
+      // 🧾 Secrétaire pédagogique
       {
         path: 'secretariat/tableau-de-bord',
         name: 'SecretaryDashboard',
         component: Dashboard,
-        meta: {
-          headerTitle: 'Tableau de bord',
-          headerIcon: ['fas', 'chart-simple'],
-          requiresRole: 'SEC'
-        }
+        meta: { headerTitle: 'Tableau de bord', headerIcon: ['fas', 'chart-simple'], requiresRole: 'SEC' }
       },
       {
         path: 'secretariat/demandes-recus',
         name: 'DemandesRecues',
         component: DemandesRecues,
-        meta: {
-          headerTitle: 'Demandes reçues',
-          headerIcon: ['fas', 'clipboard-list'],
-          requiresRole: 'SEC'
-        }
+        meta: { headerTitle: 'Demandes reçues', headerIcon: ['fas', 'clipboard-list'], requiresRole: 'SEC' }
       },
       {
         path: 'secretariat/demandes/:id',
         name: 'TraiterDemande',
         component: () => import('@/pages/secretariat/TraiterDemande.vue'),
-        meta: {
-          headerTitle: 'Traiter la demande',
-          headerIcon: ['fas', 'clipboard-list'],
-          requiresRole: 'SEC'
-        }
+        meta: { headerTitle: 'Traiter la demande', headerIcon: ['fas', 'clipboard-list'], requiresRole: 'SEC' }
       },
 
       // -------------------------------
@@ -134,36 +103,164 @@ const routes = [
         path: 'sec-admin/historique',
         name: 'Historique',
         component: () => import('@/pages/secAdmin/Historique.vue'),
-        meta: {
-          headerTitle: 'Historique',
-          headerIcon: ['fas', 'history'],
-          requiresRole: 'SEC_ADM'
-        }
+        meta: { headerTitle: 'Historique', headerIcon: ['fas', 'history'], requiresRole: 'SEC_ADM' }
       },
       {
         path: 'sec-admin/notifications',
         name: 'Notifications',
         component: () => import('@/pages/secAdmin/Notifications.vue'),
-        meta: {
-          headerTitle: 'Notifications',
-          headerIcon: ['fas', 'bell'],
-          requiresRole: 'SEC_ADM'
-        }
+        meta: { headerTitle: 'Notifications', headerIcon: ['fas', 'bell'], requiresRole: 'SEC_ADM' }
       },
       {
         path: 'sec-admin/profil',
         name: 'MonProfil',
         component: () => import('@/pages/secAdmin/MonProfil.vue'),
-        meta: {
-          headerTitle: 'Mon profil',
-          headerIcon: ['fas', 'user'],
-          requiresRole: 'SEC_ADM'
-        }
+        meta: { headerTitle: 'Mon profil', headerIcon: ['fas', 'user'], requiresRole: 'SEC_ADM' }
+      },
+
+      // 🧑‍💼 Directeur MIAGE
+      {
+        path: 'directeur/tableau-de-bord',
+        name: 'DirecteurDashboard',
+        component: () => import('@/pages/directeurMiage/Dashboard.vue'),
+        meta: { headerTitle: 'Tableau de bord', headerIcon: ['fas', 'chart-line'], requiresRole: 'DIR_MIAGE' }
+      },
+      {
+        path: 'directeur/demandes-a-signer',
+        name: 'DemandesASigner',
+        component: () => import('@/pages/directeurMiage/DemandesASigner.vue'),
+        meta: { headerTitle: 'Demandes à signer', headerIcon: ['fas', 'file-signature'], requiresRole: 'DIR_MIAGE' }
+      },
+      {
+        path: 'directeur/historique',
+        name: 'HistoriqueDirecteur',
+        component: () => import('@/pages/directeurMiage/Historique.vue'),
+        meta: { headerTitle: 'Historique', headerIcon: ['fas', 'history'], requiresRole: 'DIR_MIAGE' }
+      },
+      {
+        path: 'directeur/notifications',
+        name: 'NotificationsDirecteur',
+        component: () => import('@/pages/directeurMiage/Notifications.vue'),
+        meta: { headerTitle: 'Notifications', headerIcon: ['fas', 'bell'], requiresRole: 'DIR_MIAGE' }
+      },
+      {
+        path: 'directeur/profil',
+        name: 'ProfilDirecteur',
+        component: () => import('@/pages/directeurMiage/MonProfil.vue'),
+        meta: { headerTitle: 'Mon profil', headerIcon: ['fas', 'user'], requiresRole: 'DIR_MIAGE' }
+      },
+
+      // 📘 Responsable de Niveau
+      {
+        path: 'responsable/tableau-de-bord',
+        name: 'ResponsableDashboard',
+        component: () => import('@/pages/responsableNiveau/Dashboard.vue'),
+        meta: { headerTitle: 'Tableau de bord', headerIcon: ['fas', 'chart-area'], requiresRole: 'RESP_NIV' }
+      },
+      {
+        path: 'responsable/demandes',
+        name: 'DemandesNiveau',
+        component: () => import('@/pages/responsableNiveau/DemandesNiveau.vue'),
+        meta: { headerTitle: 'Demandes de mon niveau', headerIcon: ['fas', 'clipboard'], requiresRole: 'RESP_NIV' }
+      },
+      {
+        path: 'responsable/historique',
+        name: 'HistoriqueNiveau',
+        component: () => import('@/pages/responsableNiveau/Historique.vue'),
+        meta: { headerTitle: 'Historique complet', headerIcon: ['fas', 'history'], requiresRole: 'RESP_NIV' }
+      },
+      {
+        path: 'responsable/notifications',
+        name: 'NotificationsNiveau',
+        component: () => import('@/pages/responsableNiveau/Notifications.vue'),
+        meta: { headerTitle: 'Notifications', headerIcon: ['fas', 'bell'], requiresRole: 'RESP_NIV' }
+      },
+      {
+        path: 'responsable/profil',
+        name: 'ProfilResponsable',
+        component: () => import('@/pages/responsableNiveau/MonProfil.vue'),
+        meta: { headerTitle: 'Mon profil', headerIcon: ['fas', 'user'], requiresRole: 'RESP_NIV' }
+      },
+
+      // 👨‍🏫 Enseignant
+      {
+        path: 'enseignant/dashboard',
+        name: 'EnseignantDashboard',
+        component: () => import('@/pages/enseignant/Dashboard.vue'),
+        meta: { headerTitle: 'Tableau de bord', headerIcon: ['fas', 'chart-pie'], requiresRole: 'ENSEIGNANT' }
+      },
+      {
+        path: 'enseignant/demandes-a-traiter',
+        name: 'DemandesATraiter',
+        component: () => import('@/pages/enseignant/DemandesATraiter.vue'),
+        meta: { headerTitle: 'Demandes à traiter', headerIcon: ['fas', 'edit'], requiresRole: 'ENSEIGNANT' }
+      },
+      {
+        path: 'enseignant/historique',
+        name: 'HistoriqueEnseignant',
+        component: () => import('@/pages/enseignant/Historique.vue'),
+        meta: { headerTitle: 'Historique Recos / Thèmes', headerIcon: ['fas', 'folder-open'], requiresRole: 'ENSEIGNANT' }
+      },
+      {
+        path: 'enseignant/notifications',
+        name: 'NotificationsEnseignant',
+        component: () => import('@/pages/enseignant/Notifications.vue'),
+        meta: { headerTitle: 'Notifications', headerIcon: ['fas', 'bell'], requiresRole: 'ENSEIGNANT' }
+      },
+      {
+        path: 'enseignant/profil',
+        name: 'ProfilEnseignant',
+        component: () => import('@/pages/enseignant/MonProfil.vue'),
+        meta: { headerTitle: 'Mon profil', headerIcon: ['fas', 'user'], requiresRole: 'ENSEIGNANT' }
+      },
+
+      // 🛠️ Admin
+      {
+        path: 'admin/dashboard',
+        name: 'AdminDashboard',
+        component: () => import('@/pages/admin/Dashboard.vue'),
+        meta: { headerTitle: 'Tableau de bord', headerIcon: ['fas', 'gauge'], requiresRole: 'ADMIN' }
+      },
+      {
+        path: 'admin/utilisateurs',
+        name: 'GestionUtilisateurs',
+        component: () => import('@/pages/admin/GestionUtilisateurs.vue'),
+        meta: { headerTitle: 'Utilisateurs', headerIcon: ['fas', 'users'], requiresRole: 'ADMIN' }
+      },
+      {
+        path: 'admin/roles',
+        name: 'GestionRoles',
+        component: () => import('@/pages/admin/Roles.vue'),
+        meta: { headerTitle: 'Rôles & accès', headerIcon: ['fas', 'user-shield'], requiresRole: 'ADMIN' }
+      },
+      {
+        path: 'admin/logs',
+        name: 'LogsSecurite',
+        component: () => import('@/pages/admin/LogsSecurite.vue'),
+        meta: { headerTitle: 'Logs & sécurité', headerIcon: ['fas', 'scroll'], requiresRole: 'ADMIN' }
+      },
+      {
+        path: 'admin/parametres',
+        name: 'ParametresSysteme',
+        component: () => import('@/pages/admin/Parametres.vue'),
+        meta: { headerTitle: 'Paramètres système', headerIcon: ['fas', 'sliders-h'], requiresRole: 'ADMIN' }
+      },
+      {
+        path: 'admin/sauvegardes',
+        name: 'SauvegardesSysteme',
+        component: () => import('@/pages/admin/Sauvegardes.vue'),
+        meta: { headerTitle: 'Sauvegardes', headerIcon: ['fas', 'database'], requiresRole: 'ADMIN' }
+      },
+      {
+        path: 'admin/profil',
+        name: 'ProfilAdmin',
+        component: () => import('@/pages/admin/MonProfil.vue'),
+        meta: { headerTitle: 'Mon profil', headerIcon: ['fas', 'user-cog'], requiresRole: 'ADMIN' }
       }
     ]
   },
 
-  // Route fallback (si l'utilisateur tape une URL inconnue)
+  // 🔁 Redirection automatique
   {
     path: '/:pathMatch(.*)*',
     redirect: () => {
@@ -171,7 +268,11 @@ const routes = [
         const role = authService.getUserRole()
         if (role === 'ETU') return '/etudiants/espace-etudiant'
         if (role === 'SEC') return '/secretariat/tableau-de-bord'
-        if (role === 'SEC_ADM') return '/sec-admin/dashboard' // 👈 Ajouté
+        if (role === 'SEC_ADM') return '/sec-admin/dashboard'
+        if (role === 'DIR_MIAGE') return '/directeur/tableau-de-bord'
+        if (role === 'RESP_NIV') return '/responsable/tableau-de-bord'
+        if (role === 'ENSEIGNANT') return '/enseignant/dashboard'
+        if (role === 'ADMIN') return '/admin/dashboard'
       }
       return '/auth/login'
     }
@@ -183,33 +284,37 @@ const router = createRouter({
   routes
 })
 
-// 🔐 Guard de navigation (exécuté avant chaque changement de page)
+// ✅ Guard
 router.beforeEach((to, from, next) => {
-  const isAuth   = authService.isAuthenticated()
+  const isAuth = authService.isAuthenticated()
   const userRole = authService.getUserRole()
 
-  // Si route pour invités uniquement (login/register) et utilisateur déjà connecté
   if (to.meta.requiresGuest && isAuth) {
     if (userRole === 'ETU') return next('/etudiants/espace-etudiant')
     if (userRole === 'SEC') return next('/secretariat/tableau-de-bord')
     if (userRole === 'SEC_ADM') return next('/sec-admin/dashboard')
+    if (userRole === 'DIR_MIAGE') return next('/directeur/tableau-de-bord')
+    if (userRole === 'RESP_NIV') return next('/responsable/tableau-de-bord')
+    if (userRole === 'ENSEIGNANT') return next('/enseignant/dashboard')
+    if (userRole === 'ADMIN') return next('/admin/dashboard')
     return next('/')
   }
 
-  // Si route nécessite authentification mais l'utilisateur n'est pas connecté
   if (to.meta.requiresAuth && !isAuth) {
     return next('/auth/login')
   }
 
-  // Si la route est réservée à un rôle spécifique
   if (to.meta.requiresRole && isAuth && to.meta.requiresRole !== userRole) {
     if (userRole === 'ETU') return next('/etudiants/espace-etudiant')
     if (userRole === 'SEC') return next('/secretariat/tableau-de-bord')
     if (userRole === 'SEC_ADM') return next('/sec-admin/dashboard')
+    if (userRole === 'DIR_MIAGE') return next('/directeur/tableau-de-bord')
+    if (userRole === 'RESP_NIV') return next('/responsable/tableau-de-bord')
+    if (userRole === 'ENSEIGNANT') return next('/enseignant/dashboard')
+    if (userRole === 'ADMIN') return next('/admin/dashboard')
     return next('/')
   }
 
-  // OK, on peut accéder
   next()
 })
 
