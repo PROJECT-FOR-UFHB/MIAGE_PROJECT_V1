@@ -107,6 +107,8 @@ const login = async () => {
       router.push('/etudiants/espace-etudiant')
     } else if (role === 'SEC') {
       router.push('/secretariat/tableau-de-bord')
+    } else if (role === 'SAF') {
+      router.push('/sec-admin/dashboard')
     } else {
       router.push('/')  // fallback si rôle inattendu
     }

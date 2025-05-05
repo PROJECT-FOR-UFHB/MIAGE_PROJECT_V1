@@ -117,7 +117,7 @@ const routes = [
         meta: {
           headerTitle: 'Validation financière',
           headerIcon: ['fas', 'file-invoice-dollar'],
-          requiresRole: 'SEC_ADM'
+          requiresRole: 'SAF'
         }
       },
       {
@@ -127,7 +127,7 @@ const routes = [
         meta: {
           headerTitle: 'Tableau de bord',
           headerIcon: ['fas', 'chart-pie'],
-          requiresRole: 'SEC_ADM'
+          requiresRole: 'SAF'
         }
       },
       {
