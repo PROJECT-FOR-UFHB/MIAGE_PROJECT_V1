@@ -6,6 +6,7 @@ import BaseLayout from '@/components/BaseLayout.vue'
 // 🎓 Étudiant
 import NouvelleDemande from '@/pages/etudiants/NouvelleDemande.vue'
 import EspaceEtudiant from '@/pages/etudiants/EspaceEtudiant.vue'
+//import MonProfil from '@/pages/etudiants/MonProfil.vue'
 
 // 🗂 Secrétaire pédagogique
 import DemandesRecues from '@/pages/secretariat/DemandesRecues.vue'
@@ -54,6 +55,12 @@ const routes = [
         name: 'DetailsDemande',
         component: () => import('@/pages/etudiants/DetailsDemande.vue'),
         meta: { headerTitle: 'Détails de la demande', headerIcon: ['fas', 'clipboard-list'], requiresRole: 'ETU' }
+      },
+      {
+        path: 'etudiants/profil',
+        name: 'ProfilEtudiants',
+        component: () => import('@/pages/etudiants/MonProfil.vue'),
+        meta: { headerTitle: 'Mon profil', headerIcon: ['fas', 'user-cog'], requiresRole: 'ETU' }
       },
 
       // 🧾 Secrétaire pédagogique
