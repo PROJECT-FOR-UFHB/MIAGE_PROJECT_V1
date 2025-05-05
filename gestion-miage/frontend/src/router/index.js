@@ -36,7 +36,7 @@ const routes = [
     component: BaseLayout,
     meta: { requiresAuth: true },
     children: [
-      // 🎓 Espace Étudiant
+      // 🎓 Étudiant
       {
         path: 'etudiants/espace-etudiant',
         name: 'EspaceEtudiant',
@@ -170,62 +170,87 @@ const routes = [
         name: 'ProfilResponsable',
         component: () => import('@/pages/responsableNiveau/MonProfil.vue'),
         meta: { headerTitle: 'Mon profil', headerIcon: ['fas', 'user'], requiresRole: 'RESP_NIV' }
-      }
-      ,
+      },
+
+      // 👨‍🏫 Enseignant
       {
         path: 'enseignant/dashboard',
         name: 'EnseignantDashboard',
         component: () => import('@/pages/enseignant/Dashboard.vue'),
-        meta: {
-          headerTitle: 'Tableau de bord',
-          headerIcon: ['fas', 'chart-pie'],
-          requiresRole: 'ENSEIGNANT'
-        }
+        meta: { headerTitle: 'Tableau de bord', headerIcon: ['fas', 'chart-pie'], requiresRole: 'ENSEIGNANT' }
       },
       {
         path: 'enseignant/demandes-a-traiter',
         name: 'DemandesATraiter',
         component: () => import('@/pages/enseignant/DemandesATraiter.vue'),
-        meta: {
-          headerTitle: 'Demandes à traiter',
-          headerIcon: ['fas', 'edit'],
-          requiresRole: 'ENSEIGNANT'
-        }
+        meta: { headerTitle: 'Demandes à traiter', headerIcon: ['fas', 'edit'], requiresRole: 'ENSEIGNANT' }
       },
       {
         path: 'enseignant/historique',
         name: 'HistoriqueEnseignant',
         component: () => import('@/pages/enseignant/Historique.vue'),
-        meta: {
-          headerTitle: 'Historique Recos / Thèmes',
-          headerIcon: ['fas', 'folder-open'],
-          requiresRole: 'ENSEIGNANT'
-        }
+        meta: { headerTitle: 'Historique Recos / Thèmes', headerIcon: ['fas', 'folder-open'], requiresRole: 'ENSEIGNANT' }
       },
       {
         path: 'enseignant/notifications',
         name: 'NotificationsEnseignant',
         component: () => import('@/pages/enseignant/Notifications.vue'),
-        meta: {
-          headerTitle: 'Notifications',
-          headerIcon: ['fas', 'bell'],
-          requiresRole: 'ENSEIGNANT'
-        }
+        meta: { headerTitle: 'Notifications', headerIcon: ['fas', 'bell'], requiresRole: 'ENSEIGNANT' }
       },
       {
         path: 'enseignant/profil',
         name: 'ProfilEnseignant',
         component: () => import('@/pages/enseignant/MonProfil.vue'),
-        meta: {
-          headerTitle: 'Mon profil',
-          headerIcon: ['fas', 'user'],
-          requiresRole: 'ENSEIGNANT'
-        }
+        meta: { headerTitle: 'Mon profil', headerIcon: ['fas', 'user'], requiresRole: 'ENSEIGNANT' }
+      },
+
+      // 🛠️ Admin
+      {
+        path: 'admin/dashboard',
+        name: 'AdminDashboard',
+        component: () => import('@/pages/admin/Dashboard.vue'),
+        meta: { headerTitle: 'Tableau de bord', headerIcon: ['fas', 'gauge'], requiresRole: 'ADMIN' }
+      },
+      {
+        path: 'admin/utilisateurs',
+        name: 'GestionUtilisateurs',
+        component: () => import('@/pages/admin/GestionUtilisateurs.vue'),
+        meta: { headerTitle: 'Utilisateurs', headerIcon: ['fas', 'users'], requiresRole: 'ADMIN' }
+      },
+      {
+        path: 'admin/roles',
+        name: 'GestionRoles',
+        component: () => import('@/pages/admin/Roles.vue'),
+        meta: { headerTitle: 'Rôles & accès', headerIcon: ['fas', 'user-shield'], requiresRole: 'ADMIN' }
+      },
+      {
+        path: 'admin/logs',
+        name: 'LogsSecurite',
+        component: () => import('@/pages/admin/LogsSecurite.vue'),
+        meta: { headerTitle: 'Logs & sécurité', headerIcon: ['fas', 'scroll'], requiresRole: 'ADMIN' }
+      },
+      {
+        path: 'admin/parametres',
+        name: 'ParametresSysteme',
+        component: () => import('@/pages/admin/Parametres.vue'),
+        meta: { headerTitle: 'Paramètres système', headerIcon: ['fas', 'sliders-h'], requiresRole: 'ADMIN' }
+      },
+      {
+        path: 'admin/sauvegardes',
+        name: 'SauvegardesSysteme',
+        component: () => import('@/pages/admin/Sauvegardes.vue'),
+        meta: { headerTitle: 'Sauvegardes', headerIcon: ['fas', 'database'], requiresRole: 'ADMIN' }
+      },
+      {
+        path: 'admin/profil',
+        name: 'ProfilAdmin',
+        component: () => import('@/pages/admin/MonProfil.vue'),
+        meta: { headerTitle: 'Mon profil', headerIcon: ['fas', 'user-cog'], requiresRole: 'ADMIN' }
       }
     ]
   },
 
-  // 🔁 Redirection automatique selon le rôle
+  // 🔁 Redirection automatique
   {
     path: '/:pathMatch(.*)*',
     redirect: () => {
@@ -236,11 +261,12 @@ const routes = [
         if (role === 'SEC_ADM') return '/sec-admin/dashboard'
         if (role === 'DIR_MIAGE') return '/directeur/tableau-de-bord'
         if (role === 'RESP_NIV') return '/responsable/tableau-de-bord'
+        if (role === 'ENSEIGNANT') return '/enseignant/dashboard'
+        if (role === 'ADMIN') return '/admin/dashboard'
       }
       return '/auth/login'
     }
   }
-
 ]
 
 const router = createRouter({
@@ -248,7 +274,7 @@ const router = createRouter({
   routes
 })
 
-// ✅ Navigation Guard
+// ✅ Guard
 router.beforeEach((to, from, next) => {
   const isAuth = authService.isAuthenticated()
   const userRole = authService.getUserRole()
@@ -259,6 +285,8 @@ router.beforeEach((to, from, next) => {
     if (userRole === 'SEC_ADM') return next('/sec-admin/dashboard')
     if (userRole === 'DIR_MIAGE') return next('/directeur/tableau-de-bord')
     if (userRole === 'RESP_NIV') return next('/responsable/tableau-de-bord')
+    if (userRole === 'ENSEIGNANT') return next('/enseignant/dashboard')
+    if (userRole === 'ADMIN') return next('/admin/dashboard')
     return next('/')
   }
 
@@ -272,6 +300,8 @@ router.beforeEach((to, from, next) => {
     if (userRole === 'SEC_ADM') return next('/sec-admin/dashboard')
     if (userRole === 'DIR_MIAGE') return next('/directeur/tableau-de-bord')
     if (userRole === 'RESP_NIV') return next('/responsable/tableau-de-bord')
+    if (userRole === 'ENSEIGNANT') return next('/enseignant/dashboard')
+    if (userRole === 'ADMIN') return next('/admin/dashboard')
     return next('/')
   }
 

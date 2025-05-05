@@ -36,6 +36,10 @@ import RespoNiveauHeader from '@/components/responsableNiveau/Header.vue'
 
 import EnseignantSidebar from '@/components/enseignant/Sidebar.vue'
 import EnseignantHeader  from '@/components/enseignant/Header.vue'
+
+import AdminSidebar from '@/components/admin/Sidebar.vue'
+import AdminHeader from '@/components/admin/Header.vue'
+
 // URL actuelle
 const route = useRoute()
 
@@ -46,6 +50,7 @@ const selectedSidebar = computed(() => {
   if (route.path.includes('/directeur'))     return DirecteurSidebar
   if (route.path.includes('/responsable'))   return RespoNiveauSidebar // ✅ Corrigé
   if (route.path.includes('/enseignant')) return EnseignantSidebar
+  if (route.path.includes('/admin')) return AdminSidebar
 
 
   return StudentSidebar
@@ -58,6 +63,7 @@ const selectedHeader = computed(() => {
   if (route.path.includes('/directeur'))     return DirecteurHeader
   if (route.path.includes('/responsable'))   return RespoNiveauHeader // ✅ Corrigé
   if (route.path.includes('/enseignant')) return EnseignantHeader
+  if (route.path.includes('/admin')) return AdminHeader
 
 
   return StudentHeader
