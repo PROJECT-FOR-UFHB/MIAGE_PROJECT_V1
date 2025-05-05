@@ -1,27 +1,26 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-// Layout principal qui gère sidebar/header dynamiques
+// Layout principal
 import BaseLayout from '@/components/BaseLayout.vue'
 
 // Étudiant
-import NouvelleDemande    from '@/pages/etudiants/NouvelleDemande.vue'
-import EspaceEtudiant     from '@/pages/etudiants/EspaceEtudiant.vue'
+import NouvelleDemande from '@/pages/etudiants/NouvelleDemande.vue'
+import EspaceEtudiant  from '@/pages/etudiants/EspaceEtudiant.vue'
 
 // Secrétaire pédagogique
-import DemandesRecues     from '@/pages/secretariat/DemandesRecues.vue'
-import Dashboard          from '@/pages/secretariat/Dashboard.vue'
+import DemandesRecues from '@/pages/secretariat/DemandesRecues.vue'
+import Dashboard       from '@/pages/secretariat/Dashboard.vue'
 
-// Authentification
+// Auth
 import LoginPage                from '@/pages/auth/LoginPage.vue'
 import RegisterPage             from '@/pages/auth/RegisterPage.vue'
 import RequestPasswordResetPage from '@/pages/auth/RequestPasswordResetPage.vue'
 import ResetPasswordPage        from '@/pages/auth/ResetPasswordPage.vue'
 
-// Services
+// Service auth
 import authService from '@/services/authService'
 
 const routes = [
-  // Routes d'authentification
   {
     path: '/auth',
     children: [
@@ -32,18 +31,14 @@ const routes = [
     ]
   },
 
-  // Layout général avec header/sidebar dynamiques selon rôle
   {
     path: '/',
     component: BaseLayout,
-    meta: { requiresAuth: true }, // Tous les enfants doivent être connectés
+    meta: { requiresAuth: true },
     children: [
-      // ---------------------
-      // Espace ÉTUDIANT (ETU)
-      // ---------------------
+      // 🎓 Étudiant
       {
         path: 'etudiants/espace-etudiant',
-        alias: '/student/dashboard',
         name: 'EspaceEtudiant',
         component: EspaceEtudiant,
         meta: {
@@ -73,9 +68,7 @@ const routes = [
         }
       },
 
-      // ---------------------
-      // Espace SECRÉTAIRE (SEC)
-      // ---------------------
+      // 🧾 Secrétaire pédagogique
       {
         path: 'secretariat/tableau-de-bord',
         name: 'SecretaryDashboard',
@@ -107,19 +100,7 @@ const routes = [
         }
       },
 
-      // -------------------------------
-      // Espace SECRÉTAIRE ADMIN (SEC_ADM)
-      // -------------------------------
-      {
-        path: 'sec-admin/validation',
-        name: 'ValidationFinanciere',
-        component: () => import('@/pages/secAdmin/ValidationFinanciere.vue'),
-        meta: {
-          headerTitle: 'Validation financière',
-          headerIcon: ['fas', 'file-invoice-dollar'],
-          requiresRole: 'SEC_ADM'
-        }
-      },
+      // 💼 Secrétaire administratif
       {
         path: 'sec-admin/dashboard',
         name: 'SecAdminDashboard',
@@ -127,6 +108,16 @@ const routes = [
         meta: {
           headerTitle: 'Tableau de bord',
           headerIcon: ['fas', 'chart-pie'],
+          requiresRole: 'SEC_ADM'
+        }
+      },
+      {
+        path: 'sec-admin/validation',
+        name: 'ValidationFinanciere',
+        component: () => import('@/pages/secAdmin/ValidationFinanciere.vue'),
+        meta: {
+          headerTitle: 'Validation financière',
+          headerIcon: ['fas', 'file-invoice-dollar'],
           requiresRole: 'SEC_ADM'
         }
       },
@@ -159,19 +150,72 @@ const routes = [
           headerIcon: ['fas', 'user'],
           requiresRole: 'SEC_ADM'
         }
+      },
+
+      // 🧑‍💼 Directeur MIAGE
+      {
+        path: 'directeur/tableau-de-bord',
+        name: 'DirecteurDashboard',
+        component: () => import('@/pages/directeurMiage/Dashboard.vue'),
+        meta: {
+          headerTitle: 'Tableau de bord',
+          headerIcon: ['fas', 'chart-line'],
+          requiresRole: 'DIR_MIAGE'
+        }
+      },
+      {
+        path: 'directeur/demandes-a-signer',
+        name: 'DemandesASigner',
+        component: () => import('@/pages/directeurMiage/DemandesASigner.vue'),
+        meta: {
+          headerTitle: 'Demandes à signer',
+          headerIcon: ['fas', 'file-signature'],
+          requiresRole: 'DIR_MIAGE'
+        }
+      },
+      {
+        path: 'directeur/historique',
+        name: 'HistoriqueDirecteur',
+        component: () => import('@/pages/directeurMiage/Historique.vue'),
+        meta: {
+          headerTitle: 'Historique',
+          headerIcon: ['fas', 'history'],
+          requiresRole: 'DIR_MIAGE'
+        }
+      },
+      {
+        path: 'directeur/notifications',
+        name: 'NotificationsDirecteur',
+        component: () => import('@/pages/directeurMiage/Notifications.vue'),
+        meta: {
+          headerTitle: 'Notifications',
+          headerIcon: ['fas', 'bell'],
+          requiresRole: 'DIR_MIAGE'
+        }
+      },
+      {
+        path: 'directeur/profil',
+        name: 'ProfilDirecteur',
+        component: () => import('@/pages/directeurMiage/MonProfil.vue'),
+        meta: {
+          headerTitle: 'Mon profil',
+          headerIcon: ['fas', 'user'],
+          requiresRole: 'DIR_MIAGE'
+        }
       }
     ]
   },
 
-  // Route fallback (si l'utilisateur tape une URL inconnue)
+  // 🔁 Redirection selon rôle
   {
     path: '/:pathMatch(.*)*',
     redirect: () => {
       if (authService.isAuthenticated()) {
         const role = authService.getUserRole()
-        if (role === 'ETU') return '/etudiants/espace-etudiant'
-        if (role === 'SEC') return '/secretariat/tableau-de-bord'
-        if (role === 'SEC_ADM') return '/sec-admin/dashboard' // 👈 Ajouté
+        if (role === 'ETU')      return '/etudiants/espace-etudiant'
+        if (role === 'SEC')      return '/secretariat/tableau-de-bord'
+        if (role === 'SEC_ADM')  return '/sec-admin/dashboard'
+        if (role === 'DIR_MIAGE') return '/directeur/tableau-de-bord'
       }
       return '/auth/login'
     }
@@ -183,33 +227,31 @@ const router = createRouter({
   routes
 })
 
-// 🔐 Guard de navigation (exécuté avant chaque changement de page)
+// 🔐 Guard
 router.beforeEach((to, from, next) => {
   const isAuth   = authService.isAuthenticated()
   const userRole = authService.getUserRole()
 
-  // Si route pour invités uniquement (login/register) et utilisateur déjà connecté
   if (to.meta.requiresGuest && isAuth) {
-    if (userRole === 'ETU') return next('/etudiants/espace-etudiant')
-    if (userRole === 'SEC') return next('/secretariat/tableau-de-bord')
-    if (userRole === 'SEC_ADM') return next('/sec-admin/dashboard')
+    if (userRole === 'ETU')       return next('/etudiants/espace-etudiant')
+    if (userRole === 'SEC')       return next('/secretariat/tableau-de-bord')
+    if (userRole === 'SEC_ADM')   return next('/sec-admin/dashboard')
+    if (userRole === 'DIR_MIAGE') return next('/directeur/tableau-de-bord')
     return next('/')
   }
 
-  // Si route nécessite authentification mais l'utilisateur n'est pas connecté
   if (to.meta.requiresAuth && !isAuth) {
     return next('/auth/login')
   }
 
-  // Si la route est réservée à un rôle spécifique
   if (to.meta.requiresRole && isAuth && to.meta.requiresRole !== userRole) {
-    if (userRole === 'ETU') return next('/etudiants/espace-etudiant')
-    if (userRole === 'SEC') return next('/secretariat/tableau-de-bord')
-    if (userRole === 'SEC_ADM') return next('/sec-admin/dashboard')
+    if (userRole === 'ETU')       return next('/etudiants/espace-etudiant')
+    if (userRole === 'SEC')       return next('/secretariat/tableau-de-bord')
+    if (userRole === 'SEC_ADM')   return next('/sec-admin/dashboard')
+    if (userRole === 'DIR_MIAGE') return next('/directeur/tableau-de-bord')
     return next('/')
   }
 
-  // OK, on peut accéder
   next()
 })
 
