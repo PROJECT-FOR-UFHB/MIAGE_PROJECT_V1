@@ -31,6 +31,9 @@ import SecAdminHeader     from '@/components/secAdmin/Header.vue'
 import DirecteurSidebar   from '@/components/directeurMiage/Sidebar.vue'     // 👈 Ajouté
 import DirecteurHeader    from '@/components/directeurMiage/Header.vue'      // 👈 Ajouté
 
+import RespoNiveauSidebar from '@/components/responsableNiveau/Sidebar.vue'
+import RespoNiveauHeader from '@/components/responsableNiveau/Header.vue'
+
 // URL actuelle
 const route = useRoute()
 
@@ -38,7 +41,9 @@ const route = useRoute()
 const selectedSidebar = computed(() => {
   if (route.path.includes('/sec-admin'))     return SecAdminSidebar
   if (route.path.includes('/secretariat'))   return SecretarySidebar
-  if (route.path.includes('/directeur'))     return DirecteurSidebar       // Ajouté
+  if (route.path.includes('/directeur'))     return DirecteurSidebar
+  if (route.path.includes('/responsable'))   return RespoNiveauSidebar // ✅ Corrigé
+
   return StudentSidebar
 })
 
@@ -46,7 +51,9 @@ const selectedSidebar = computed(() => {
 const selectedHeader = computed(() => {
   if (route.path.includes('/sec-admin'))     return SecAdminHeader
   if (route.path.includes('/secretariat'))   return SecretaryHeader
-  if (route.path.includes('/directeur'))     return DirecteurHeader        // Ajouté
+  if (route.path.includes('/directeur'))     return DirecteurHeader
+  if (route.path.includes('/responsable'))   return RespoNiveauHeader // ✅ Corrigé
+
   return StudentHeader
 })
 

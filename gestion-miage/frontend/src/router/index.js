@@ -1,33 +1,33 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-// Layout principal
+// 🧱 Layout principal avec Sidebar/Header dynamiques
 import BaseLayout from '@/components/BaseLayout.vue'
 
-// Étudiant
+// 🎓 Étudiant
 import NouvelleDemande from '@/pages/etudiants/NouvelleDemande.vue'
 import EspaceEtudiant  from '@/pages/etudiants/EspaceEtudiant.vue'
 
-// Secrétaire pédagogique
+// 🗂 Secrétaire pédagogique
 import DemandesRecues from '@/pages/secretariat/DemandesRecues.vue'
 import Dashboard       from '@/pages/secretariat/Dashboard.vue'
 
-// Auth
+// 🔐 Auth
 import LoginPage                from '@/pages/auth/LoginPage.vue'
 import RegisterPage             from '@/pages/auth/RegisterPage.vue'
 import RequestPasswordResetPage from '@/pages/auth/RequestPasswordResetPage.vue'
 import ResetPasswordPage        from '@/pages/auth/ResetPasswordPage.vue'
 
-// Service auth
+// 🛡 Service auth
 import authService from '@/services/authService'
 
 const routes = [
   {
     path: '/auth',
     children: [
-      { path: 'login',                  name: 'Login',                component: LoginPage,               meta: { requiresGuest: true } },
-      { path: 'register',               name: 'Register',             component: RegisterPage,            meta: { requiresGuest: true } },
+      { path: 'login', name: 'Login', component: LoginPage, meta: { requiresGuest: true } },
+      { path: 'register', name: 'Register', component: RegisterPage, meta: { requiresGuest: true } },
       { path: 'request-password-reset', name: 'RequestPasswordReset', component: RequestPasswordResetPage, meta: { requiresGuest: true } },
-      { path: 'reset-password',         name: 'ResetPassword',        component: ResetPasswordPage,       meta: { requiresGuest: true } },
+      { path: 'reset-password', name: 'ResetPassword', component: ResetPasswordPage, meta: { requiresGuest: true } },
     ]
   },
 
@@ -36,36 +36,24 @@ const routes = [
     component: BaseLayout,
     meta: { requiresAuth: true },
     children: [
-      // 🎓 Étudiant
+      // 🎓 Espace Étudiant
       {
         path: 'etudiants/espace-etudiant',
         name: 'EspaceEtudiant',
         component: EspaceEtudiant,
-        meta: {
-          headerTitle: 'Espace étudiant',
-          headerIcon: ['fas', 'graduation-cap'],
-          requiresRole: 'ETU'
-        }
+        meta: { headerTitle: 'Espace étudiant', headerIcon: ['fas', 'graduation-cap'], requiresRole: 'ETU' }
       },
       {
         path: 'etudiants/nouvelle-demande',
         name: 'NouvelleDemande',
         component: NouvelleDemande,
-        meta: {
-          headerTitle: 'Nouvelle demande',
-          headerIcon: ['fas', 'file-alt'],
-          requiresRole: 'ETU'
-        }
+        meta: { headerTitle: 'Nouvelle demande', headerIcon: ['fas', 'file-alt'], requiresRole: 'ETU' }
       },
       {
         path: 'etudiants/demandes/:id',
         name: 'DetailsDemande',
         component: () => import('@/pages/etudiants/DetailsDemande.vue'),
-        meta: {
-          headerTitle: 'Détails de la demande',
-          headerIcon: ['fas', 'clipboard-list'],
-          requiresRole: 'ETU'
-        }
+        meta: { headerTitle: 'Détails de la demande', headerIcon: ['fas', 'clipboard-list'], requiresRole: 'ETU' }
       },
 
       // 🧾 Secrétaire pédagogique
@@ -73,31 +61,19 @@ const routes = [
         path: 'secretariat/tableau-de-bord',
         name: 'SecretaryDashboard',
         component: Dashboard,
-        meta: {
-          headerTitle: 'Tableau de bord',
-          headerIcon: ['fas', 'chart-simple'],
-          requiresRole: 'SEC'
-        }
+        meta: { headerTitle: 'Tableau de bord', headerIcon: ['fas', 'chart-simple'], requiresRole: 'SEC' }
       },
       {
         path: 'secretariat/demandes-recus',
         name: 'DemandesRecues',
         component: DemandesRecues,
-        meta: {
-          headerTitle: 'Demandes reçues',
-          headerIcon: ['fas', 'clipboard-list'],
-          requiresRole: 'SEC'
-        }
+        meta: { headerTitle: 'Demandes reçues', headerIcon: ['fas', 'clipboard-list'], requiresRole: 'SEC' }
       },
       {
         path: 'secretariat/demandes/:id',
         name: 'TraiterDemande',
         component: () => import('@/pages/secretariat/TraiterDemande.vue'),
-        meta: {
-          headerTitle: 'Traiter la demande',
-          headerIcon: ['fas', 'clipboard-list'],
-          requiresRole: 'SEC'
-        }
+        meta: { headerTitle: 'Traiter la demande', headerIcon: ['fas', 'clipboard-list'], requiresRole: 'SEC' }
       },
 
       // 💼 Secrétaire administratif
@@ -105,51 +81,31 @@ const routes = [
         path: 'sec-admin/dashboard',
         name: 'SecAdminDashboard',
         component: () => import('@/pages/secAdmin/Dashboard.vue'),
-        meta: {
-          headerTitle: 'Tableau de bord',
-          headerIcon: ['fas', 'chart-pie'],
-          requiresRole: 'SEC_ADM'
-        }
+        meta: { headerTitle: 'Tableau de bord', headerIcon: ['fas', 'chart-pie'], requiresRole: 'SEC_ADM' }
       },
       {
         path: 'sec-admin/validation',
         name: 'ValidationFinanciere',
         component: () => import('@/pages/secAdmin/ValidationFinanciere.vue'),
-        meta: {
-          headerTitle: 'Validation financière',
-          headerIcon: ['fas', 'file-invoice-dollar'],
-          requiresRole: 'SEC_ADM'
-        }
+        meta: { headerTitle: 'Validation financière', headerIcon: ['fas', 'file-invoice-dollar'], requiresRole: 'SEC_ADM' }
       },
       {
         path: 'sec-admin/historique',
         name: 'Historique',
         component: () => import('@/pages/secAdmin/Historique.vue'),
-        meta: {
-          headerTitle: 'Historique',
-          headerIcon: ['fas', 'history'],
-          requiresRole: 'SEC_ADM'
-        }
+        meta: { headerTitle: 'Historique', headerIcon: ['fas', 'history'], requiresRole: 'SEC_ADM' }
       },
       {
         path: 'sec-admin/notifications',
         name: 'Notifications',
         component: () => import('@/pages/secAdmin/Notifications.vue'),
-        meta: {
-          headerTitle: 'Notifications',
-          headerIcon: ['fas', 'bell'],
-          requiresRole: 'SEC_ADM'
-        }
+        meta: { headerTitle: 'Notifications', headerIcon: ['fas', 'bell'], requiresRole: 'SEC_ADM' }
       },
       {
         path: 'sec-admin/profil',
         name: 'MonProfil',
         component: () => import('@/pages/secAdmin/MonProfil.vue'),
-        meta: {
-          headerTitle: 'Mon profil',
-          headerIcon: ['fas', 'user'],
-          requiresRole: 'SEC_ADM'
-        }
+        meta: { headerTitle: 'Mon profil', headerIcon: ['fas', 'user'], requiresRole: 'SEC_ADM' }
       },
 
       // 🧑‍💼 Directeur MIAGE
@@ -157,65 +113,78 @@ const routes = [
         path: 'directeur/tableau-de-bord',
         name: 'DirecteurDashboard',
         component: () => import('@/pages/directeurMiage/Dashboard.vue'),
-        meta: {
-          headerTitle: 'Tableau de bord',
-          headerIcon: ['fas', 'chart-line'],
-          requiresRole: 'DIR_MIAGE'
-        }
+        meta: { headerTitle: 'Tableau de bord', headerIcon: ['fas', 'chart-line'], requiresRole: 'DIR_MIAGE' }
       },
       {
         path: 'directeur/demandes-a-signer',
         name: 'DemandesASigner',
         component: () => import('@/pages/directeurMiage/DemandesASigner.vue'),
-        meta: {
-          headerTitle: 'Demandes à signer',
-          headerIcon: ['fas', 'file-signature'],
-          requiresRole: 'DIR_MIAGE'
-        }
+        meta: { headerTitle: 'Demandes à signer', headerIcon: ['fas', 'file-signature'], requiresRole: 'DIR_MIAGE' }
       },
       {
         path: 'directeur/historique',
         name: 'HistoriqueDirecteur',
         component: () => import('@/pages/directeurMiage/Historique.vue'),
-        meta: {
-          headerTitle: 'Historique',
-          headerIcon: ['fas', 'history'],
-          requiresRole: 'DIR_MIAGE'
-        }
+        meta: { headerTitle: 'Historique', headerIcon: ['fas', 'history'], requiresRole: 'DIR_MIAGE' }
       },
       {
         path: 'directeur/notifications',
         name: 'NotificationsDirecteur',
         component: () => import('@/pages/directeurMiage/Notifications.vue'),
-        meta: {
-          headerTitle: 'Notifications',
-          headerIcon: ['fas', 'bell'],
-          requiresRole: 'DIR_MIAGE'
-        }
+        meta: { headerTitle: 'Notifications', headerIcon: ['fas', 'bell'], requiresRole: 'DIR_MIAGE' }
       },
       {
         path: 'directeur/profil',
         name: 'ProfilDirecteur',
         component: () => import('@/pages/directeurMiage/MonProfil.vue'),
-        meta: {
-          headerTitle: 'Mon profil',
-          headerIcon: ['fas', 'user'],
-          requiresRole: 'DIR_MIAGE'
-        }
+        meta: { headerTitle: 'Mon profil', headerIcon: ['fas', 'user'], requiresRole: 'DIR_MIAGE' }
+      },
+
+      // 📘 Responsable de Niveau
+      {
+        path: 'responsable/tableau-de-bord',
+        name: 'ResponsableDashboard',
+        component: () => import('@/pages/responsableNiveau/Dashboard.vue'),
+        meta: { headerTitle: 'Tableau de bord', headerIcon: ['fas', 'chart-area'], requiresRole: 'RESP_NIV' }
+      },
+      {
+        path: 'responsable/demandes',
+        name: 'DemandesNiveau',
+        component: () => import('@/pages/responsableNiveau/DemandesNiveau.vue'),
+        meta: { headerTitle: 'Demandes de mon niveau', headerIcon: ['fas', 'clipboard'], requiresRole: 'RESP_NIV' }
+      },
+      {
+        path: 'responsable/historique',
+        name: 'HistoriqueNiveau',
+        component: () => import('@/pages/responsableNiveau/Historique.vue'),
+        meta: { headerTitle: 'Historique complet', headerIcon: ['fas', 'history'], requiresRole: 'RESP_NIV' }
+      },
+      {
+        path: 'responsable/notifications',
+        name: 'NotificationsNiveau',
+        component: () => import('@/pages/responsableNiveau/Notifications.vue'),
+        meta: { headerTitle: 'Notifications', headerIcon: ['fas', 'bell'], requiresRole: 'RESP_NIV' }
+      },
+      {
+        path: 'responsable/profil',
+        name: 'ProfilResponsable',
+        component: () => import('@/pages/responsableNiveau/MonProfil.vue'),
+        meta: { headerTitle: 'Mon profil', headerIcon: ['fas', 'user'], requiresRole: 'RESP_NIV' }
       }
     ]
   },
 
-  // 🔁 Redirection selon rôle
+  // 🔁 Redirection automatique selon le rôle
   {
     path: '/:pathMatch(.*)*',
     redirect: () => {
       if (authService.isAuthenticated()) {
         const role = authService.getUserRole()
-        if (role === 'ETU')      return '/etudiants/espace-etudiant'
-        if (role === 'SEC')      return '/secretariat/tableau-de-bord'
-        if (role === 'SEC_ADM')  return '/sec-admin/dashboard'
-        if (role === 'DIR_MIAGE') return '/directeur/tableau-de-bord'
+        if (role === 'ETU')        return '/etudiants/espace-etudiant'
+        if (role === 'SEC')        return '/secretariat/tableau-de-bord'
+        if (role === 'SEC_ADM')    return '/sec-admin/dashboard'
+        if (role === 'DIR_MIAGE')  return '/directeur/tableau-de-bord'
+        if (role === 'RESP_NIV')   return '/responsable/tableau-de-bord'
       }
       return '/auth/login'
     }
@@ -227,16 +196,17 @@ const router = createRouter({
   routes
 })
 
-// 🔐 Guard
+// ✅ Navigation Guard
 router.beforeEach((to, from, next) => {
   const isAuth   = authService.isAuthenticated()
   const userRole = authService.getUserRole()
 
   if (to.meta.requiresGuest && isAuth) {
-    if (userRole === 'ETU')       return next('/etudiants/espace-etudiant')
-    if (userRole === 'SEC')       return next('/secretariat/tableau-de-bord')
-    if (userRole === 'SEC_ADM')   return next('/sec-admin/dashboard')
-    if (userRole === 'DIR_MIAGE') return next('/directeur/tableau-de-bord')
+    if (userRole === 'ETU')        return next('/etudiants/espace-etudiant')
+    if (userRole === 'SEC')        return next('/secretariat/tableau-de-bord')
+    if (userRole === 'SEC_ADM')    return next('/sec-admin/dashboard')
+    if (userRole === 'DIR_MIAGE')  return next('/directeur/tableau-de-bord')
+    if (userRole === 'RESP_NIV')   return next('/responsable/tableau-de-bord')
     return next('/')
   }
 
@@ -245,10 +215,11 @@ router.beforeEach((to, from, next) => {
   }
 
   if (to.meta.requiresRole && isAuth && to.meta.requiresRole !== userRole) {
-    if (userRole === 'ETU')       return next('/etudiants/espace-etudiant')
-    if (userRole === 'SEC')       return next('/secretariat/tableau-de-bord')
-    if (userRole === 'SEC_ADM')   return next('/sec-admin/dashboard')
-    if (userRole === 'DIR_MIAGE') return next('/directeur/tableau-de-bord')
+    if (userRole === 'ETU')        return next('/etudiants/espace-etudiant')
+    if (userRole === 'SEC')        return next('/secretariat/tableau-de-bord')
+    if (userRole === 'SEC_ADM')    return next('/sec-admin/dashboard')
+    if (userRole === 'DIR_MIAGE')  return next('/directeur/tableau-de-bord')
+    if (userRole === 'RESP_NIV')   return next('/responsable/tableau-de-bord')
     return next('/')
   }
 
