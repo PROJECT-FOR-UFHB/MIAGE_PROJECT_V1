@@ -83,18 +83,28 @@ const routes = [
         meta: { headerTitle: 'Traiter la demande', headerIcon: ['fas', 'clipboard-list'], requiresRole: 'SEC' }
       },
 
-      // 💼 Secrétaire administratif
-      {
-        path: 'sec-admin/dashboard',
-        name: 'SecAdminDashboard',
-        component: () => import('@/pages/secAdmin/Dashboard.vue'),
-        meta: { headerTitle: 'Tableau de bord', headerIcon: ['fas', 'chart-pie'], requiresRole: 'SEC_ADM' }
-      },
+      // -------------------------------
+      // Espace SECRÉTAIRE ADMIN (SEC_ADM)
+      // -------------------------------
       {
         path: 'sec-admin/validation',
         name: 'ValidationFinanciere',
         component: () => import('@/pages/secAdmin/ValidationFinanciere.vue'),
-        meta: { headerTitle: 'Validation financière', headerIcon: ['fas', 'file-invoice-dollar'], requiresRole: 'SEC_ADM' }
+        meta: {
+          headerTitle: 'Validation financière',
+          headerIcon: ['fas', 'file-invoice-dollar'],
+          requiresRole: 'SAF'
+        }
+      },
+      {
+        path: 'sec-admin/dashboard',
+        name: 'SecAdminDashboard',
+        component: () => import('@/pages/secAdmin/Dashboard.vue'),
+        meta: {
+          headerTitle: 'Tableau de bord',
+          headerIcon: ['fas', 'chart-pie'],
+          requiresRole: 'SAF'
+        }
       },
       {
         path: 'sec-admin/historique',
