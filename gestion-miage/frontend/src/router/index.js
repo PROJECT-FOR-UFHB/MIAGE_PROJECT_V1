@@ -110,19 +110,19 @@ const routes = [
         path: 'sec-admin/historique',
         name: 'Historique',
         component: () => import('@/pages/secAdmin/Historique.vue'),
-        meta: { headerTitle: 'Historique', headerIcon: ['fas', 'history'], requiresRole: 'SEC_ADM' }
+        meta: { headerTitle: 'Historique', headerIcon: ['fas', 'history'], requiresRole: 'SAF' }
       },
       {
         path: 'sec-admin/notifications',
         name: 'Notifications',
         component: () => import('@/pages/secAdmin/Notifications.vue'),
-        meta: { headerTitle: 'Notifications', headerIcon: ['fas', 'bell'], requiresRole: 'SEC_ADM' }
+        meta: { headerTitle: 'Notifications', headerIcon: ['fas', 'bell'], requiresRole: 'SAF' }
       },
       {
         path: 'sec-admin/profil',
         name: 'MonProfil',
         component: () => import('@/pages/secAdmin/MonProfil.vue'),
-        meta: { headerTitle: 'Mon profil', headerIcon: ['fas', 'user'], requiresRole: 'SEC_ADM' }
+        meta: { headerTitle: 'Mon profil', headerIcon: ['fas', 'user'], requiresRole: 'SAF' }
       },
 
       // 🧑‍💼 Directeur MIAGE
