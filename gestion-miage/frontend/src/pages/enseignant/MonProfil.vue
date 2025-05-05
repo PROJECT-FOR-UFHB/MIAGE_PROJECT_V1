@@ -1,66 +1,169 @@
 <template>
-    <main class="bg-gray-100 min-h-screen pt-6 px-4">
-      <div class="max-w-3xl mx-auto bg-white p-6 rounded shadow">
-        <h1 class="text-xl font-semibold mb-6">Mon profil</h1>
-  
-        <!-- Infos personnelles -->
-        <div class="space-y-4 mb-6">
+  <main class="bg-gray-100 min-h-screen pt-6">
+    <div class="max-w-3xl mx-auto bg-white p-6 rounded shadow space-y-6">
+
+      <!-- 🔹 Informations personnelles -->
+      <section>
+        <h2 class="text-xl font-semibold mb-4 text-gray-800">Mes informations</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700">Nom</label>
+            <label class="block mb-1 font-medium text-sm">Nom</label>
             <input v-model="form.nom" type="text" class="input-style" disabled />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Email</label>
-            <input v-model="form.email" type="email" class="input-style" disabled />
+            <label class="block mb-1 font-medium text-sm">Prénom</label>
+            <input v-model="form.prenom" type="text" class="input-style" disabled />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Département</label>
-            <input v-model="form.departement" type="text" class="input-style" disabled />
+            <label class="block mb-1 font-medium text-sm">Email</label>
+            <input v-model="form.email" type="email" class="input-style" />
+          </div>
+          <div>
+            <label class="block mb-1 font-medium text-sm">Téléphone</label>
+            <input v-model="form.telephone" type="tel" class="input-style" />
           </div>
         </div>
-  
-        <!-- Changement de mot de passe -->
-        <div class="space-y-4">
-          <h2 class="font-semibold mb-2">Changer de mot de passe</h2>
-          <input type="password" v-model="form.password" placeholder="Nouveau mot de passe" class="input-style" />
-          <input type="password" v-model="form.confirm" placeholder="Confirmer" class="input-style" />
-          <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" @click="changerMdp">
-            Mettre à jour
-          </button>
+        <button @click="updateInfo" class="btn-primary mt-4" :disabled="loading">
+          Mettre à jour
+        </button>
+      </section>
+
+      <!-- 🔒 Modification mot de passe -->
+      <section>
+        <h2 class="text-xl font-semibold mb-4 text-gray-800">Changer mon mot de passe</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block mb-1 font-medium text-sm">Mot de passe actuel</label>
+            <input v-model="passwordForm.current" type="password" class="input-style" />
+          </div>
+          <div>
+            <label class="block mb-1 font-medium text-sm">Nouveau mot de passe</label>
+            <input v-model="passwordForm.new" type="password" class="input-style" />
+          </div>
         </div>
-      </div>
-    </main>
-  </template>
-  
-  <script setup>
-  import { ref } from 'vue'
-  
-  // 🔄 Données simulées
-  const form = ref({
-    nom: 'Kouadio Julien',
-    email: 'julien.k@univ-mage.net',
-    departement: 'MIAGE',
-    password: '',
-    confirm: ''
-  })
-  
-  // ✅ Action fictive (remplacée plus tard par appel API)
-  const changerMdp = () => {
-    if (!form.value.password || form.value.password !== form.value.confirm) {
-      alert("Les mots de passe ne correspondent pas.")
+        <button @click="changePassword" class="btn-primary mt-4" :disabled="loading">
+          Changer le mot de passe
+        </button>
+      </section>
+
+      <!-- ✍️ Clé de signature numérique -->
+      <section>
+        <h2 class="text-xl font-semibold mb-4 text-gray-800">Clé de signature numérique</h2>
+        <div>
+          <label class="block mb-1 font-medium text-sm">Clé actuelle</label>
+          <input v-model="form.signatureKey" type="text" class="input-style" placeholder="XXXX-XXXX-XXXX" />
+          <small class="text-gray-500 text-sm">Utilisée pour signer les documents PDF de manière sécurisée.</small>
+        </div>
+        <button @click="updateKey" class="btn-primary mt-4" :disabled="loading">
+          Mettre à jour la clé
+        </button>
+      </section>
+
+      <!-- Message -->
+      <div v-if="message" class="text-green-600 font-medium">{{ message }}</div>
+      <div v-if="error" class="text-red-600 font-medium">{{ error }}</div>
+    </div>
+  </main>
+</template>
+
+<script setup>
+import { ref, onMounted } from 'vue'
+
+// État du formulaire principal
+const form = ref({
+  nom: '',
+  prenom: '',
+  email: '',
+  telephone: '',
+  signatureKey: ''
+})
+
+// Changement de mot de passe
+const passwordForm = ref({
+  current: '',
+  new: ''
+})
+
+const message = ref('')
+const error = ref('')
+const loading = ref(false)
+
+// 📡 Récupération du profil utilisateur (remplacer plus tard par un vrai appel API)
+onMounted(() => {
+  // 🔁 À remplacer par : await directorService.getProfile()
+  const mockUser = {
+    nom: 'Konan',
+    prenom: 'Boris',
+    email: 'boris@miage.edu.ci',
+    telephone: '0708123456',
+    signatureKey: 'MIAGE-2025-SIGN'
+  }
+  form.value = { ...mockUser }
+})
+
+// 💾 Mise à jour des infos personnelles
+const updateInfo = async () => {
+  loading.value = true
+  message.value = ''
+  error.value = ''
+  try {
+    // 📡 Appel API à faire : await directorService.updateProfile(form.value)
+    await new Promise(res => setTimeout(res, 1000))
+    message.value = 'Informations mises à jour avec succès.'
+  } catch (err) {
+    error.value = 'Erreur lors de la mise à jour.'
+  } finally {
+    loading.value = false
+  }
+}
+
+// 🔑 Mise à jour mot de passe
+const changePassword = async () => {
+  loading.value = true
+  message.value = ''
+  error.value = ''
+  try {
+    if (!passwordForm.value.current || !passwordForm.value.new) {
+      error.value = 'Veuillez remplir les champs du mot de passe.'
       return
     }
-  
-    alert("Mot de passe mis à jour (simulation).")
+    // 📡 Appel API à faire : await directorService.updatePassword(passwordForm.value)
+    await new Promise(res => setTimeout(res, 1000))
+    message.value = 'Mot de passe modifié.'
+    passwordForm.value = { current: '', new: '' }
+  } catch (err) {
+    error.value = 'Erreur lors du changement de mot de passe.'
+  } finally {
+    loading.value = false
   }
-  </script>
-  
-  <style scoped>
-  .input-style {
-    padding: 0.5rem;
-    border: 1px solid #d1d5db;
-    border-radius: 0.375rem;
-    width: 100%;
+}
+
+// 🔐 Mise à jour de la clé
+const updateKey = async () => {
+  loading.value = true
+  message.value = ''
+  error.value = ''
+  try {
+    if (!form.value.signatureKey) {
+      error.value = 'Veuillez entrer une clé.'
+      return
+    }
+    // 📡 Appel API à faire : await directorService.updateSignatureKey(form.value.signatureKey)
+    await new Promise(res => setTimeout(res, 1000))
+    message.value = 'Clé mise à jour avec succès.'
+  } catch (err) {
+    error.value = 'Erreur lors de la mise à jour de la clé.'
+  } finally {
+    loading.value = false
   }
-  </style>
-  
+}
+</script>
+
+<style scoped>
+.input-style {
+  @apply w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500;
+}
+.btn-primary {
+  @apply bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition;
+}
+</style>
