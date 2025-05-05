@@ -5,17 +5,17 @@ import BaseLayout from '@/components/BaseLayout.vue'
 
 // 🎓 Étudiant
 import NouvelleDemande from '@/pages/etudiants/NouvelleDemande.vue'
-import EspaceEtudiant  from '@/pages/etudiants/EspaceEtudiant.vue'
+import EspaceEtudiant from '@/pages/etudiants/EspaceEtudiant.vue'
 
 // 🗂 Secrétaire pédagogique
 import DemandesRecues from '@/pages/secretariat/DemandesRecues.vue'
-import Dashboard       from '@/pages/secretariat/Dashboard.vue'
+import Dashboard from '@/pages/secretariat/Dashboard.vue'
 
 // 🔐 Auth
-import LoginPage                from '@/pages/auth/LoginPage.vue'
-import RegisterPage             from '@/pages/auth/RegisterPage.vue'
+import LoginPage from '@/pages/auth/LoginPage.vue'
+import RegisterPage from '@/pages/auth/RegisterPage.vue'
 import RequestPasswordResetPage from '@/pages/auth/RequestPasswordResetPage.vue'
-import ResetPasswordPage        from '@/pages/auth/ResetPasswordPage.vue'
+import ResetPasswordPage from '@/pages/auth/ResetPasswordPage.vue'
 
 // 🛡 Service auth
 import authService from '@/services/authService'
@@ -171,6 +171,57 @@ const routes = [
         component: () => import('@/pages/responsableNiveau/MonProfil.vue'),
         meta: { headerTitle: 'Mon profil', headerIcon: ['fas', 'user'], requiresRole: 'RESP_NIV' }
       }
+      ,
+      {
+        path: 'enseignant/dashboard',
+        name: 'EnseignantDashboard',
+        component: () => import('@/pages/enseignant/Dashboard.vue'),
+        meta: {
+          headerTitle: 'Tableau de bord',
+          headerIcon: ['fas', 'chart-pie'],
+          requiresRole: 'ENSEIGNANT'
+        }
+      },
+      {
+        path: 'enseignant/demandes-a-traiter',
+        name: 'DemandesATraiter',
+        component: () => import('@/pages/enseignant/DemandesATraiter.vue'),
+        meta: {
+          headerTitle: 'Demandes à traiter',
+          headerIcon: ['fas', 'edit'],
+          requiresRole: 'ENSEIGNANT'
+        }
+      },
+      {
+        path: 'enseignant/historique',
+        name: 'HistoriqueEnseignant',
+        component: () => import('@/pages/enseignant/Historique.vue'),
+        meta: {
+          headerTitle: 'Historique Recos / Thèmes',
+          headerIcon: ['fas', 'folder-open'],
+          requiresRole: 'ENSEIGNANT'
+        }
+      },
+      {
+        path: 'enseignant/notifications',
+        name: 'NotificationsEnseignant',
+        component: () => import('@/pages/enseignant/Notifications.vue'),
+        meta: {
+          headerTitle: 'Notifications',
+          headerIcon: ['fas', 'bell'],
+          requiresRole: 'ENSEIGNANT'
+        }
+      },
+      {
+        path: 'enseignant/profil',
+        name: 'ProfilEnseignant',
+        component: () => import('@/pages/enseignant/MonProfil.vue'),
+        meta: {
+          headerTitle: 'Mon profil',
+          headerIcon: ['fas', 'user'],
+          requiresRole: 'ENSEIGNANT'
+        }
+      }
     ]
   },
 
@@ -180,15 +231,16 @@ const routes = [
     redirect: () => {
       if (authService.isAuthenticated()) {
         const role = authService.getUserRole()
-        if (role === 'ETU')        return '/etudiants/espace-etudiant'
-        if (role === 'SEC')        return '/secretariat/tableau-de-bord'
-        if (role === 'SEC_ADM')    return '/sec-admin/dashboard'
-        if (role === 'DIR_MIAGE')  return '/directeur/tableau-de-bord'
-        if (role === 'RESP_NIV')   return '/responsable/tableau-de-bord'
+        if (role === 'ETU') return '/etudiants/espace-etudiant'
+        if (role === 'SEC') return '/secretariat/tableau-de-bord'
+        if (role === 'SEC_ADM') return '/sec-admin/dashboard'
+        if (role === 'DIR_MIAGE') return '/directeur/tableau-de-bord'
+        if (role === 'RESP_NIV') return '/responsable/tableau-de-bord'
       }
       return '/auth/login'
     }
   }
+
 ]
 
 const router = createRouter({
@@ -198,15 +250,15 @@ const router = createRouter({
 
 // ✅ Navigation Guard
 router.beforeEach((to, from, next) => {
-  const isAuth   = authService.isAuthenticated()
+  const isAuth = authService.isAuthenticated()
   const userRole = authService.getUserRole()
 
   if (to.meta.requiresGuest && isAuth) {
-    if (userRole === 'ETU')        return next('/etudiants/espace-etudiant')
-    if (userRole === 'SEC')        return next('/secretariat/tableau-de-bord')
-    if (userRole === 'SEC_ADM')    return next('/sec-admin/dashboard')
-    if (userRole === 'DIR_MIAGE')  return next('/directeur/tableau-de-bord')
-    if (userRole === 'RESP_NIV')   return next('/responsable/tableau-de-bord')
+    if (userRole === 'ETU') return next('/etudiants/espace-etudiant')
+    if (userRole === 'SEC') return next('/secretariat/tableau-de-bord')
+    if (userRole === 'SEC_ADM') return next('/sec-admin/dashboard')
+    if (userRole === 'DIR_MIAGE') return next('/directeur/tableau-de-bord')
+    if (userRole === 'RESP_NIV') return next('/responsable/tableau-de-bord')
     return next('/')
   }
 
@@ -215,11 +267,11 @@ router.beforeEach((to, from, next) => {
   }
 
   if (to.meta.requiresRole && isAuth && to.meta.requiresRole !== userRole) {
-    if (userRole === 'ETU')        return next('/etudiants/espace-etudiant')
-    if (userRole === 'SEC')        return next('/secretariat/tableau-de-bord')
-    if (userRole === 'SEC_ADM')    return next('/sec-admin/dashboard')
-    if (userRole === 'DIR_MIAGE')  return next('/directeur/tableau-de-bord')
-    if (userRole === 'RESP_NIV')   return next('/responsable/tableau-de-bord')
+    if (userRole === 'ETU') return next('/etudiants/espace-etudiant')
+    if (userRole === 'SEC') return next('/secretariat/tableau-de-bord')
+    if (userRole === 'SEC_ADM') return next('/sec-admin/dashboard')
+    if (userRole === 'DIR_MIAGE') return next('/directeur/tableau-de-bord')
+    if (userRole === 'RESP_NIV') return next('/responsable/tableau-de-bord')
     return next('/')
   }
 
