@@ -299,7 +299,7 @@ router.beforeEach((to, from, next) => {
   if (to.meta.requiresGuest && isAuth) {
     if (userRole === 'ETU') return next('/etudiants/espace-etudiant')
     if (userRole === 'SEC') return next('/secretariat/tableau-de-bord')
-    if (userRole === 'SEC_ADM') return next('/sec-admin/dashboard')
+    if (userRole === 'SAF') return next('/sec-admin/dashboard')
     if (userRole === 'DIM') return next('/directeur/tableau-de-bord')
     if (userRole === 'RESP_NIV') return next('/responsable/tableau-de-bord')
     if (userRole === 'ENSEIGNANT') return next('/enseignant/dashboard')
@@ -314,7 +314,7 @@ router.beforeEach((to, from, next) => {
   if (to.meta.requiresRole && isAuth && to.meta.requiresRole !== userRole) {
     if (userRole === 'ETU') return next('/etudiants/espace-etudiant')
     if (userRole === 'SEC') return next('/secretariat/tableau-de-bord')
-    if (userRole === 'SEC_ADM') return next('/sec-admin/dashboard')
+    if (userRole === 'SAF') return next('/sec-admin/dashboard')
     if (userRole === 'DIM') return next('/directeur/tableau-de-bord')
     if (userRole === 'RESP_NIV') return next('/responsable/tableau-de-bord')
     if (userRole === 'ENSEIGNANT') return next('/enseignant/dashboard')
