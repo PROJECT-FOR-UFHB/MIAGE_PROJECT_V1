@@ -1,6 +1,6 @@
 <template>
-    <main class="bg-gray-100 min-h-screen pt-6">
-      <div class="max-w-7xl mx-auto px-4">
+  <main class="bg-gray-100 min-h-screen pt-10">
+    <div class="max-w-7xl mx-auto px-4">
   
         <!-- 📊 Cartes de statistiques système -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">

@@ -32,24 +32,26 @@
             Nouvelle demande
           </router-link>
         </li>
+        <!--
         <li>
-          <!-- Lien Mes demandes -->
+           Lien Mes demandes 
           <router-link
-            to="#"
+            to="etudiants/demandes/:id"
             class="block text-brandBlue px-3 py-2 rounded hover:bg-gray-100 transition-colors flex items-center"
           >
             <font-awesome-icon :icon="['fas', 'clipboard-list']" class="mr-2 text-brandBlue" />
             Mes demandes
           </router-link>
         </li>
+        -->
         <li>
           <!-- Lien Profil -->
           <router-link
-            to="#"
-            class="block text-brandBlue px-3 py-2 rounded hover:bg-gray-100 transition-colors flex items-center"
+            to="/etudiants/profil"
+            class="sidebar-link text-brandBlue px-3 py-2 rounded hover:bg-gray-100 transition-colors flex items-center"
           >
             <font-awesome-icon :icon="['fas', 'user']" class="mr-2 text-brandBlue" />
-            Profil
+            Mon profil
           </router-link>
         </li>
       </ul>
