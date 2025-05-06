@@ -1,24 +1,24 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-// 🧱 Layout principal avec Sidebar/Header dynamiques
+// Layout principal avec Sidebar/Header dynamiques
 import BaseLayout from '@/components/BaseLayout.vue'
 
-// 🎓 Étudiant
+// Étudiant
 import NouvelleDemande from '@/pages/etudiants/NouvelleDemande.vue'
 import EspaceEtudiant from '@/pages/etudiants/EspaceEtudiant.vue'
 //import MonProfil from '@/pages/etudiants/MonProfil.vue'
 
-// 🗂 Secrétaire pédagogique
+// Secrétaire pédagogique
 import DemandesRecues from '@/pages/secretariat/DemandesRecues.vue'
 import Dashboard from '@/pages/secretariat/Dashboard.vue'
 
-// 🔐 Auth
+// Auth
 import LoginPage from '@/pages/auth/LoginPage.vue'
 import RegisterPage from '@/pages/auth/RegisterPage.vue'
 import RequestPasswordResetPage from '@/pages/auth/RequestPasswordResetPage.vue'
 import ResetPasswordPage from '@/pages/auth/ResetPasswordPage.vue'
 
-// 🛡 Service auth
+// Service auth
 import authService from '@/services/authService'
 
 const routes = [
@@ -37,7 +37,7 @@ const routes = [
     component: BaseLayout,
     meta: { requiresAuth: true },
     children: [
-      // 🎓 Étudiant
+      // Étudiant
       {
         path: 'etudiants/espace-etudiant',
         name: 'EspaceEtudiant',
@@ -60,10 +60,10 @@ const routes = [
         path: 'etudiants/profil',
         name: 'ProfilEtudiants',
         component: () => import('@/pages/etudiants/MonProfil.vue'),
-        meta: { headerTitle: 'Mon profil', headerIcon: ['fas', 'user-cog'], requiresRole: 'ETU' }
+        meta: { headerTitle: 'Mon profil', headerIcon: ['fas', 'user'], requiresRole: 'ETU' }
       },
 
-      // 🧾 Secrétaire pédagogique
+      // Secrétaire pédagogique
       {
         path: 'secretariat/tableau-de-bord',
         name: 'SecretaryDashboard',
@@ -125,7 +125,7 @@ const routes = [
         meta: { headerTitle: 'Mon profil', headerIcon: ['fas', 'user'], requiresRole: 'SAF' }
       },
 
-      // 🧑‍💼 Directeur MIAGE
+      // Directeur MIAGE
       {
         path: 'directeur/tableau-de-bord',
         name: 'DirecteurDashboard',
@@ -157,7 +157,7 @@ const routes = [
         meta: { headerTitle: 'Mon profil', headerIcon: ['fas', 'user'], requiresRole: 'DIM' }
       },
 
-      // 📘 Responsable de Niveau
+      // Responsable de Niveau
       {
         path: 'responsable/tableau-de-bord',
         name: 'ResponsableDashboard',
@@ -189,7 +189,7 @@ const routes = [
         meta: { headerTitle: 'Mon profil', headerIcon: ['fas', 'user'], requiresRole: 'RDN' }
       },
 
-      // 👨‍🏫 Enseignant
+      // Enseignant
       {
         path: 'enseignant/dashboard',
         name: 'EnseignantDashboard',
@@ -221,7 +221,7 @@ const routes = [
         meta: { headerTitle: 'Mon profil', headerIcon: ['fas', 'user'], requiresRole: 'ENS' }
       },
 
-      // 🛠️ Admin
+      // Admin
       {
         path: 'admin/dashboard',
         name: 'AdminDashboard',
@@ -267,7 +267,7 @@ const routes = [
     ]
   },
 
-  // 🔁 Redirection automatique
+  // Redirection automatique
   {
     path: '/:pathMatch(.*)*',
     redirect: () => {
@@ -291,7 +291,7 @@ const router = createRouter({
   routes
 })
 
-// ✅ Guard
+// Guard
 router.beforeEach((to, from, next) => {
   const isAuth = authService.isAuthenticated()
   const userRole = authService.getUserRole()
