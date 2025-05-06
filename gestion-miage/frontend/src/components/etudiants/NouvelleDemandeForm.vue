@@ -49,8 +49,8 @@
                 <option disabled value="">Sélectionner votre niveau</option>
 
                 <!-- itération dynamique -->
-                <option v-for="niv in niveaux" :key="niv.id_niveau" :value="niv.id_niveau">
-                  {{ niv.nom }}
+                <option v-for="niv in tabNiveaux" :key="niv.id_niveau" :value="niv.id_niveau">
+                  {{ niv.lib_niveau }}
                 </option>
               </select>
             </div>
@@ -81,14 +81,14 @@
                 class="border border-gray-300 rounded w-full px-2 py-1 focus:outline-none focus:ring-1 focus:ring-brandBlue"
                 :disabled="loading" @change="loadRequiredFiles">
                 <option disabled value="">Sélectionner un type de demande</option>
-                <option v-for="type in requestTypes" :key="type.id_type_de_demande" :value="type.id_type_de_demande">
-                  {{ type.nom }}
+                <option v-for="type in tabDeTypeDeDemande" :key="type.id_type_de_demande" :value="type.id_type_de_demande">
+                  {{ type.lib_type_de_demande }}
                 </option>
 
               </select>
             </div>
             <!-- Libellé de la demande -->
-            <div>
+            <!--<div>
               <label class="block mb-1 font-medium flex items-center">
                 <font-awesome-icon :icon="['fas', 'info-circle']" class="text-brandBlue mr-2" />
                 Libellé de la demande
@@ -96,7 +96,7 @@
               <input v-model="form.titre" type="text"
                 class="border border-gray-300 rounded w-full px-2 py-1 focus:outline-none focus:ring-1 focus:ring-brandBlue"
                 :disabled="loading" />
-            </div>
+            </div>-->
 
             <!-- Description de la demande -->
             <div class="col-span-2">
@@ -112,12 +112,12 @@
             <!-- Fichiers requis -->
             <div v-if="requiredFiles.length > 0" class="col-span-2 mt-4">
               <h3 class="text-md font-semibold mb-2">Documents requis</h3>
-              <div v-for="(fileType, index) in requiredFiles" :key="index" class="mb-4">
+              <div v-for="(fileType, index) in requiredFiles" :key="fileType.id_type_de_piece_jointe" class="mb-4">
                 <label class="block mb-1 font-medium flex items-center">
                   <font-awesome-icon :icon="['fas', 'paperclip']" class="text-brandBlue mr-2" />
-                  {{ fileType.nom }} <span class="text-red-500 ml-1">*</span>
+                  {{ fileType.lib_type_de_piece_jointe }} <span class="text-red-500 ml-1">*</span>
                 </label>
-                <input type="file" @change="(e) => handleFileChange(e, fileType.id)"
+                <input type="file" @change="(e) => handleFileChange(e, fileType.id_type_de_piece_jointe)"
                   class="border border-gray-300 rounded w-full px-2 py-1 focus:outline-none focus:ring-1 focus:ring-brandBlue"
                   :disabled="loading" />
                 <p class="text-sm text-gray-500 mt-1">{{ fileType.description }}</p>
@@ -153,27 +153,31 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
-import { requestService, fileService, authService } from '@/services'
+import { authService,studentService } from '@/services'
 
-// État du formulaire
+// État (Variables) du formulaire
 const form = reactive({
   nom: '',
   prenom: '',
   niveau: '',
   annee_universitaire: '',
   id_type_demande: '',
-  titre: '',
+  //titre: '',
   description: ''
 })
 
-// Autres états
+let pieces_jointes;
+
+// Autres états (variables)
 const loading       = ref(false)
 const error         = ref('')
 const success       = ref('')
-const requestTypes  = ref([])
-const niveaux       = ref([])    // ← état pour les niveaux
+const tabDeTypeDeDemande  = ref([])
+const tabNiveaux       = ref([])
+const mapTypeDeDemandePiecesJointes = new Map()
 const requiredFiles = ref([])
 const files         = reactive({ required: {}, other: [] })
+
 
 // Données mock au besoin
 const mockRequestTypes = [
@@ -184,30 +188,39 @@ const mockRequestTypes = [
   { id: 5, nom: "Autre demande" }
 ]
 
+//Partie de chargement des données
 onMounted(async () => {
   loading.value = true
   try {
-    // Charger les types de demandes
-    const respTypes = await requestService.getRequestTypes()
-    if (respTypes.data?.status && Array.isArray(respTypes.data.data)) {
-      requestTypes.value = respTypes.data.data
-    } else if (Array.isArray(respTypes.data)) {
-      requestTypes.value = respTypes.data
+    // Charger les données pour le formulaire
+    const elementsFormulaireReçus = await studentService.getElementsFormulaire()
+    if (elementsFormulaireReçus.data?.status) {
+
+      //Les types de demandes
+      tabDeTypeDeDemande.value = elementsFormulaireReçus.data.data.types_de_demandes
+
+      //Les niveaux pour la demande (Exemple : Bulletin de L2)
+      tabNiveaux.value = elementsFormulaireReçus.data.data.niveaux
+
+      //Section de remplissage de la map qui contient les types de demandes et leurs pièces jointes
+      elementsFormulaireReçus.data.data.types_de_demandes.forEach((typeDeDemande) => {
+        // Pour chaque type de demande, on extrait ses pièces jointes
+        const pieces = typeDeDemande.types_de_pieces_jointes.map((piece) => {
+          return {
+            id_type_de_piece_jointe: piece.id_type_de_piece_jointe,
+            lib_type_de_piece_jointe: piece.lib_type_de_piece_jointe
+          };
+        });
+
+        // On stocke dans la map avec l'id du type de demande comme clé
+        mapTypeDeDemandePiecesJointes.set(typeDeDemande.id_type_de_demande, pieces);
+      });
+        
     } else {
       console.warn('Mock types used')
-      requestTypes.value = mockRequestTypes
+      tabDeTypeDeDemande.value = mockRequestTypes
     }
 
-    // Charger les niveaux
-    const respNiv = await requestService.getLevels()
-    if (respNiv.data?.status && Array.isArray(respNiv.data.data)) {
-      niveaux.value = respNiv.data.data
-    } else if (Array.isArray(respNiv.data)) {
-      niveaux.value = respNiv.data
-    } else {
-      console.warn('No niveaux returned, using empty list')
-      niveaux.value = []
-    }
 
     // Pré-remplir nom/prenom
     const user = authService.getUser()
@@ -227,17 +240,20 @@ onMounted(async () => {
     loading.value = false
   }
 })
+//Fin partie de chargement des données
 
-// Charger les fichiers requis
+
+/**
+ * Charger les fichiers requis en fonction de la demande choisi
+ */ 
 const loadRequiredFiles = async () => {
   if (!form.id_type_demande) return
   loading.value = true
   try {
-    const resp = await requestService.getRequiredFileTypes(form.id_type_demande)
-    if (resp.data?.status && Array.isArray(resp.data.data)) {
-      requiredFiles.value = resp.data.data
-    } else if (Array.isArray(resp.data)) {
-      requiredFiles.value = resp.data
+    const resp = mapTypeDeDemandePiecesJointes.get(form.id_type_demande)
+
+    if (resp) {
+      requiredFiles.value = resp
     } else {
       requiredFiles.value = []
     }
@@ -250,13 +266,16 @@ const loadRequiredFiles = async () => {
 }
 
 // Gestion fichiers requis
-const handleFileChange = (e, typeId) => {
-  if (e.target.files.length) {
-    files.required[typeId] = e.target.files[0]
-  } else {
-    delete files.required[typeId]
+const handleFileChange = (e, typeDePieceJointeId) => {
+  const file = e.target.files[0];
+  console.log(file)
+  console.log(files)
+  if (file) {
+    files.required[typeDePieceJointeId] = file;
   }
 }
+
+
 
 // Gestion autres fichiers
 const handleOtherFilesChange = e => {
@@ -270,7 +289,7 @@ const submitRequest = async () => {
   loading.value = true
 
   // validation
-  if (!form.titre || !form.description || !form.id_type_demande || !form.niveau) {
+  if (/*!form.titre ||*/ !form.description || !form.id_type_demande || !form.niveau) {
     error.value = 'Veuillez remplir tous les champs obligatoires'
     loading.value = false
     return
@@ -278,33 +297,36 @@ const submitRequest = async () => {
 
   try {
     // Création de la demande
-    const payload = {
+    /*const payload = {
       id_type_de_demande: form.id_type_demande,
       id_niveau: form.niveau,
-      annee_document_demande: form.annee_universitaire
+      annee_document: form.annee_universitaire
     }
-    const resp = await requestService.createRequest(payload)
+    const resp = await studentService.postElementsFormulaire(payload)
     if (!resp.data?.status || !resp.data.data) {
       throw new Error('Format réponse création incorrect')
-    }
+    }*/
 
-    const reqId = resp.data.data.id
+    const donneesFormulaire = new FormData();
+
+    donneesFormulaire.append('id_type_de_demande', form.id_type_demande);
+    donneesFormulaire.append('id_niveau', form.niveau);
+    donneesFormulaire.append('annee_document', form.annee_universitaire);
 
     // Upload fichiers requis
-    for (const [tId, f] of Object.entries(files.required)) {
-      const fd = new FormData()
-      fd.append('file', f)
-      fd.append('id_request', reqId)
-      fd.append('id_type_fichier', tId)
-      await fileService.uploadFile(fd)
+    let index = 0
+
+    for (const [id_type_de_piece_jointe, file] of Object.entries(files.required)) {
+      console.log(file)
+      console.log(files.required)
+      donneesFormulaire.append(`pieces_jointes[${index}][id_type_de_piece_jointe]`, id_type_de_piece_jointe)
+      donneesFormulaire.append(`pieces_jointes[${index}][fichier]`, file)
+      index++
     }
 
-    // Upload autres fichiers
-    for (const f of files.other) {
-      const fd = new FormData()
-      fd.append('file', f)
-      fd.append('id_request', reqId)
-      await fileService.uploadFile(fd)
+    const resp = await studentService.postElementsFormulaire(donneesFormulaire)
+    if (!resp.data?.status || !resp.data.data) {
+      throw new Error('Format réponse création incorrect')
     }
 
     // Reset form

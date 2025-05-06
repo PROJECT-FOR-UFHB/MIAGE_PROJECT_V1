@@ -24,7 +24,32 @@ const studentService = {
    */
   getDashboard() {
     return apiClient.get('/students/dashboard')
+  },
+
+  /**
+   * GET
+   * Récupérer les éléments de formulaire pour créer une demande 
+   * @returns {Promise} - Promesse avec les informations sur le fichier téléchargé
+   */
+  getElementsFormulaire() {
+    return apiClient.get('students/create-demande')
+  },
+
+  /**
+   * POST
+   * Envoyer les éléments de formulaire pour créer une demande
+   * @param {*} formData 
+   * @returns {Promise} - Promesse avec les informations sur le fichier téléchargé
+   */
+  postElementsFormulaire(formData) {
+    
+    return apiClient.post('students/create-demande', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
   }
+  
 }
 
 export default studentService 
