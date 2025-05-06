@@ -1,6 +1,6 @@
 <template>
-    <main class="bg-gray-100 min-h-screen pt-6">
-      <div class="max-w-7xl mx-auto px-4">
+  <main class="bg-gray-100 min-h-screen pt-10">
+    <div class="max-w-7xl mx-auto px-4">
   
         <!-- Titre -->
         <div class="mb-6 flex justify-between items-center">
