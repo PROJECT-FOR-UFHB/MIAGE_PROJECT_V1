@@ -81,7 +81,8 @@
                 class="border border-gray-300 rounded w-full px-2 py-1 focus:outline-none focus:ring-1 focus:ring-brandBlue"
                 :disabled="loading" @change="loadRequiredFiles">
                 <option disabled value="">Sélectionner un type de demande</option>
-                <option v-for="type in tabDeTypeDeDemande" :key="type.id_type_de_demande" :value="type.id_type_de_demande">
+                <option v-for="type in tabDeTypeDeDemande" :key="type.id_type_de_demande"
+                  :value="type.id_type_de_demande">
                   {{ type.lib_type_de_demande }}
                 </option>
 
@@ -117,10 +118,16 @@
                   <font-awesome-icon :icon="['fas', 'paperclip']" class="text-brandBlue mr-2" />
                   {{ fileType.lib_type_de_piece_jointe }} <span class="text-red-500 ml-1">*</span>
                 </label>
-                <input type="file" @change="(e) => handleFileChange(e, fileType.id_type_de_piece_jointe)"
-                  class="border border-gray-300 rounded w-full px-2 py-1 focus:outline-none focus:ring-1 focus:ring-brandBlue"
-                  :disabled="loading" />
+                <input type="file" @change="(e) => handleFileChange(e, fileType.id_type_de_piece_jointe)" :class="[
+                  'border rounded w-full px-2 py-1 focus:outline-none focus:ring-1',
+                  hasInvalidFile(fileType.id_type_de_piece_jointe)
+                    ? 'border-red-500 ring-red-500'
+                    : 'border-gray-300 focus:ring-brandBlue'
+                ]" :disabled="loading" />
                 <p class="text-sm text-gray-500 mt-1">{{ fileType.description }}</p>
+                <p v-if="hasInvalidFile(fileType.id_type_de_piece_jointe)" class="text-red-500 text-sm mt-1">
+                  Le fichier ne doit pas dépasser 2 Mo.
+                </p>
               </div>
             </div>
 
@@ -130,10 +137,16 @@
                 <font-awesome-icon :icon="['fas', 'paperclip']" class="text-brandBlue mr-2" />
                 Autres documents
               </label>
-              <input type="file" multiple @change="handleOtherFilesChange"
-                class="border border-gray-300 rounded w-full px-2 py-1 focus:outline-none focus:ring-1 focus:ring-brandBlue"
-                :disabled="loading" />
+              <input type="file" multiple @change="handleOtherFilesChange" :class="[
+                'border rounded w-full px-2 py-1 focus:outline-none focus:ring-1',
+                otherFilesTooLarge.length > 0
+                  ? 'border-red-500 ring-red-500'
+                  : 'border-gray-300 focus:ring-brandBlue'
+              ]" :disabled="loading" />
               <p class="text-sm text-gray-500 mt-1">Vous pouvez ajouter plusieurs fichiers</p>
+              <p v-if="otherFilesTooLarge.length > 0" class="text-red-500 text-sm mt-1">
+                Chaque fichier doit faire 2 Mo maximum.
+              </p>
             </div>
           </div>
         </div>
@@ -153,7 +166,7 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
-import { authService,studentService } from '@/services'
+import { authService, studentService } from '@/services'
 
 // État (Variables) du formulaire
 const form = reactive({
@@ -162,24 +175,26 @@ const form = reactive({
   niveau: '',
   annee_universitaire: '',
   id_type_demande: '',
-  //titre: '',
   description: ''
 })
 
 let pieces_jointes;
 
 // Autres états (variables)
-const loading       = ref(false)
-const error         = ref('')
-const success       = ref('')
-const tabDeTypeDeDemande  = ref([])
-const tabNiveaux       = ref([])
+const loading = ref(false)
+const error = ref('')
+const success = ref('')
+const tabDeTypeDeDemande = ref([])
+const tabNiveaux = ref([])
 const mapTypeDeDemandePiecesJointes = new Map()
 const requiredFiles = ref([])
-const files         = reactive({ required: {}, other: [] })
+const files = reactive({ required: {}, other: [] })
 
+// 🔧 AJOUT : limites de taille fichier
+const MAX_FILE_SIZE = 2 * 1024 * 1024 // 2 Mo
+const invalidFiles = reactive({}) // pour les fichiers requis
+const otherFilesTooLarge = ref([]) // pour les fichiers supplémentaires
 
-// Données mock au besoin
 const mockRequestTypes = [
   { id: 1, nom: "Attestation de scolarité" },
   { id: 2, nom: "Demande de stage" },
@@ -192,46 +207,34 @@ const mockRequestTypes = [
 onMounted(async () => {
   loading.value = true
   try {
-    // Charger les données pour le formulaire
     const elementsFormulaireReçus = await studentService.getElementsFormulaire()
     if (elementsFormulaireReçus.data?.status) {
-
-      //Les types de demandes
       tabDeTypeDeDemande.value = elementsFormulaireReçus.data.data.types_de_demandes
-
-      //Les niveaux pour la demande (Exemple : Bulletin de L2)
       tabNiveaux.value = elementsFormulaireReçus.data.data.niveaux
 
-      //Section de remplissage de la map qui contient les types de demandes et leurs pièces jointes
       elementsFormulaireReçus.data.data.types_de_demandes.forEach((typeDeDemande) => {
-        // Pour chaque type de demande, on extrait ses pièces jointes
         const pieces = typeDeDemande.types_de_pieces_jointes.map((piece) => {
           return {
             id_type_de_piece_jointe: piece.id_type_de_piece_jointe,
-            lib_type_de_piece_jointe: piece.lib_type_de_piece_jointe
+            lib_type_de_piece_jointe: piece.lib_type_de_piece_jointe,
+            description: piece.description || ''
           };
         });
-
-        // On stocke dans la map avec l'id du type de demande comme clé
         mapTypeDeDemandePiecesJointes.set(typeDeDemande.id_type_de_demande, pieces);
       });
-        
     } else {
       console.warn('Mock types used')
       tabDeTypeDeDemande.value = mockRequestTypes
     }
 
-
-    // Pré-remplir nom/prenom
     const user = authService.getUser()
     if (user) {
-      form.nom    = user.nom    || user.last_name  || ''
+      form.nom = user.nom || user.last_name || ''
       form.prenom = user.prenom || user.first_name || ''
     }
 
-    // Par défaut année universitaire
     const y = new Date().getFullYear()
-    form.annee_universitaire = `${y}-${y+1}`
+    form.annee_universitaire = `${y}-${y + 1}`
 
   } catch (err) {
     console.error(err)
@@ -240,18 +243,17 @@ onMounted(async () => {
     loading.value = false
   }
 })
-//Fin partie de chargement des données
 
+// 🔧 AJOUT : Vérifie si un fichier requis est invalide
+const hasInvalidFile = (typeId) => {
+  return invalidFiles[typeId] === true
+}
 
-/**
- * Charger les fichiers requis en fonction de la demande choisi
- */ 
 const loadRequiredFiles = async () => {
   if (!form.id_type_demande) return
   loading.value = true
   try {
     const resp = mapTypeDeDemandePiecesJointes.get(form.id_type_demande)
-
     if (resp) {
       requiredFiles.value = resp
     } else {
@@ -267,19 +269,24 @@ const loadRequiredFiles = async () => {
 
 // Gestion fichiers requis
 const handleFileChange = (e, typeDePieceJointeId) => {
-  const file = e.target.files[0];
-  console.log(file)
-  console.log(files)
+  const file = e.target.files[0]
   if (file) {
-    files.required[typeDePieceJointeId] = file;
+    // 🔧 AJOUT : vérification taille
+    if (file.size > MAX_FILE_SIZE) {
+      invalidFiles[typeDePieceJointeId] = true
+      files.required[typeDePieceJointeId] = null
+    } else {
+      invalidFiles[typeDePieceJointeId] = false
+      files.required[typeDePieceJointeId] = file
+    }
   }
 }
 
-
-
 // Gestion autres fichiers
 const handleOtherFilesChange = e => {
-  files.other = Array.from(e.target.files)
+  const selectedFiles = Array.from(e.target.files)
+  otherFilesTooLarge.value = selectedFiles.filter(file => file.size > MAX_FILE_SIZE)
+  files.other = selectedFiles
 }
 
 // Soumettre la demande
@@ -288,40 +295,33 @@ const submitRequest = async () => {
   success.value = ''
   loading.value = true
 
-  // validation
-  if (/*!form.titre ||*/ !form.description || !form.id_type_demande || !form.niveau) {
+  if (!form.description || !form.id_type_demande || !form.niveau) {
     error.value = 'Veuillez remplir tous les champs obligatoires'
     loading.value = false
     return
   }
 
+  // 🔧 AJOUT : blocage si fichier trop grand
+  const anyInvalid = Object.values(invalidFiles).some(val => val === true)
+  if (anyInvalid || otherFilesTooLarge.value.length > 0) {
+    error.value = 'Certains fichiers dépassent la taille maximale autorisée (2 Mo)'
+    loading.value = false
+    return
+  }
+
   try {
-    // Création de la demande
-    /*const payload = {
-      id_type_de_demande: form.id_type_demande,
-      id_niveau: form.niveau,
-      annee_document: form.annee_universitaire
-    }
-    const resp = await studentService.postElementsFormulaire(payload)
-    if (!resp.data?.status || !resp.data.data) {
-      throw new Error('Format réponse création incorrect')
-    }*/
+    const donneesFormulaire = new FormData()
+    donneesFormulaire.append('id_type_de_demande', form.id_type_demande)
+    donneesFormulaire.append('id_niveau', form.niveau)
+    donneesFormulaire.append('annee_document', form.annee_universitaire)
 
-    const donneesFormulaire = new FormData();
-
-    donneesFormulaire.append('id_type_de_demande', form.id_type_demande);
-    donneesFormulaire.append('id_niveau', form.niveau);
-    donneesFormulaire.append('annee_document', form.annee_universitaire);
-
-    // Upload fichiers requis
     let index = 0
-
     for (const [id_type_de_piece_jointe, file] of Object.entries(files.required)) {
-      console.log(file)
-      console.log(files.required)
-      donneesFormulaire.append(`pieces_jointes[${index}][id_type_de_piece_jointe]`, id_type_de_piece_jointe)
-      donneesFormulaire.append(`pieces_jointes[${index}][fichier]`, file)
-      index++
+      if (file) {
+        donneesFormulaire.append(`pieces_jointes[${index}][id_type_de_piece_jointe]`, id_type_de_piece_jointe)
+        donneesFormulaire.append(`pieces_jointes[${index}][fichier]`, file)
+        index++
+      }
     }
 
     const resp = await studentService.postElementsFormulaire(donneesFormulaire)
@@ -329,16 +329,14 @@ const submitRequest = async () => {
       throw new Error('Format réponse création incorrect')
     }
 
-    // Reset form
     Object.keys(form).forEach(k => {
-      if (!['nom','prenom','annee_universitaire'].includes(k)) {
+      if (!['nom', 'prenom', 'annee_universitaire'].includes(k)) {
         form[k] = ''
       }
     })
     files.required = {}
-    files.other    = []
+    files.other = []
     requiredFiles.value = []
-
     success.value = 'Votre demande a été soumise avec succès'
   } catch (err) {
     console.error(err)
