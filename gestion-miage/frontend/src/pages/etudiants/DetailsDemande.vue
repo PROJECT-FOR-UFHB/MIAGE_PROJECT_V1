@@ -15,13 +15,13 @@
           <div>
             <h1 class="text-2xl font-bold">{{ request.titre }}</h1>
             <p class="text-gray-600">
-              <span class="font-semibold">Demande #{{ request.id }}</span> - 
+              <span class="font-semibold">Demande #{{ request.id_demande }}</span> - 
               Créée le {{ formatDate(request.created_at) }}
             </p>
           </div>
           <span 
             class="px-3 py-1 rounded text-sm font-semibold"
-            :class="getStatusClass(request.statut)"
+            :class="getStatusClass(request.id_statut)"
           >
             {{ request.statut }}
           </span>
@@ -37,7 +37,7 @@
           <div class="bg-gray-50 p-4 rounded">
             <div class="mb-4">
               <p class="text-sm text-gray-500">Type de demande</p>
-              <p>{{ request.type_demande?.nom || 'N/A' }}</p>
+              <p>{{ request?.id_type_de_demande || 'N/A' }}</p>
             </div>
             
             <div class="mb-4">
@@ -47,12 +47,12 @@
             
             <div class="mb-4">
               <p class="text-sm text-gray-500">Niveau</p>
-              <p>{{ request.niveau || 'N/A' }}</p>
+              <p>{{ request.id_niveau || 'N/A' }}</p>
             </div>
             
             <div>
               <p class="text-sm text-gray-500">Année universitaire</p>
-              <p>{{ request.annee_universitaire || 'N/A' }}</p>
+              <p>{{ request.annee_document_demande || 'N/A' }}</p>
             </div>
           </div>
         </div>
@@ -93,17 +93,17 @@
         </div>
         
         <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div v-for="file in files" :key="file.id" class="bg-gray-50 p-4 rounded flex items-center justify-between">
+          <div v-for="file in files" :key="file.id_piece" class="bg-gray-50 p-4 rounded flex items-center justify-between">
             <div class="flex items-center">
               <font-awesome-icon icon="file-alt" class="text-blue-500 mr-2" />
               <div>
-                <p class="font-medium">{{ file.nom }}</p>
-                <p class="text-sm text-gray-500">{{ formatFileSize(file.taille) }}</p>
+                <p class="font-medium">{{ file.fichier_path }}</p>
+                <!--<p class="text-sm text-gray-500">{{ formatFileSize(file.taille) }}</p>-->
               </div>
             </div>
             
             <button 
-              @click="downloadFile(file.id)" 
+              @click="downloadFile(file.id_piece)" 
               class="text-blue-500 hover:text-blue-700"
             >
               Télécharger
@@ -134,7 +134,7 @@ const route = useRoute()
 const loading = ref(true)
 const error = ref('')
 const request = ref({})
-const files = ref([])
+let files = []
 const validationSteps = reactive([
   { name: 'Secrétariat', status: 'pending', date: null, comment: null },
   { name: 'Service financier', status: 'pending', date: null, comment: null },
@@ -148,7 +148,6 @@ onMounted(async () => {
   try {
     await Promise.all([
       loadRequest(requestId),
-      loadFiles(requestId),
       loadValidationHistory(requestId)
     ])
   } catch (err) {
@@ -165,6 +164,9 @@ const loadRequest = async (requestId) => {
     const response = await requestService.getRequest(requestId)
     if (response.data && response.data.status) {
       request.value = response.data.data
+      files = response.data.data.pieces_jointes || []
+
+
     } else {
       throw new Error('Impossible de charger les détails de la demande')
     }
@@ -177,10 +179,7 @@ const loadRequest = async (requestId) => {
 // Charger les fichiers de la demande
 const loadFiles = async (requestId) => {
   try {
-    const response = await fileService.getRequestFiles(requestId)
-    if (response.data && response.data.status) {
-      files.value = response.data.data || []
-    }
+
   } catch (err) {
     console.error('Erreur lors du chargement des fichiers:', err)
     // On ne relaie pas cette erreur car ce n'est pas critique
