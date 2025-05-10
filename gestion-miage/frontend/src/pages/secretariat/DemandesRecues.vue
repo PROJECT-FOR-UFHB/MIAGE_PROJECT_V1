@@ -17,16 +17,15 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(demande, index) in demandes" :key="index" class="hover:bg-gray-50">
-            <td class="p-3 whitespace-nowrap">{{ demande.numero }}</td>
-            <td class="p-3 whitespace-nowrap">{{ demande.nomEtudiant }}</td>
+          <tr v-for="demande in tabDemandes" :key="demande.id_demande" class="hover:bg-gray-50">
+            <td class="p-3 whitespace-nowrap">{{ demande.id_demande }}</td>
+            <td class="p-3 whitespace-nowrap">{{ demande.etudiant.nom }}</td>
             <td class="p-3 whitespace-nowrap">{{ demande.niveau }}</td>
-            <td class="p-3 whitespace-nowrap">{{ demande.libelle }}</td>
-            <td class="p-3 whitespace-nowrap">{{ demande.date }}</td>
+            <td class="p-3 whitespace-nowrap">{{ demande.created_at }}</td>
             <td class="p-3 whitespace-nowrap">
               <button
                 class="bg-brandBlue text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
-                @click="voirDetails(demande.numero)"
+                @click="voirDetails(demande.id_demande)"
               >
                 Voir détails
               </button>
@@ -39,20 +38,63 @@
 </template>
 
 <script setup>
-const demandes = [
-  {
+
+import { onMounted, ref } from 'vue'
+import { secretaireService } from '@/services'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+const tabDemandes = ref([
+  /*{
     numero: 'N°AT001',
     nomEtudiant: 'KOUADIO ANGE',
     niveau: 'L1',
     libelle: 'Attestation de fréquentation',
     date: '20/03/2025'
-  },
+  },*/
   // Ajoutez d'autres objets ici si besoin
-]
+])
 
-// Fonction fictive pour le bouton
-const voirDetails = (numero) => {
-  alert(`Voir détails pour la demande ${numero}`)
+onMounted(async () => {
+  
+  try {
+    await Promise.all([
+      recupDemandes(),
+    ])
+  } catch (err) {
+    console.error('Erreur lors du chargement des données:', err)
+    error.value = 'Erreur lors du chargement des tabDemandes.'
+  } /*finally {
+    loading.value = false
+  }*/
+})
+
+// Charger les tabDemandes des étudiants dans un tableau
+const recupDemandes = async () => {
+  try {
+    const demandes = await secretaireService.getDemandesSecretaire()
+    if (demandes.data && demandes.data.status) {
+
+      tabDemandes.value = demandes.data.data
+
+    } else {
+      throw new Error('Impossible de charger les tabDemandes')
+    }
+  } catch (err) {
+    console.error('Erreur lors du chargement des demande:', err)
+    throw err
+  }
+}
+
+/**
+ * Voir les détails de la demande pour la traiter
+ * @param idDemande
+ */
+const voirDetails = (idDemande) => {
+  //alert(`Voir détails pour la demande ${numero}`)
   // À remplacer plus tard par un router.push si nécessaire
+
+    router.push(`/secretariat/demandes/${idDemande}`)
+
 }
 </script>

@@ -14,13 +14,13 @@ const apiClient = axios.create({
 })
 
 // Avant que chaque requête parte, cet intercepteur :
-// Récupère le token du localStorage.
+// Récupère le token du sessionStorage.
 // L’ajoute automatiquement aux en-têtes (Authorization: Bearer <token>).
 
 apiClient.interceptors.request.use(
   config => {
 
-    const token = localStorage.getItem('auth_token')
+    const token = sessionStorage.getItem('auth_token')
     
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
@@ -50,8 +50,8 @@ apiClient.interceptors.response.use(
     // Si erreur 401 (non authentifié), on peut rediriger vers la page de login
     if (error.response && error.response.status === 401) {
       // On peut supprimer le token et rediriger vers la page de login
-      localStorage.removeItem('auth_token')
-      localStorage.removeItem('user')
+      sessionStorage.removeItem('auth_token')
+      sessionStorage.removeItem('user')
       
       // Si vous utilisez Vue Router, vous pouvez rediriger vers la page de login
       // router.push('/login')

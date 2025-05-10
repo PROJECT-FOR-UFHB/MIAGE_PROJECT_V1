@@ -62,8 +62,9 @@ const routes = [
         component: () => import('@/pages/etudiants/MonProfil.vue'),
         meta: { headerTitle: 'Mon profil', headerIcon: ['fas', 'user'], requiresRole: 'ETU' }
       },
-
-      // Secrétaire pédagogique
+      // -------------------------------
+      // Espace SECRÉTAIRE PEDAGOGIQUE (SEC)
+      // -------------------------------
       {
         path: 'secretariat/tableau-de-bord',
         name: 'SecretaryDashboard',
