@@ -19,4 +19,7 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     },
   },
+  optimizeDeps: {
+    include: ['pdfjs-dist/build/pdf.worker.min.mjs']
+  }
 })

@@ -81,21 +81,24 @@
           <h2 class="text-lg font-semibold mb-4">Documents attachés</h2>
           
           <div v-for="file in files" :key="file.id_piece" class="mb-4">
-            <div class="flex items-center space-x-4">
               <!-- Si le fichier est une image -->
               <div v-if="isImage(file.fichier_path)">
-                <img 
-                  :src="getFileUrl(file.fichier_path)" 
-                  :alt="file.type_de_piece_jointe.lib_type_de_piece_jointe" 
-                  class="w-32 h-32 object-cover rounded border border-gray-200"
+
+                <DocumentPreview
+                  :title="file.type_de_piece_jointe.lib_type_de_piece_jointe"
+                  :imageSrc="getFileUrl(file.fichier_path)"
+                  :downloadLink="getFileUrl(file.fichier_path)"
                 />
+                          
               </div>
 
               <!-- Si c'est un PDF -->
               <div v-else-if="isPdf(file.fichier_path)">
-                  <a :href="getFileUrl(file.fichier_path)" target="_blank" class="text-red-500 underline">
-                    Voir le PDF
-                  </a>
+                  <DocumentPreviewPdf
+                    :title="file.type_de_piece_jointe.lib_type_de_piece_jointe"
+                    :src="getCorsUrl(file.id_piece)"
+                  />
+                  
               </div>
 
               <!-- Si c’est un autre type de fichier -->
@@ -104,13 +107,7 @@
               </div>
 
               <!-- Nom du type de pièce et bouton de téléchargement -->
-              <div class="flex flex-col">
-                <span class="font-medium">{{ file.type_de_piece_jointe.lib_type_de_piece_jointe }}</span>
-                <button @click="downloadFile(file.id_piece)" class="text-blue-500 hover:text-blue-700 text-sm">
-                  Télécharger
-                </button>
-              </div>
-            </div>
+
           </div>
           
           <h2 class="text-lg font-semibold mb-4">Progression de la demande</h2>
@@ -221,6 +218,9 @@
 import { ref, reactive, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { requestService, fileService } from '@/services'
+import DocumentPreview from "@/components/DocumentPreview.vue";
+import DocumentPreviewPdf from "@/components/DocumentPreviewPdf.vue";
+
 
 const route = useRoute()
 const router = useRouter()
@@ -255,7 +255,6 @@ const canProcess = computed(() => {
  * Pendant le chargement de la page
  */
 onMounted(async () => {
-
   const urlIdDemande = route.params.id
   
   try {
@@ -264,7 +263,6 @@ onMounted(async () => {
       loadValidationHistory(urlIdDemande)
     ])
   } catch (err) {
-    console.error('Erreur lors du chargement des données:', err)
     error.value = 'Erreur lors du chargement des données de la demande.'
   } finally {
     loading.value = false
@@ -484,5 +482,7 @@ const isPdf = (file) => {
 const getFileUrl = (cheminFichier) => {
   return `${import.meta.env.VITE_FILE_URL}${cheminFichier}`
 }
-
+const getCorsUrl = (idPiece) => {
+  return `${import.meta.env.VITE_API_URL}/files/${idPiece}`
+}
 </script> 

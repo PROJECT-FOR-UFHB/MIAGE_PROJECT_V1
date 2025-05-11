@@ -54,6 +54,7 @@ import EnseignantHeader from '@/components/enseignant/Header.vue'
 import AdminSidebar from '@/components/admin/Sidebar.vue'
 import AdminHeader from '@/components/admin/Header.vue'
 
+
 const route = useRoute()
 const sidebarVisible = ref(false)
 

@@ -16,13 +16,10 @@ const fileService = {
 
   /**
    * Obtenir un fichier par son ID
-   * @param {number} id - L'identifiant du fichier
    * @returns {Promise} - Promesse avec le fichier demandé (blob)
    */
   getFile(id) {
-    return apiClient.get(`/files/${id}`, {
-      responseType: 'blob'
-    })
+    return apiClient.get(`/files/${id}`)
   },
 
   /**
