@@ -5,6 +5,7 @@ import validationService from './validationService'
 import fileService from './fileService'
 import studentService from './studentService'
 import adminService from './adminService'
+import secretaireService from './secretaireService'
 
 export {
   apiClient,
@@ -13,5 +14,7 @@ export {
   validationService,
   fileService,
   studentService,
-  adminService
+  adminService,
+  secretaireService
+
 } 

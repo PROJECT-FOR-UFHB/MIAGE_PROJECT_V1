@@ -5,10 +5,14 @@
     <div class="max-w-6xl mx-auto bg-white rounded shadow p-6 mb-6">
       <h2 class="text-xl font-semibold mb-4">Tableau de bord</h2>
       
-      <div v-if="loading" class="flex justify-center items-center p-8">
-        <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      <div v-if="loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div v-for="n in 4" :key="n" class="bg-gray-100 p-4 rounded shadow animate-pulse flex flex-col items-center">
+          <div class="h-8 w-8 bg-gray-300 rounded-full mb-2"></div>
+          <div class="h-4 bg-gray-300 rounded w-1/2 mb-1"></div>
+          <div class="h-6 bg-gray-300 rounded w-1/3"></div>
+        </div>
       </div>
-      
+
       <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <!-- Demandes en attente -->
         <div class="bg-gray-50 p-4 rounded shadow flex flex-col items-center">
@@ -50,8 +54,27 @@
         </router-link>
       </div>
       
-      <div v-if="loading" class="flex justify-center items-center p-8">
-        <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      <div v-if="loading" class="overflow-x-auto animate-pulse">
+      <table class="min-w-full bg-white">
+        <thead>
+          <tr class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
+            <th class="py-3 px-4 text-left">ID Demande</th>
+            <th class="py-3 px-4 text-left">Type de demande</th>
+            <th class="py-3 px-4 text-left">Pour l'année</th>
+            <th class="py-3 px-4 text-left">Statut</th>
+            <th class="py-3 px-4 text-left">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="n in 5" :key="n" class="border-b border-gray-200">
+            <td class="py-3 px-4"><div class="h-4 bg-gray-300 rounded w-20"></div></td>
+            <td class="py-3 px-4"><div class="h-4 bg-gray-300 rounded w-32"></div></td>
+            <td class="py-3 px-4"><div class="h-4 bg-gray-300 rounded w-24"></div></td>
+            <td class="py-3 px-4"><div class="h-4 bg-gray-300 rounded w-16"></div></td>
+            <td class="py-3 px-4"><div class="h-4 bg-gray-300 rounded w-12"></div></td>
+          </tr>
+        </tbody>
+      </table>
       </div>
       
       <div v-else-if="requests.length === 0" class="text-center py-8 bg-gray-50 rounded">

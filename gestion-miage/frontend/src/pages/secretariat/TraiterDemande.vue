@@ -13,17 +13,17 @@
       <div class="mb-6 border-b pb-4">
         <div class="flex justify-between items-start">
           <div>
-            <h1 class="text-2xl font-bold">{{ request.titre }}</h1>
+            <h1 class="text-2xl font-bold">{{ request.type_de_demande.lib_type_de_demande }}</h1>
             <p class="text-gray-600">
-              <span class="font-semibold">Demande #{{ request.id }}</span> - 
+              <span class="font-semibold">Demande #{{ request.id_demande }}</span> - 
               Soumise le {{ formatDate(request.created_at) }}
             </p>
           </div>
           <span 
             class="px-3 py-1 rounded text-sm font-semibold"
-            :class="getStatusClass(request.statut)"
+            :class="getStatusClass(request.statut.id_statut)"
           >
-            {{ request.statut }}
+            {{ request.statut.statut }}
           </span>
         </div>
       </div>
@@ -37,22 +37,22 @@
           <div class="bg-gray-50 p-4 rounded mb-6">
             <div class="mb-4">
               <p class="text-sm text-gray-500">Type de demande</p>
-              <p>{{ request.type_demande?.nom || 'N/A' }}</p>
+              <p>{{ request.type_de_demande?.lib_type_de_demande || 'N/A' }}</p>
             </div>
             
-            <div class="mb-4">
+           <!-- <div class="mb-4">
               <p class="text-sm text-gray-500">Description</p>
               <p class="whitespace-pre-line">{{ request.description }}</p>
-            </div>
+            </div>-->
             
             <div class="mb-4">
               <p class="text-sm text-gray-500">Niveau</p>
-              <p>{{ request.niveau || 'N/A' }}</p>
+              <p>{{ request.niveau.lib_niveau || 'N/A' }}</p>
             </div>
             
             <div>
-              <p class="text-sm text-gray-500">Année universitaire</p>
-              <p>{{ request.annee_universitaire || 'N/A' }}</p>
+              <p class="text-sm text-gray-500">Année du document demandé</p>
+              <p>{{ request.annee_document_demande || 'N/A' }}</p>
             </div>
           </div>
           
@@ -80,26 +80,36 @@
         <div>
           <h2 class="text-lg font-semibold mb-4">Documents attachés</h2>
           
-          <div v-if="files.length === 0" class="bg-gray-50 p-4 rounded text-gray-600 mb-6">
-            Aucun document n'est attaché à cette demande.
-          </div>
-          
-          <div v-else class="bg-gray-50 p-4 rounded mb-6">
-            <div v-for="file in files" :key="file.id" class="mb-4 flex justify-between items-center">
-              <div class="flex items-center">
-                <font-awesome-icon icon="file-alt" class="text-blue-500 mr-2" />
-                <div>
-                  <p class="font-medium">{{ file.nom }}</p>
-                  <p class="text-sm text-gray-500">{{ formatFileSize(file.taille) }}</p>
-                </div>
+          <div v-for="file in files" :key="file.id_piece" class="mb-4">
+            <div class="flex items-center space-x-4">
+              <!-- Si le fichier est une image -->
+              <div v-if="isImage(file.fichier_path)">
+                <img 
+                  :src="getFileUrl(file.fichier_path)" 
+                  :alt="file.type_de_piece_jointe.lib_type_de_piece_jointe" 
+                  class="w-32 h-32 object-cover rounded border border-gray-200"
+                />
               </div>
-              
-              <button 
-                @click="downloadFile(file.id)" 
-                class="text-blue-500 hover:text-blue-700"
-              >
-                Télécharger
-              </button>
+
+              <!-- Si c'est un PDF -->
+              <div v-else-if="isPdf(file.fichier_path)">
+                  <a :href="getFileUrl(file.fichier_path)" target="_blank" class="text-red-500 underline">
+                    Voir le PDF
+                  </a>
+              </div>
+
+              <!-- Si c’est un autre type de fichier -->
+              <div v-else>
+                <font-awesome-icon icon="file-alt" class="text-blue-500 text-3xl" />
+              </div>
+
+              <!-- Nom du type de pièce et bouton de téléchargement -->
+              <div class="flex flex-col">
+                <span class="font-medium">{{ file.type_de_piece_jointe.lib_type_de_piece_jointe }}</span>
+                <button @click="downloadFile(file.id_piece)" class="text-blue-500 hover:text-blue-700 text-sm">
+                  Télécharger
+                </button>
+              </div>
             </div>
           </div>
           
@@ -217,7 +227,7 @@ const router = useRouter()
 const loading = ref(true)
 const error = ref('')
 const request = ref({})
-const files = ref([])
+let files = []
 const validationSteps = reactive([
   { name: 'Secrétariat', status: 'pending', date: null, comment: null },
   { name: 'Service financier', status: 'pending', date: null, comment: null },
@@ -237,18 +247,21 @@ const canProcess = computed(() => {
   if (!request.value || !request.value.statut) return false
   
   // La demande peut être traitée si elle est "En attente" ou "En cours"
-  const status = request.value.statut.toLowerCase()
+  const status = request.value.statut.id_statut
   return status === 'en attente' || status === 'en cours'
 })
 
+/**
+ * Pendant le chargement de la page
+ */
 onMounted(async () => {
-  const requestId = route.params.id
+
+  const urlIdDemande = route.params.id
   
   try {
     await Promise.all([
-      loadRequest(requestId),
-      loadFiles(requestId),
-      loadValidationHistory(requestId)
+      loadRequest(urlIdDemande),
+      loadValidationHistory(urlIdDemande)
     ])
   } catch (err) {
     console.error('Erreur lors du chargement des données:', err)
@@ -259,11 +272,14 @@ onMounted(async () => {
 })
 
 // Charger les détails de la demande
-const loadRequest = async (requestId) => {
+const loadRequest = async (urlIdDemande) => {
   try {
-    const response = await requestService.getRequest(requestId)
+    const response = await requestService.getRequest(urlIdDemande)
     if (response.data && response.data.status) {
       request.value = response.data.data
+      files = response.data.data.pieces_jointes || []
+
+      console.log(request.value)
     } else {
       throw new Error('Impossible de charger les détails de la demande')
     }
@@ -273,23 +289,10 @@ const loadRequest = async (requestId) => {
   }
 }
 
-// Charger les fichiers de la demande
-const loadFiles = async (requestId) => {
-  try {
-    const response = await fileService.getRequestFiles(requestId)
-    if (response.data && response.data.status) {
-      files.value = response.data.data || []
-    }
-  } catch (err) {
-    console.error('Erreur lors du chargement des fichiers:', err)
-    // On ne relaie pas cette erreur car ce n'est pas critique
-  }
-}
-
 // Charger l'historique des validations
-const loadValidationHistory = async (requestId) => {
+const loadValidationHistory = async (urlIdDemande) => {
   try {
-    const response = await requestService.getValidationHistory(requestId)
+    const response = await requestService.getValidationHistory(urlIdDemande)
     if (response.data && response.data.status) {
       const history = response.data.data || []
       
@@ -435,7 +438,7 @@ const getStatusClass = (status) => {
   if (!status) return 'bg-gray-200 text-gray-800'
   
   switch (status.toLowerCase()) {
-    case 'en attente':
+    case 'NIV01':
       return 'bg-yellow-100 text-yellow-800'
     case 'validée':
     case 'approuvée':
@@ -462,4 +465,24 @@ const getStepStatusClass = (status) => {
       return 'bg-gray-300 text-gray-600'
   }
 }
+
+const getFileExtension = (filename) => {
+  return filename.split('.').pop().toLowerCase()
+}
+
+const isImage = (file) => {
+  const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp']
+  const ext = getFileExtension(file || '')
+  return imageExtensions.includes(ext)
+}
+
+const isPdf = (file) => {
+  console.log(file)
+  const ext = getFileExtension(file || '')
+  return ext === 'pdf'
+}
+const getFileUrl = (cheminFichier) => {
+  return `${import.meta.env.VITE_FILE_URL}${cheminFichier}`
+}
+
 </script> 
