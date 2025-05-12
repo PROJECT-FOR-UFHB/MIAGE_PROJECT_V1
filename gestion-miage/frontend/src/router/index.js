@@ -98,6 +98,12 @@ const routes = [
         }
       },
       {
+        path: 'sec-admin/demandes/:id',
+        name: 'DemandeDetails',
+        component: () => import('@/pages/secAdmin/DemandeDetails.vue')
+      },
+
+      {
         path: 'sec-admin/dashboard',
         name: 'SecAdminDashboard',
         component: () => import('@/pages/secAdmin/Dashboard.vue'),

@@ -15,6 +15,17 @@ const secretaireService = {
   getDemandesSecretaireFinancier(){
     return apiClient.get('/demandes/dmdsecfin')
   },
+  getOneDemande(id) {
+    return apiClient.get(`/demandes/${id}`)
+  },
+  /*approuverDemande(id) {
+    return apiClient.post(`/validations/${id}/approve`)
+  },
+  rejeterDemande(id, reason) {
+    return apiClient.post(`/validations/${id}/reject`, {
+      reason: reason
+    })
+  },*/
 
 }
 
