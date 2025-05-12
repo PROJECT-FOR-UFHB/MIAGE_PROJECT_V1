@@ -8,6 +8,13 @@ const secretaireService = {
   getDemandesSecretaire() {
     return apiClient.get('/demandes/dmdsec')
   },
+    /**
+   * Obtenir les demandes validée par la secrétaire
+   * @returns {Promise} - Promesse avec les données du profil étudiant
+   */
+  getDemandesSecretaireFinancier(){
+    return apiClient.get('/demandes/dmdsecfin')
+  },
 
 }
 

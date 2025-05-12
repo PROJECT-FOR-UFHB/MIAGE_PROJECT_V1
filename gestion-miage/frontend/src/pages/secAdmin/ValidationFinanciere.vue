@@ -1,116 +1,81 @@
 <template>
-  <main class="bg-gray-100 min-h-screen pt-6">
-    <div class="max-w-6xl mx-auto bg-white rounded shadow p-6">
-      <h2 class="text-2xl font-semibold mb-6">Validation financière</h2>
+  <main class="bg-gray-100 min-h-screen pt-10 px-4 pb-10">
+    <div class="max-w-6xl mx-auto bg-white rounded shadow p-6 overflow-x-auto">
+      <!-- Titre -->
+      <h2 class="text-xl font-semibold mb-6 text-center sm:text-left">Validation Financière</h2>
 
-      <!-- Message d'erreur -->
-      <div v-if="error" class="bg-red-100 text-red-700 px-4 py-2 mb-4 rounded">
-        {{ error }}
-      </div>
-
-      <!-- Chargement -->
-      <div v-if="loading" class="text-center py-10">
-        <span class="text-brandBlue">Chargement des demandes...</span>
-      </div>
-
-      <!-- Aucun résultat -->
-      <div v-else-if="demandes.length === 0" class="text-center text-gray-600">
-        Aucune demande à traiter.
+      <!-- Message si aucune demande -->
+      <div v-if="tabDemandes.length === 0" class="text-center text-gray-600 py-8">
+        Aucune demande disponible.
       </div>
 
       <!-- Tableau -->
-      <div v-else>
-        <table class="min-w-full text-sm text-left">
-          <thead class="bg-gray-100">
-            <tr>
-              <th class="py-2 px-4">ID</th>
-              <th class="py-2 px-4">Étudiant</th>
-              <th class="py-2 px-4">Type d’acte</th>
-              <th class="py-2 px-4">Montant dû</th>
-              <th class="py-2 px-4">Statut</th>
-              <th class="py-2 px-4">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              v-for="demande in demandes"
-              :key="demande.id"
-              class="border-b hover:bg-gray-50"
-            >
-              <td class="py-2 px-4">{{ demande.id }}</td>
-              <td class="py-2 px-4">{{ demande.etudiant }}</td>
-              <td class="py-2 px-4">{{ demande.libelle }}</td>
-              <td class="py-2 px-4">{{ demande.montant || 'N/A' }} FCFA</td>
-              <td class="py-2 px-4">
-                <span
-                  :class="{
-                    'text-yellow-600 font-semibold': demande.statut === 'En attente',
-                    'text-green-600 font-semibold': demande.statut === 'Validée',
-                    'text-red-600 font-semibold': demande.statut === 'Rejetée'
-                  }"
-                >
-                  {{ demande.statut }}
-                </span>
-              </td>
-              <td class="py-2 px-4">
-                <button
-                  @click="valider(demande.id)"
-                  class="text-green-600 hover:underline"
-                >
-                  Valider
-                </button>
-                <button
-                  @click="rejeter(demande.id)"
-                  class="text-red-600 hover:underline ml-2"
-                >
-                  Rejeter
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <table v-else class="min-w-full text-sm border-collapse">
+        <thead>
+          <tr class="bg-gray-100 text-left">
+            <th class="p-3 font-medium text-gray-700 whitespace-nowrap">Numéro demande</th>
+            <th class="p-3 font-medium text-gray-700 whitespace-nowrap">Nom étudiant</th>
+            <th class="p-3 font-medium text-gray-700 whitespace-nowrap">Niveau</th>
+            <th class="p-3 font-medium text-gray-700 whitespace-nowrap">Libellé</th>
+            <th class="p-3 font-medium text-gray-700 whitespace-nowrap">Date</th>
+            <th class="p-3 font-medium text-gray-700 whitespace-nowrap">Statut</th>
+            <th class="p-3"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="demande in tabDemandes" :key="demande.id_demande" class="hover:bg-gray-50">
+            <td class="p-3 whitespace-nowrap">{{ demande.id_demande }}</td>
+            <td class="p-3 whitespace-nowrap">{{ demande.etudiant.nom }}</td>
+            <td class="p-3 whitespace-nowrap">{{ demande.niveau?.lib_niveau || 'N/A' }}</td>
+            <td class="p-3 whitespace-nowrap">{{ demande.type_de_demande?.lib_type_de_demande || 'N/A' }}</td>
+            <td class="p-3 whitespace-nowrap">{{ new Date(demande.date_emission).toLocaleDateString() }}</td>
+            <td class="p-3 whitespace-nowrap">{{ demande.statut?.lib_statut || demande.id_statut }}</td>
+            <td class="p-3 whitespace-nowrap">
+              <button class="bg-brandBlue text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
+                @click="voirDetails(demande.id_demande)">
+                Voir détails
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
     </div>
   </main>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
+import { secretaireService } from '@/services'
+import { useRouter } from 'vue-router'
 
-const loading = ref(false)
+const router = useRouter()
+const tabDemandes = ref([])
 const error = ref('')
 
-// 🔧 Données simulées (mock)
-const demandes = ref([
-  {
-    id: 1,
-    etudiant: 'Kouadio Ange',
-    libelle: 'Attestation',
-    montant: 3500,
-    statut: 'En attente'
-  },
-  {
-    id: 2,
-    etudiant: 'Traoré A.',
-    libelle: 'Lettre recommandation',
-    montant: 0,
-    statut: 'En attente'
+onMounted(async () => {
+  try {
+    await recupDemandes()
+  } catch (err) {
+    console.error('Erreur lors du chargement des données:', err)
+    error.value = 'Erreur lors du chargement des demandes.'
   }
-])
+})
 
-// ✅ Validation
-const valider = (id) => {
-  const d = demandes.value.find(d => d.id === id)
-  if (d) d.statut = 'Validée'
-  alert(`✅ Demande ${id} validée`)
+const recupDemandes = async () => {
+  try {
+    const demandes = await secretaireService.getDemandesSecretaireFinancier()
+    if (demandes.data?.status) {
+      tabDemandes.value = demandes.data.data
+    } else {
+      throw new Error('Impossible de charger les demandes')
+    }
+  } catch (err) {
+    throw err
+  }
 }
 
-// ❌ Rejet
-const rejeter = (id) => {
-  const motif = prompt('Motif du rejet ?')
-  if (!motif) return
-  const d = demandes.value.find(d => d.id === id)
-  if (d) d.statut = 'Rejetée'
-  alert(`❌ Demande ${id} rejetée (motif : ${motif})`)
+const voirDetails = (idDemande) => {
+  router.push(`/secretariat/demandes/${idDemande}`)
 }
 </script>
