@@ -76,6 +76,6 @@ const recupDemandes = async () => {
 }
 
 const voirDetails = (idDemande) => {
-  router.push(`/secretariat/demandes/${idDemande}`)
+  router.push(`/sec-admin/demandes/${idDemande}`)
 }
 </script>
