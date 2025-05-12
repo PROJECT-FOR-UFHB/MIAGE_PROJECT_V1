@@ -48,7 +48,16 @@ const studentService = {
         'Content-Type': 'multipart/form-data'
       }
     })
-  }
+  },/**
+  * Récupérer l'état de progression de la demande
+  * @param {string} dmdId
+  * @returns {Promise}
+  */
+ getRequestProgress(dmdId) {
+   return apiClient.get(`/students/suivis/${dmdId}`)
+ }
+ 
+  
   
 }
 

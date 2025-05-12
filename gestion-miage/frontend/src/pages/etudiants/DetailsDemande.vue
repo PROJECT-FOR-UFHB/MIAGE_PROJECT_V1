@@ -77,7 +77,7 @@
               <div>
                 <p class="font-medium">{{ step.name }}</p>
                 <p class="text-sm text-gray-500">{{ step.date || 'En attente' }}</p>
-                <p v-if="step.comment" class="text-sm italic mt-1">"{{ step.comment }}"</p>
+                <p v-if="step.message" class="text-sm italic mt-1">"{{ step.message }}"</p>
               </div>
             </div>
           </div>
@@ -128,7 +128,7 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import { requestService, fileService } from '@/services'
+import { requestService, fileService, studentService } from '@/services'
 
 const route = useRoute()
 const loading = ref(true)
@@ -136,10 +136,10 @@ const error = ref('')
 const request = ref({})
 let files = []
 const validationSteps = reactive([
-  { name: 'Secrétariat', status: 'pending', date: null, comment: null },
-  { name: 'Service financier', status: 'pending', date: null, comment: null },
-  { name: 'Directeur MIAGE', status: 'pending', date: null, comment: null },
-  { name: 'Directeur UFR', status: 'pending', date: null, comment: null }
+  { name: 'Secrétariat', status: 'pending', date: null, message: null },
+  { name: 'Service financier', status: 'pending', date: null, message: null },
+  { name: 'Directeur MIAGE', status: 'pending', date: null, message: null },
+  { name: 'Directeur UFR', status: 'pending', date: null, message: null }
 ])
 
 onMounted(async () => {
@@ -148,7 +148,7 @@ onMounted(async () => {
   try {
     await Promise.all([
       loadRequest(requestId),
-      loadValidationHistory(requestId)
+      loadValidationProgress(requestId)
     ])
   } catch (err) {
     console.error('Erreur lors du chargement des données:', err)
@@ -187,48 +187,71 @@ const loadFiles = async (requestId) => {
 }
 
 // Charger l'historique des validations
-const loadValidationHistory = async (requestId) => {
+const loadValidationProgress = async (requestId) => {
   try {
-    const response = await requestService.getValidationHistory(requestId)
+    const response = await studentService.getRequestProgress(requestId)
+
     if (response.data && response.data.status) {
-      const history = response.data.data || []
-      
-      // Mettre à jour les étapes de validation
-      history.forEach(validation => {
-        let stepIndex = -1
-        
-        if (validation.type === 'secretary') stepIndex = 0
-        else if (validation.type === 'financial') stepIndex = 1
-        else if (validation.type === 'director') stepIndex = 2
-        else if (validation.type === 'ufr_director') stepIndex = 3
-        
-        if (stepIndex >= 0) {
-          validationSteps[stepIndex].status = validation.status === 'approved' ? 'completed' : 'rejected'
-          validationSteps[stepIndex].date = formatDate(validation.date)
-          validationSteps[stepIndex].comment = validation.comment
-        }
+      const statut = response.data.data.id_statut
+      const sms = response.data.message
+
+      // Réinitialise les étapes
+      validationSteps.forEach((step) => {
+        step.status = 'pending'
       })
-      
-      // Mettre à jour le statut des étapes en attente
-      // Si une étape est rejetée, toutes les étapes suivantes restent en attente
-      // Si une étape est complétée, l'étape suivante devient active
-      let activeFound = false
-      for (let i = 0; i < validationSteps.length; i++) {
-        if (validationSteps[i].status === 'rejected') {
+
+      // Applique le statut selon l’étape en cours
+      switch (statut) {
+        case 'NIV01':
+          validationSteps[0].status = 'active'
           break
-        }
-        
-        if (validationSteps[i].status === 'pending' && !activeFound) {
-          validationSteps[i].status = 'active'
-          activeFound = true
-        }
+        case 'NIV02':
+          validationSteps[0].status = 'completed'
+          validationSteps[1].status = 'active'
+          break
+        case 'NIV03':
+          validationSteps[0].status = 'completed'
+          validationSteps[1].status = 'completed'
+          validationSteps[2].status = 'active'
+          break
+        case 'NIV04':
+          validationSteps[0].status = 'completed'
+          validationSteps[1].status = 'completed'
+          validationSteps[2].status = 'completed'
+          validationSteps[3].status = 'active'
+          break
+
+        case 'REJ01':
+          validationSteps[0].status = 'rejected'
+          break
+        case 'REJ02':
+          validationSteps[0].status = 'completed'
+          validationSteps[1].status = 'rejected'
+          break
+        case 'REJ03':
+          validationSteps[0].status = 'completed'
+          validationSteps[1].status = 'completed'
+          validationSteps[2].status = 'rejected'
+          break
+        case 'REJ04':
+          validationSteps[0].status = 'completed'
+          validationSteps[1].status = 'completed'
+          validationSteps[2].status = 'completed'
+          validationSteps[3].status = 'rejected'
+          break
+
+        default:
+          // Tous en pending si statut inconnu
+          break
       }
+      validationSteps.forEach((step, i) => setStepMessage(step, i))
+
     }
   } catch (err) {
-    console.error('Erreur lors du chargement de l\'historique des validations:', err)
-    // On ne relaie pas cette erreur car ce n'est pas critique
+    console.error('Erreur progression:', err)
   }
 }
+
 
 // Télécharger un fichier
 const downloadFile = async (fileId) => {
@@ -312,11 +335,32 @@ const getStepStatusClass = (status) => {
     case 'completed':
       return 'bg-green-500'
     case 'active':
-      return 'bg-blue-500'
+      return 'bg-orange-500' // ← orange pour l’étape en cours
     case 'rejected':
       return 'bg-red-500'
     default:
       return 'bg-gray-300 text-gray-600'
   }
 }
+
+const setStepMessage = (step, index) => {
+  const roles = ['le secrétariat', 'le service financier', 'le directeur MIAGE', 'le directeur UFR']
+  const role = roles[index]
+
+  switch (step.status) {
+    case 'active':
+      step.message = `En attente de validation par ${role}`
+      break
+    case 'completed':
+      step.message = `Demande validée par ${role}`
+      break
+    case 'rejected':
+      step.message = `Demande rejetée par ${role}`
+      break
+    default:
+      step.message = ''
+  }
+}
+
+
 </script> 
