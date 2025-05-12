@@ -99,8 +99,8 @@ const routes = [
       },
       {
         path: 'sec-admin/demandes/:id',
-        name: 'DemandeDetails',
-        component: () => import('@/pages/secAdmin/DemandeDetails.vue')
+        name: 'SecFinancierDemandeDetails',
+        component: () => import('@/components/secAdmin/SecFinancierDemandeDetails.vue')
       },
 
       {
