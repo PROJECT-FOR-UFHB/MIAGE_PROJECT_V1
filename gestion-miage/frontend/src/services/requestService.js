@@ -122,8 +122,8 @@ const requestService = {
    * @param {string} validationData.comment - Un commentaire optionnel
    * @returns {Promise} - Promesse avec le résultat de la validation
    */
-  validateRequest(validationData) {
-    return apiClient.post('/validations', validationData)
+  validationSecretariat(validationData,idDemande) {
+    return apiClient.post(`/validations/secretary/${idDemande}`, validationData)
   },
 
   /**

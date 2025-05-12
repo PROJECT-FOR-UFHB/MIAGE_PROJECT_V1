@@ -16,6 +16,9 @@ const authService = {
           
           // 4. (facultatif) Stocker user_type ('etudiant' ou 'personnel')
           sessionStorage.setItem('user_type', data.user_type)
+
+          // 5. (facultatif) Stocker l'ID de l'utilisateur
+          sessionStorage.setItem('user_id', data.user.id_personnel)
         }
         return data
       })
