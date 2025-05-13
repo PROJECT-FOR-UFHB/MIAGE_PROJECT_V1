@@ -82,7 +82,7 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import apiClient from '@/services/apiClient'
+import { apiClient, validationService } from '@/services'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 const route = useRoute()
@@ -142,9 +142,17 @@ onMounted(async () => {
 })
 
 const valider = async () => {
-  if (!confirm('Confirmez-vous la validation ?')) return
   try {
-    await apiClient.post(`/validations/financial/${id}`, { commentaires: comment.value })
+
+    const validationData = {
+      id_demande: id,
+      statut: true,
+      commentaire: comment.value,
+      id_personnel: sessionStorage.getItem('user_id')
+    }
+
+
+    await validationService.financialValidation(id, validationData)
     alert('✅ Demande validée.')
     router.push('/sec-admin/validation')
   } catch (err) {
