@@ -5,12 +5,26 @@ const validationService = {
    * Validation par le secrétariat
    * @param {number} requestId - L'identifiant de la demande
    * @param {Object} validationData - Les données de la validation
-   * @param {string} validationData.status - Le statut de la validation (approved, rejected)
+   * @param {string} validationData.status - Le statut de la validation (true)
    * @param {string} validationData.comment - Commentaire optionnel
+   * @param {string} validationData.user_id - L'id du personnel
    * @returns {Promise} - Promesse avec le statut de la validation
    */
   secretaryValidation(requestId, validationData) {
     return apiClient.post(`/validations/secretary/${requestId}`, validationData)
+  },
+
+    /**
+   * Validation par le secrétariat
+   * @param {number} requestId - L'identifiant de la demande
+   * @param {Object} validationData - Les données du rejet
+   * @param {string} validationData.status - Le statut de la validation (false)
+   * @param {string} validationData.comment - Commentaire optionnel
+   * @param {string} validationData.user_id - L'id du personnel
+   * @returns {Promise} - Promesse avec le statut de la validation
+   */
+  secretaryRejet(requestId, validationData) {
+    return apiClient.post(`/validations/secretaryRejet/${requestId}`, validationData)
   },
 
   /**

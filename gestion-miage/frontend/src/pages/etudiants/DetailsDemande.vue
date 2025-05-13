@@ -23,7 +23,7 @@
             class="px-3 py-1 rounded text-sm font-semibold"
             :class="getStatusClass(request.id_statut)"
           >
-            {{ request.statut }}
+            {{ request.statut.statut }}
           </span>
         </div>
       </div>
@@ -95,27 +95,28 @@
         <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div v-for="file in files" :key="file.id_piece" class="bg-gray-50 p-4 rounded flex items-center justify-between">
             <div class="flex items-center">
-              <font-awesome-icon icon="file-alt" class="text-blue-500 mr-2" />
               <div v-if="helpers.isImage(file.fichier_path)">
                 <DocumentPreview 
                 :title="file.lib_type_de_piece_jointe"
                 :image-src="file.fichier_path"/>
               </div>
-              <dic v-else-if="helpers.isPdf(file.fichier_path)">
+              <div v-else-if="helpers.isPdf(file.fichier_path)">
                 <DocumentPreviewPdf
                 :title="file.lib_type_de_piece_jointe"
                 :id_piece="file.id_piece"
                 :fichier_path="file.fichier_path"
                 />
-              </dic>
+              </div>
+              <font-awesome-icon v-else="" icon="file-alt" class="text-blue-500 mr-2" />
+
             </div>
             
-            <button 
+            <!--<button 
               @click="downloadFile(file.id_piece)" 
               class="text-blue-500 hover:text-blue-700"
             >
               Télécharger
-            </button>
+            </button>-->
           </div>
         </div>
       </div>

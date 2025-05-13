@@ -215,7 +215,7 @@
 <script setup>
 import { ref, reactive, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { requestService, fileService, helpers } from '@/services'
+import { requestService, fileService, helpers, validationService } from '@/services'
 import DocumentPreview from "@/components/DocumentPreview.vue";
 import DocumentPreviewPdf from "@/components/DocumentPreviewPdf.vue";
 
@@ -246,7 +246,7 @@ const canProcess = computed(() => {
   
   // La demande peut être traitée si elle est "En attente" ou "En cours"
   const status = request.value.statut.id_statut
-  return status === 'en attente' || status === 'en cours'
+  return status === 'NIV01'
 })
 
 /**
@@ -372,13 +372,16 @@ const processRequest = async () => {
     // Préparer les données pour la validation
     const validationData = {
       id_demande: request.value.id_demande,
-      statut: processing.decision === 'approved' ? true : false,
       commentaire: processing.comment,
       id_personnel: sessionStorage.getItem('user_id')
     }
     
-    // Appeler l'API pour traiter la demande
-    await requestService.validateRequest(validationData)
+    // Appeler l'API pour valider ou rejeter la demande
+    if(processing.decision === 'approved'){
+      await validationService.secretaryValidation(request.value.id_demande,validationData)
+    }else{
+      await validationService.secretaryRejet(request.value.id_demande,validationData)
+    }
     
     // Mettre à jour l'interface
     processingSuccess.value = `La demande a été ${processing.decision === 'approved' ? 'approuvée' : 'rejetée'} avec succès.`
