@@ -165,7 +165,14 @@ const rejeter = async () => {
   const motif = prompt('Motif du rejet :')
   if (!motif) return
   try {
-    await apiClient.post(`/validations/financialRejet/${id}`, { commentaires: motif })
+    const validationData = {
+      id_demande: id,
+      statut: false,
+      commentaire: comment.value,
+      id_personnel: sessionStorage.getItem('user_id')
+    }
+
+    await validationService.financialRejet(id, validationData)
     alert('❌ Demande rejetée.')
     router.push('/sec-admin/validation')
   } catch (err) {
