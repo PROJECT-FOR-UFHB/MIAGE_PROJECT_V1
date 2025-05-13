@@ -83,11 +83,13 @@
           <div v-for="file in files" :key="file.id_piece" class="mb-4">
               <!-- Si le fichier est une image -->
               <div v-if="isImage(file.fichier_path)">
+
                 <DocumentPreview
                   :title="file.type_de_piece_jointe.lib_type_de_piece_jointe"
                   :imageSrc="getFileUrl(file.fichier_path)"
                   :downloadLink="getFileUrl(file.fichier_path)"
-                />  
+                />
+                          
               </div>
 
               <!-- Si c'est un PDF -->
@@ -246,7 +248,7 @@ const canProcess = computed(() => {
   
   // La demande peut être traitée si elle est "En attente" ou "En cours"
   const status = request.value.statut.id_statut
-  return status === 'NIV01'
+  return status === 'en attente' || status === 'en cours'
 })
 
 /**
@@ -312,13 +314,13 @@ const loadValidationHistory = async (urlIdDemande) => {
       // Si une étape est rejetée, toutes les étapes suivantes restent en attente
       // Si une étape est complétée, l'étape suivante devient active
       let activeFound = false
-      for (const element of validationSteps) {
-        if (element.status === 'rejected') {
+      for (let i = 0; i < validationSteps.length; i++) {
+        if (validationSteps[i].status === 'rejected') {
           break
         }
         
-        if (element.status === 'pending' && !activeFound) {
-          element.status = 'active'
+        if (validationSteps[i].status === 'pending' && !activeFound) {
+          validationSteps[i].status = 'active'
           activeFound = true
         }
       }
@@ -370,25 +372,22 @@ const processRequest = async () => {
   
   try {
     // Préparer les données pour la validation
-    //données eenvoyées par post
     const validationData = {
-      id_demande: request.value.id_demande,
+      request_id: request.value.id,
       type: 'secretary', // Type de validation (secrétariat)
-      statut: processing.decision === 'approved' ? true : false,
-      commentaire: processing.comment,
-      id_personnel: sessionStorage.getItem('user_id')
+      status: processing.decision,
+      comment: processing.comment
     }
     
-    console.log(validationData)
     // Appeler l'API pour traiter la demande
-    const req = await requestService.validationSecretariat(validationData,validationData.id_demande)
-    console.log(req.data+"1111111111111")
+    await requestService.validateRequest(validationData)
+    
     // Mettre à jour l'interface
     processingSuccess.value = `La demande a été ${processing.decision === 'approved' ? 'approuvée' : 'rejetée'} avec succès.`
     
     // Recharger les données après traitement
     await Promise.all([
-      loadRequest(request.value.id_demande),
+      loadRequest(request.value.id),
       loadValidationHistory(request.value.id)
     ])
     
