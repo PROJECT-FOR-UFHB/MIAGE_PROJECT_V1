@@ -4,7 +4,7 @@
 
             <!-- Image cliquable -->
             <img
-            :src="imageSrc"
+            :src="helpers.getFileUrl(imageSrc)"
             alt="preview"
             class="preview-img"
             @click="openModal"
@@ -13,27 +13,29 @@
             <!-- Modal plein écran -->
             <div v-if="isModalOpen" class="modal" @click.self="closeModal">
             <span class="close" @click="closeModal">&times;</span>
-            <img :src="imageSrc" class="modal-content" />
+            <img :src="helpers.getFileUrl(imageSrc)" class="modal-content" alt="piece jointe" />
             </div>
             
         <div class="flex flex-col">
             <span class="font-medium">{{ title }}</span>
                         <!-- Lien de téléchargement -->
-            <a :href="downloadLink" target="_blank" class="text-red-500 underline">Voir</a>
+            <a :href="helpers.getFileUrl(imageSrc)" target="_blank" class="text-red-500 underline">Voir</a>
         </div>
     </div>
 </template>
 
 <script>
+import helpers from '@/services/helpers';
+
 export default {
   props: {
     title: String,
-    imageSrc: String,
-    downloadLink: String
+    imageSrc: String
   },
   data() {
     return {
-      isModalOpen: false
+      isModalOpen: false,
+      helpers
     };
   },
   methods: {

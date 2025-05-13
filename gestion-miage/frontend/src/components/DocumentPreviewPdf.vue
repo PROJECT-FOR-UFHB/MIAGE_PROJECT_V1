@@ -14,7 +14,7 @@
     <!-- Informations et lien -->
     <div class="flex flex-col">
       <span class="font-medium">{{ title }}</span>
-      <a :href="src" target="_blank" class="text-red-500 underline">Voir</a>
+      <a :href="helpers.getFileUrl(props.fichier_path)" target="_blank" class="text-red-500 underline">Voir</a>
     </div>
   </div>
 </template>
@@ -23,17 +23,19 @@
 import { ref, onMounted, watch } from 'vue'
 import * as pdfjsLib from 'pdfjs-dist/build/pdf'
 import workerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url'
+import { helpers } from '@/services'
 
 // Configuration du worker PDF.js
 pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl
 
 // Définition des props attendues (URL du fichier et titre)
 const props = defineProps({
-  src: {
+  id_piece: {
     type: String,
     required: true,
   },
   title: String,
+  fichier_path: String
 })
 
 // Références aux balises <canvas>
@@ -52,7 +54,7 @@ async function afficherPdf(refCanvas, echelleOuLargeur) {
   try {
     // Chargement du document PDF avec en-tête Authorization
     const chargement = pdfjsLib.getDocument({
-      url: props.src,
+      url: helpers.getCorsUrl(props.id_piece),
       httpHeaders: {
         Authorization: `Bearer ${token}`
       }

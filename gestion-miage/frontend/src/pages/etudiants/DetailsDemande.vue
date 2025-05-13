@@ -96,10 +96,18 @@
           <div v-for="file in files" :key="file.id_piece" class="bg-gray-50 p-4 rounded flex items-center justify-between">
             <div class="flex items-center">
               <font-awesome-icon icon="file-alt" class="text-blue-500 mr-2" />
-              <div>
-                <p class="font-medium">{{ file.fichier_path }}</p>
-                <!--<p class="text-sm text-gray-500">{{ formatFileSize(file.taille) }}</p>-->
+              <div v-if="helpers.isImage(file.fichier_path)">
+                <DocumentPreview 
+                :title="file.lib_type_de_piece_jointe"
+                :image-src="file.fichier_path"/>
               </div>
+              <dic v-else-if="helpers.isPdf(file.fichier_path)">
+                <DocumentPreviewPdf
+                :title="file.lib_type_de_piece_jointe"
+                :id_piece="file.id_piece"
+                :fichier_path="file.fichier_path"
+                />
+              </dic>
             </div>
             
             <button 
@@ -128,7 +136,9 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import { requestService, fileService, studentService } from '@/services'
+import { requestService, fileService, studentService, helpers } from '@/services'
+import DocumentPreview from '@/components/DocumentPreview.vue'
+import DocumentPreviewPdf from '@/components/DocumentPreviewPdf.vue'
 
 const route = useRoute()
 const loading = ref(true)

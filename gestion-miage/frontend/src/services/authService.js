@@ -36,6 +36,7 @@ const authService = {
           // à l'inscription, on sait que c'est ETU
           sessionStorage.setItem('user_role', 'ETU')
           sessionStorage.setItem('user_type', 'etudiant')
+          sessionStorage.setItem('user_id', data.user.id_personnel)
         }
         return data
       })
@@ -48,6 +49,7 @@ const authService = {
         sessionStorage.removeItem('user')
         sessionStorage.removeItem('user_role')
         sessionStorage.removeItem('user_type')
+        sessionStorage.removeItem('user_id')
       })
   },
 
