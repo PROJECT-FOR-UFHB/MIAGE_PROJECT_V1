@@ -373,7 +373,6 @@ const processRequest = async () => {
     //données eenvoyées par post
     const validationData = {
       id_demande: request.value.id_demande,
-      type: 'secretary', // Type de validation (secrétariat)
       statut: processing.decision === 'approved' ? true : false,
       commentaire: processing.comment,
       id_personnel: sessionStorage.getItem('user_id')
