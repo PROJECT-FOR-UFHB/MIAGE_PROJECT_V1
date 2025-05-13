@@ -373,10 +373,10 @@ const processRequest = async () => {
   try {
     // Préparer les données pour la validation
     const validationData = {
-      request_id: request.value.id,
-      type: 'secretary', // Type de validation (secrétariat)
-      status: processing.decision,
-      comment: processing.comment
+      id_demande: request.value.id_demande,
+      statut: processing.decision === 'approved' ? true : false,
+      commentaire: processing.comment,
+      id_personnel: sessionStorage.getItem('user_id')
     }
     
     // Appeler l'API pour traiter la demande
