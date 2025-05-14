@@ -1,6 +1,6 @@
 <template>
   <!-- Ici, on se contente du fond et du padding vertical puisque la gauche est déjà prise en compte par le layout -->
-  <main class="bg-gray-100 min-h-screen pt-4">
+  <main class="bg-gray-100 min-h-screen pt-10 px-4 pb-10">
     <div class="max-w-4xl mx-auto">
       <!-- Message de succès -->
       <div v-if="success" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
