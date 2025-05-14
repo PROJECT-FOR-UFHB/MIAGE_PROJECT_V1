@@ -7,6 +7,7 @@ import studentService from './studentService'
 import adminService from './adminService'
 import secretaireService from './secretaireService'
 import helpers from './helpers'
+import directeurMiService from './directeurMiService'
 
 export {
   apiClient,
@@ -17,6 +18,7 @@ export {
   studentService,
   adminService,
   secretaireService,
-  helpers
+  helpers,
+  directeurMiService
 
-} 
+}
