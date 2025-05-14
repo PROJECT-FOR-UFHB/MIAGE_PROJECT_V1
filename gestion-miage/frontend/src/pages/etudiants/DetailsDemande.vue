@@ -73,7 +73,6 @@
                 </div>
                 <div>
                   <p class="font-medium">{{ step.name }}</p>
-                  <p class="text-sm text-gray-500">{{ step.date || 'En attente' }}</p>
                   <p v-if="step.message" class="text-sm italic mt-1">"{{ step.message }}"</p>
                 </div>
               </div>
