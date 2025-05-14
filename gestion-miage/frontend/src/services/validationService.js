@@ -38,6 +38,18 @@ const validationService = {
   financialValidation(requestId, validationData) {
     return apiClient.post(`/validations/financial/${requestId}`, validationData)
   },
+  /**
+   * Validation par le secrétariat
+   * @param {number} requestId - L'identifiant de la demande
+   * @param {Object} validationData - Les données du rejet
+   * @param {string} validationData.status - Le statut de la validation (false)
+   * @param {string} validationData.comment - Commentaire optionnel
+   * @param {string} validationData.user_id - L'id du personnel
+   * @returns {Promise} - Promesse avec le statut de la validation
+   */
+  financialRejet(requestId, validationData) {
+    return apiClient.post(`/validations/financialRejet/${requestId}`, validationData)
+  },
 
   /**
    * Validation par le directeur MIAGE

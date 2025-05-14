@@ -82,19 +82,21 @@
           
           <div v-for="file in files" :key="file.id_piece" class="mb-4">
               <!-- Si le fichier est une image -->
-              <div v-if="helpers.isImage(file.fichier_path)">
+              <div v-if="isImage(file.fichier_path)">
+
                 <DocumentPreview
-                  :title="file.lib_type_de_piece_jointe"
-                  :imageSrc="file.fichier_path"
+                  :title="file.type_de_piece_jointe.lib_type_de_piece_jointe"
+                  :imageSrc="getFileUrl(file.fichier_path)"
+                  :downloadLink="getFileUrl(file.fichier_path)"
                 />
+                          
               </div>
 
               <!-- Si c'est un PDF -->
-              <div v-else-if="helpers.isPdf(file.fichier_path)">
+              <div v-else-if="isPdf(file.fichier_path)">
                   <DocumentPreviewPdf
-                    :title="file.lib_type_de_piece_jointe"
-                    :id_piece="file.id_piece"
-                    :fichier_path="file.fichier_path"
+                    :title="file.type_de_piece_jointe.lib_type_de_piece_jointe"
+                    :src="getCorsUrl(file.id_piece)"
                   />
                   
               </div>
@@ -215,7 +217,7 @@
 <script setup>
 import { ref, reactive, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { requestService, fileService, helpers, validationService } from '@/services'
+import { requestService, fileService } from '@/services'
 import DocumentPreview from "@/components/DocumentPreview.vue";
 import DocumentPreviewPdf from "@/components/DocumentPreviewPdf.vue";
 
@@ -246,7 +248,7 @@ const canProcess = computed(() => {
   
   // La demande peut être traitée si elle est "En attente" ou "En cours"
   const status = request.value.statut.id_statut
-  return status === 'NIV01'
+  return status === 'en attente' || status === 'en cours'
 })
 
 /**
@@ -372,16 +374,13 @@ const processRequest = async () => {
     // Préparer les données pour la validation
     const validationData = {
       id_demande: request.value.id_demande,
+      statut: processing.decision === 'approved' ? true : false,
       commentaire: processing.comment,
       id_personnel: sessionStorage.getItem('user_id')
     }
     
-    // Appeler l'API pour valider ou rejeter la demande
-    if(processing.decision === 'approved'){
-      await validationService.secretaryValidation(request.value.id_demande,validationData)
-    }else{
-      await validationService.secretaryRejet(request.value.id_demande,validationData)
-    }
+    // Appeler l'API pour traiter la demande
+    await requestService.validateRequest(validationData)
     
     // Mettre à jour l'interface
     processingSuccess.value = `La demande a été ${processing.decision === 'approved' ? 'approuvée' : 'rejetée'} avec succès.`
@@ -465,5 +464,25 @@ const getStepStatusClass = (status) => {
   }
 }
 
+const getFileExtension = (filename) => {
+  return filename.split('.').pop().toLowerCase()
+}
 
+const isImage = (file) => {
+  const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp']
+  const ext = getFileExtension(file || '')
+  return imageExtensions.includes(ext)
+}
+
+const isPdf = (file) => {
+  console.log(file)
+  const ext = getFileExtension(file || '')
+  return ext === 'pdf'
+}
+const getFileUrl = (cheminFichier) => {
+  return `${import.meta.env.VITE_FILE_URL}${cheminFichier}`
+}
+const getCorsUrl = (idPiece) => {
+  return `${import.meta.env.VITE_API_URL}/files/${idPiece}`
+}
 </script> 
