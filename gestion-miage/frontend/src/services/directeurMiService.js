@@ -8,5 +8,8 @@ const directeurMiService = {
   getDemandesDirecteurMi() {
     return apiClient.get('/demandes/dmddirmiage')
   },
+  getProfile() {
+    return apiClient.get('/profile')
+  },
 }
 export default directeurMiService

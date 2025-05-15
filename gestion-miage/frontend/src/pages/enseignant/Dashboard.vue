@@ -2,7 +2,7 @@
   <main class="bg-gray-100 min-h-screen pt-20">
     <div class="max-w-6xl mx-auto px-4">
 
-      <!-- 🔢 Cartes KPI -->
+      <!-- Cartes KPI -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
         <div class="bg-white p-6 rounded shadow text-center">
           <font-awesome-icon :icon="['fas', 'pen-nib']" class="text-blue-500 text-3xl mb-2" />
@@ -21,8 +21,6 @@
         </div>
       </div>
 
-      <!-- 📊 Graphique simulé -->
-      <RepartitionChart />
 
     </div>
   </main>
@@ -31,7 +29,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 // import { enseignantService } from '@/services' // 🔌 À activer quand l’API sera dispo
-import RepartitionChart from '@/components/enseignant/RepartitionChart.vue'
 
 // 🧪 Données simulées
 const stats = ref({

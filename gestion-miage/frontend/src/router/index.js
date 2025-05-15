@@ -148,13 +148,13 @@ const routes = [
         path: 'directeur/tableau-de-bord',
         name: 'DirecteurDashboard',
         component: () => import('@/pages/directeurMiage/Dashboard.vue'),
-        meta: { headerTitle: 'Tableau de bord', headerIcon: ['fas', 'chart-line'], requiresRole: 'DIM' }
+        meta: { headerTitle: 'Tableau de bord', headerIcon: ['fas', 'chart-pie'], requiresRole: 'DIM' }
       },
       {
         path: 'directeur/demandes-a-signer',
         name: 'DemandesASigner',
         component: () => import('@/pages/directeurMiage/DemandesASigner.vue'),
-        meta: { headerTitle: 'Demandes à signer', headerIcon: ['fas', 'file-signature'], requiresRole: 'DIM' }
+        meta: { headerTitle: 'Demandes à signer', headerIcon: ['fas', 'edit'], requiresRole: 'DIM' }
       },
       {
         path: 'directeur/demande-details/:id',
@@ -185,13 +185,13 @@ const routes = [
         path: 'responsable/tableau-de-bord',
         name: 'ResponsableDashboard',
         component: () => import('@/pages/responsableNiveau/Dashboard.vue'),
-        meta: { headerTitle: 'Tableau de bord', headerIcon: ['fas', 'chart-area'], requiresRole: 'RDN' }
+        meta: { headerTitle: 'Tableau de bord', headerIcon: ['fas', 'chart-pie'], requiresRole: 'RDN' }
       },
       {
         path: 'responsable/demandes',
         name: 'DemandesNiveau',
         component: () => import('@/pages/responsableNiveau/DemandesNiveau.vue'),
-        meta: { headerTitle: 'Demandes de mon niveau', headerIcon: ['fas', 'clipboard'], requiresRole: 'RDN' }
+        meta: { headerTitle: 'Demandes de mon niveau', headerIcon: ['fas', 'file-alt'], requiresRole: 'RDN' }
       },
       {
         path: 'responsable/historique',
@@ -229,7 +229,7 @@ const routes = [
         path: 'enseignant/historique',
         name: 'HistoriqueEnseignant',
         component: () => import('@/pages/enseignant/Historique.vue'),
-        meta: { headerTitle: 'Historique Recos / Thèmes', headerIcon: ['fas', 'folder-open'], requiresRole: 'ENS' }
+        meta: { headerTitle: 'Lettres de recommandation', headerIcon: ['fas', 'folder-open'], requiresRole: 'ENS' }
       },
       {
         path: 'enseignant/notifications',

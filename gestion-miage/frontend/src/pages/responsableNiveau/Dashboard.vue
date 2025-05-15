@@ -2,33 +2,25 @@
     <main class="bg-gray-100 min-h-screen pt-6">
       <div class="max-w-6xl mx-auto">
         
-        <!-- ✅ Cartes de statistiques -->
+        <!-- Cartes de statistiques -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          <div class="bg-yellow-100 p-4 rounded shadow text-center">
+          <div class="bg-slate-50 p-4 rounded shadow text-center">
             <font-awesome-icon :icon="['fas', 'spinner']" class="text-yellow-600 text-3xl mb-2" />
             <h2 class="text-lg font-semibold">En cours</h2>
             <p class="text-2xl font-bold">{{ stats.pending }}</p>
           </div>
   
-          <div class="bg-green-100 p-4 rounded shadow text-center">
+          <div class="bg-slate-50 p-4 rounded shadow text-center">
             <font-awesome-icon :icon="['fas', 'check-circle']" class="text-green-600 text-3xl mb-2" />
             <h2 class="text-lg font-semibold">Terminées</h2>
             <p class="text-2xl font-bold">{{ stats.completed }}</p>
           </div>
   
-          <div class="bg-red-100 p-4 rounded shadow text-center">
+          <div class="bg-slate-50 p-4 rounded shadow text-center">
             <font-awesome-icon :icon="['fas', 'ban']" class="text-red-600 text-3xl mb-2" />
             <h2 class="text-lg font-semibold">Rejetées</h2>
             <p class="text-2xl font-bold">{{ stats.rejected }}</p>
           </div>
-        </div>
-  
-        <!-- ✅ Graphique par type d’actes -->
-        <div class="bg-white rounded shadow p-6">
-          <h3 class="text-lg font-semibold mb-4">Répartition des types d’actes</h3>
-  
-          <!-- 📊 Composant graphique (mocké pour l’instant) -->
-          <RepartitionChart />
         </div>
       </div>
     </main>
@@ -37,7 +29,6 @@
   <script setup>
   import { ref, onMounted } from 'vue'
   // import { responsableService } from '@/services' ← à activer quand l'API sera prête
-  import RepartitionChart from '@/components/responsableNiveau/RepartitionChart.vue'
   
   // 📊 Données mockées à remplacer plus tard par un appel API
   const stats = ref({
