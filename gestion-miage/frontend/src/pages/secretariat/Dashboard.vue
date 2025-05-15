@@ -5,14 +5,13 @@
     <div class="max-w-6xl mx-auto bg-white rounded shadow p-6">
       <h2 class="text-xl font-semibold mb-4">Tableau de bord</h2>
 
-      <div v-if="loading" class="flex justify-center items-center p-8">
-        <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
-
-      <div v-else-if="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-        {{ error }}
-      </div>
-
+        <div v-if="loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div v-for="n in 4" :key="n" class="bg-gray-100 p-4 rounded shadow animate-pulse flex flex-col items-center">
+            <div class="h-8 w-8 bg-gray-300 rounded-full mb-2"></div>
+            <div class="h-4 bg-gray-300 rounded w-1/2 mb-1"></div>
+            <div class="h-6 bg-gray-300 rounded w-1/3"></div>
+          </div>
+        </div>
       <div v-else>
         <!-- Grille de cartes statistiques -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -114,7 +113,8 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { requestService } from '@/services'
+
+import { requestService, secretaireService} from '@/services'
 
 const router = useRouter()
 const loading = ref(true)
@@ -149,9 +149,9 @@ const loadStatistics = async () => {
     if (response.data && response.data.status && response.data.data) {
       const data = response.data.data
       stats.total = data.total_requests || 0
-      stats.processed = data.processed_requests || 0
-      stats.approved = data.approved_requests || 0
-      stats.rejected = data.rejected_requests || 0
+      stats.pending = data.processing_count || 0
+      stats.approved = data.validated_count || 0
+      stats.rejected = data.rejected_count|| 0
     }
   } catch (err) {
     console.error('Erreur lors du chargement des statistiques:', err)

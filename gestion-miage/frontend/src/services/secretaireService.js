@@ -8,6 +8,14 @@ const secretaireService = {
   getDemandesSecretaire() {
     return apiClient.get('/demandes/dmdsec')
   },
+   /**
+   * Obtenir le tableau de bord de l'étudiant connecté
+   * @returns {Promise} - Promesse avec les données du tableau de bord
+   */
+   getSecDashboard() {
+    return apiClient.get('/dashboard')
+  },
+
   /**
  * Obtenir les demandes validée par la secrétaire
  * @returns {Promise} - Promesse avec les données du profil étudiant
