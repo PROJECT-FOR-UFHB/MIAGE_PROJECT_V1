@@ -19,7 +19,8 @@
             <input v-model="form.email" type="email" class="input-style" />
           </div>
         </div>
-        <button @click="updateInfo" class="btn-primary mt-4" :disabled="loading">
+        <!-- Bouton pour modifier email -->
+        <button @click="updateProfile" class="btn-primary mt-4" :disabled="loading">
           Mettre à jour
         </button>
       </section>
@@ -41,7 +42,8 @@
             <input v-model="passwordForm.confirm" type="password" class="input-style" />
           </div>
         </div>
-        <button @click="changePassword" class="btn-primary mt-4" :disabled="loading">
+        <!-- Bouton pour modifier mot de passe -->
+        <button @click="updateProfile" class="btn-primary mt-4" :disabled="loading">
           Changer le mot de passe
         </button>
       </section>
@@ -55,7 +57,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import apiClient from '@/services/apiClient' // on appelle directement l'API car secretaireService ne l'a pas encore
+import apiClient from '@/services/apiClient'
 
 const form = ref({
   nom: '',
@@ -73,6 +75,7 @@ const message = ref('')
 const error = ref('')
 const loading = ref(false)
 
+// Chargement initial du profil
 onMounted(async () => {
   loading.value = true
   try {
@@ -95,15 +98,40 @@ onMounted(async () => {
   }
 })
 
-// Mise à jour email
-const updateInfo = async () => {
-  loading.value = true
+// Soumettre la mise à jour du profil + mot de passe si fourni
+const updateProfile = async () => {
   message.value = ''
   error.value = ''
+  loading.value = true
+
   try {
-    const res = await apiClient.put('/profile', { email: form.value.email })
+    const payload = {
+      email: form.value.email
+    }
+
+    if (passwordForm.value.current || passwordForm.value.new || passwordForm.value.confirm) {
+      if (!passwordForm.value.current || !passwordForm.value.new || !passwordForm.value.confirm) {
+        error.value = 'Tous les champs du mot de passe doivent être remplis.'
+        loading.value = false
+        return
+      }
+
+      if (passwordForm.value.new !== passwordForm.value.confirm) {
+        error.value = 'Les mots de passe ne correspondent pas.'
+        loading.value = false
+        return
+      }
+
+      payload.current_password = passwordForm.value.current
+      payload.password = passwordForm.value.new
+      payload.password_confirmation = passwordForm.value.confirm
+    }
+
+    const res = await apiClient.put('/profile', payload)
+
     if (res.data?.status) {
-      message.value = 'Informations mises à jour avec succès.'
+      message.value = res.data.message || 'Profil mis à jour avec succès.'
+      passwordForm.value = { current: '', new: '', confirm: '' }
     } else {
       error.value = res.data.message || 'Échec de la mise à jour.'
     }
@@ -114,48 +142,14 @@ const updateInfo = async () => {
     loading.value = false
   }
 }
-
-// Changement de mot de passe
-const changePassword = async () => {
-  message.value = ''
-  error.value = ''
-  loading.value = true
-  try {
-    const { current, new: newPwd, confirm } = passwordForm.value
-    if (!current || !newPwd || !confirm) {
-      error.value = 'Tous les champs sont requis.'
-      return
-    }
-    if (newPwd !== confirm) {
-      error.value = 'Les mots de passe ne correspondent pas.'
-      return
-    }
-
-    const res = await apiClient.put('/profile', {
-      current_password: current,
-      password: newPwd,
-      password_confirmation: confirm
-    })
-
-    if (res.data?.status) {
-      message.value = 'Mot de passe modifié avec succès.'
-      passwordForm.value = { current: '', new: '', confirm: '' }
-    } else {
-      error.value = res.data.message || 'Erreur de modification.'
-    }
-  } catch (err) {
-    error.value = err.response?.data?.message || 'Erreur serveur.'
-    console.error(err)
-  } finally {
-    loading.value = false
-  }
-}
 </script>
+
 
 <style scoped>
 .input-style {
   @apply w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500;
 }
+
 .btn-primary {
   @apply bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition;
 }
