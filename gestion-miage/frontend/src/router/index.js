@@ -83,6 +83,12 @@ const routes = [
         component: () => import('@/pages/secretariat/TraiterDemande.vue'),
         meta: { headerTitle: 'Traiter la demande', headerIcon: ['fas', 'clipboard-list'], requiresRole: 'SEC' }
       },
+      {
+        path: 'secretariat/profil',
+        name: 'ProfilSecretaire',
+        component: () => import('@/pages/secretariat/MonProfil.vue'),
+        meta: { headerTitle: 'Mon profil', headerIcon: ['fas', 'user'], requiresRole: 'SEC' }
+      },
 
       // -------------------------------
       // Espace SECRÉTAIRE ADMIN (SEC_ADM)
@@ -93,14 +99,19 @@ const routes = [
         component: () => import('@/pages/secAdmin/ValidationFinanciere.vue'),
         meta: {
           headerTitle: 'Validation financière',
-          headerIcon: ['fas', 'file-invoice-dollar'],
+          headerIcon: ['fas', 'edit'],
           requiresRole: 'SAF'
         }
       },
       {
         path: 'sec-admin/demandes/:id',
         name: 'SecFinancierDemandeDetails',
-        component: () => import('@/components/secAdmin/SecFinancierDemandeDetails.vue')
+        component: () => import('@/components/secAdmin/SecFinancierDemandeDetails.vue'),
+        meta: {
+          headerTitle: 'Validation financière',
+          headerIcon: ['fas', 'edit'],
+          requiresRole: 'SAF'
+        }
       },
 
       {

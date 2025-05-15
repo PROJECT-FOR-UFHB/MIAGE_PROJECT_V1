@@ -31,7 +31,7 @@
           </router-link>
         </li>
 
-        <li>
+        <!--<li>
           <router-link
             to="/sec-admin/historique"
             class="flex items-center text-brandBlue px-3 py-2 rounded hover:bg-gray-100 transition-colors"
@@ -40,7 +40,7 @@
             <font-awesome-icon :icon="['fas', 'history']" class="mr-2 text-brandBlue" />
             Suivi & Historique
           </router-link>
-        </li>
+        </li>-->
 
         <li>
           <router-link

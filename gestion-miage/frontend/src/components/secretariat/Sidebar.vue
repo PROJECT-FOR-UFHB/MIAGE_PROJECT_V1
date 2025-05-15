@@ -33,7 +33,7 @@
         </li>
 
         <!-- (Lien Profil désactivé pour l’instant) -->
-        <!--
+        
         <li>
           <router-link
             to="/secretariat/profil"
@@ -44,7 +44,7 @@
             Mon profil
           </router-link>
         </li>
-        -->
+      
 
         <!-- Bouton Se déconnecter bien aligné -->
         <li>
