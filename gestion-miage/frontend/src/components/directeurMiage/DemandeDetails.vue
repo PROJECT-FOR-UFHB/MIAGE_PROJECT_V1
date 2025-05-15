@@ -132,17 +132,16 @@ const valider = async () => {
 
     const validationData = {
       id_demande: id,
-      statut: true,
-      commentaire: comment.value,
+      action: true,
+      commentaires: comment.value,
       id_personnel: sessionStorage.getItem('user_id')
     }
 
 
-    await validationService.financialValidation(id, validationData)
+    await validationService.directorValidation(id, validationData)
     alert('✅ Demande signée.')
     router.push('/directeur/demandes-a-signer')
   } catch (err) {
-    console.error(err)
     alert("❌ Erreur lors de la signature.")
   }
 }
