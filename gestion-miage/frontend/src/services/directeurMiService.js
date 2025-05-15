@@ -11,5 +11,8 @@ const directeurMiService = {
   getProfile() {
     return apiClient.get('/profile')
   },
+  getDashboard() {
+    return apiClient.get('/dashboard')
+  }
 }
 export default directeurMiService
