@@ -146,6 +146,11 @@ const routes = [
         meta: { headerTitle: 'Demandes à signer', headerIcon: ['fas', 'file-signature'], requiresRole: 'DIM' }
       },
       {
+        path: 'directeur/demande-details/:id',
+        name: 'DemandeDetails',
+        component: () => import('@/components/directeurMiage/DemandeDetails.vue')
+      },
+      {
         path: 'directeur/historique',
         name: 'HistoriqueDirecteur',
         component: () => import('@/pages/directeurMiage/Historique.vue'),
