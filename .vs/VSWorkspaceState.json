@@ -1,0 +1,16 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\gestion-miage",
+    "\\gestion-miage\\api-miage\\app",
+    "\\gestion-miage\\api-miage\\app\\Http",
+    "\\gestion-miage\\api-miage\\app\\Http\\Controllers",
+    "\\gestion-miage\\api-miage\\app\\Models",
+    "\\gestion-miage\\api-miage\\app\\Providers",
+    "\\gestion-miage\\frontend",
+    "\\gestion-miage\\frontend\\src",
+    "\\gestion-miage\\frontend\\src\\pages\\etudiants"
+  ],
+  "SelectedNode": "\\gestion-miage\\api-miage",
+  "PreviewInSolutionExplorer": false
+}

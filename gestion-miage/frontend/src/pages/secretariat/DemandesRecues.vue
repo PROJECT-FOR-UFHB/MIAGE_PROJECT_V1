@@ -1,6 +1,6 @@
-<!-- src/pages/secretariat/DemandesRecues.vue -->
 <template>
-  <div class="max-w-6xl mx-auto bg-white rounded shadow p-6">
+  <main class="bg-gray-100 min-h-screen pt-10 px-4 pb-10">
+    <div class="max-w-6xl mx-auto bg-white rounded shadow p-6 overflow-x-auto">
     <h2 class="text-xl font-semibold mb-4">Demandes reçues</h2>
     <table class="w-full border-collapse">
       <thead>
@@ -30,18 +30,22 @@
         </tr>
       </tbody>
     </table>
-  </div>
-  <DemandeModal v-if="demandeSelectionnee" :demande="demandeSelectionnee" @fermer="fermerModal"
-  @valider="validerDemande" />
+    </div>
+    <DemandeModal v-if="demandeSelectionnee" :demande="demandeSelectionnee" @fermer="fermerModal"
+    @valider="validerDemande" />
+  </main>
 </template>
 
 
 
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import DemandeModal from '@/components/secretariat/DemandeModal.vue'
-// Liste des demandes (mock pour le moment)
+import { secretaireService } from '@/services'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 const demandes = ref([
   {
     numero: 'N°AT001',
@@ -57,9 +61,10 @@ const demandes = ref([
     niveau: 'M1',
     libelle: 'Attestation de fréquentation',
     date: '20/03/2025'
-  },
-  // Tu peux ajouter d'autres demandes ici
+  }
+  // Autres demandes seront chargées depuis l'API
 ])
+
 // Variable pour stocker la demande actuellement sélectionnée
 const demandeSelectionnee = ref(null)
 
@@ -78,6 +83,63 @@ function validerDemande() {
   if (demandeSelectionnee.value) {
     demandes.value = demandes.value.filter(d => d.numero !== demandeSelectionnee.value.numero)
     demandeSelectionnee.value = null
+  }
+}
+
+// Charger les données au montage du composant
+onMounted(async () => {
+  try {
+    await recupDemandes()
+  } catch (err) {
+    console.error('Erreur lors du chargement des données:', err)
+  }
+})
+
+// Charger les demandes des étudiants depuis l'API
+const recupDemandes = async () => {
+  try {
+    const response = await secretaireService.getDemandesSecretaire()
+    if (response.data && response.data.status) {
+      // Mettre à jour les demandes avec les données de l'API
+      demandes.value = response.data.data.map(item => ({
+        numero: item.id_demande,
+        nomEtudiant: item.etudiant ? `${item.etudiant.nom} ${item.etudiant.prenom}` : 'Non spécifié',
+        niveau: item.niveau || 'Non spécifié',
+        libelle: item.type_demande ? item.type_demande.libelle : 'Non spécifié',
+        date: formatDate(item.created_at),
+        // Conserver les données originales pour le traitement
+        original: item
+      }))
+    } else {
+      throw new Error('Impossible de charger les demandes')
+    }
+  } catch (err) {
+    console.error('Erreur lors du chargement des demandes:', err)
+    throw err
+  }
+}
+
+// Formater la date pour l'affichage
+const formatDate = (dateString) => {
+  if (!dateString) return 'N/A'
+  
+  const date = new Date(dateString)
+  return new Intl.DateTimeFormat('fr-FR', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  }).format(date)
+}
+
+// Voir les détails d'une demande (utilise le modal ou la navigation)
+const voirDetails = (idDemande) => {
+  // Trouver la demande correspondante
+  const demande = demandes.value.find(d => d.numero === idDemande)
+  if (demande) {
+    ouvrirModal(demande)
+  } else {
+    // Si pas trouvée, naviguer vers la page de détails
+    router.push(`/secretariat/demandes/${idDemande}`)
   }
 }
 </script>
