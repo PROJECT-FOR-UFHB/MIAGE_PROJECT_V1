@@ -11,6 +11,7 @@ class NotificationService {
   async getNotifications() {
     try {
       const response = await apiClient.get('/admin/notifications')
+      console.log('Réponse des notifications:', response.data)
       return response.data
     } catch (error) {
       console.error('Erreur lors de la récupération des notifications:', error)

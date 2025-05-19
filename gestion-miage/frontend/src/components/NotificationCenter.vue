@@ -66,30 +66,14 @@ export default {
     const loadNotifications = async () => {
       try {
         loading.value = true
-        // Utiliser le service de notification pour obtenir les notifications
-        // Si le service n'est pas encore prêt, utiliser des données de test
-        try {
-          const response = await notificationService.getNotifications()
+        const response = await notificationService.getNotifications()
+        console.log('Réponse complète:', response)
+        if (response && response.status === true) {
           notifications.value = response.notifications || []
-        } catch (error) {
-          console.error('Erreur lors du chargement des notifications:', error)
-          // Utiliser des données de test en cas d'erreur
-          notifications.value = [
-            {
-              id_notification: '1',
-              titre: 'Nouvelle demande',
-              message: 'Une demande requiert votre attention',
-              est_lu: false,
-              created_at: new Date().toISOString()
-            },
-            {
-              id_notification: '2',
-              titre: 'Demande validée',
-              message: 'Une demande a été validée',
-              est_lu: true,
-              created_at: new Date(Date.now() - 86400000).toISOString()
-            }
-          ]
+          console.log('Notifications chargées:', notifications.value)
+        } else {
+          console.error('Format de réponse invalide:', response)
+          notifications.value = []
         }
         
         // Mettre à jour le compteur de notifications non lues
@@ -191,12 +175,15 @@ export default {
 
       // Écouter le canal public des demandes
       echo.channel('demandes')
-        .listen('.demande.status.changed', (e) => {
+        .listen('.App\\Events\\DemandeStatusChanged', (e) => {
           console.log('Événement de changement de statut reçu:', e)
           // Recharger les notifications
           loadNotifications()
           // Afficher une notification système
-          showSystemNotification('Notification', 'Une demande a changé de statut')
+          showSystemNotification('Notification', e.message || 'Une demande a changé de statut')
+        })
+        .error((error) => {
+          console.error('Erreur de connexion WebSocket:', error)
         })
 
       console.log('Écoute des notifications en temps réel activée')

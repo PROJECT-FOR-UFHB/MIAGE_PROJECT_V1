@@ -20,15 +20,20 @@ export function initEcho(token) {
   // Créer une nouvelle instance d'Echo
   echoInstance = new Echo({
     broadcaster: 'pusher',
-    key: 'miage_key',
-    wsHost: window.location.hostname,
-    wsPort: 8080,
+    key: import.meta.env.VITE_PUSHER_APP_KEY || 'miage_key',
+    cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER || 'eu',
+    wsHost: import.meta.env.VITE_WEBSOCKET_HOST || window.location.hostname,
+    wsPort: parseInt(import.meta.env.VITE_WEBSOCKET_PORT || '8080'),
     forceTLS: false,
     disableStats: true,
     enabledTransports: ['ws', 'wss'],
+    encrypted: false,
+    // Indiquer qu'il s'agit d'un hôte personnalisé (important)
+    host: `${import.meta.env.VITE_WEBSOCKET_HOST || window.location.hostname}:${import.meta.env.VITE_WEBSOCKET_PORT || '8080'}`,
     auth: {
       headers: {
-        Authorization: `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json'
       }
     }
   })
