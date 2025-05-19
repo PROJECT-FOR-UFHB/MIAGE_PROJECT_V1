@@ -1,8 +1,8 @@
 import Echo from 'laravel-echo'
-import { io } from 'socket.io-client'
+import Pusher from 'pusher-js'
 
-// Définir la variable globale io pour Laravel Echo
-window.io = io
+// Configuration globale pour Pusher
+window.Pusher = Pusher
 
 // Instance d'Echo
 let echoInstance = null
@@ -19,8 +19,13 @@ export function initEcho(token) {
 
   // Créer une nouvelle instance d'Echo
   echoInstance = new Echo({
-    broadcaster: 'socket.io',
-    host: 'http://localhost:8080', // URL du serveur Reverb
+    broadcaster: 'pusher',
+    key: 'miage_key',
+    wsHost: window.location.hostname,
+    wsPort: 8080,
+    forceTLS: false,
+    disableStats: true,
+    enabledTransports: ['ws', 'wss'],
     auth: {
       headers: {
         Authorization: `Bearer ${token}`
