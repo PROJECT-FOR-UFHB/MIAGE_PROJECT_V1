@@ -170,6 +170,11 @@ export default {
       const echo = getEcho()
       if (!echo) {
         console.warn('Echo n\'est pas initialisé, impossible d\'écouter les notifications en temps réel')
+        // Réessayer dans 5 secondes
+        setTimeout(() => {
+          console.log('Tentative de reconnexion à Echo...')
+          initializeEcho()
+        }, 5000)
         return
       }
 
@@ -181,6 +186,13 @@ export default {
           loadNotifications()
           // Afficher une notification système
           showSystemNotification('Notification', e.message || 'Une demande a changé de statut')
+        })
+        .listen('.App\\Events\\NewNotification', (e) => {
+          console.log('Nouvelle notification reçue:', e)
+          // Recharger les notifications
+          loadNotifications()
+          // Afficher une notification système
+          showSystemNotification('Nouvelle notification', e.message || 'Vous avez une nouvelle notification')
         })
         .error((error) => {
           console.error('Erreur de connexion WebSocket:', error)
@@ -208,20 +220,24 @@ export default {
     const initializeEcho = () => {
       const token = sessionStorage.getItem('auth_token')
       if (token) {
-        initEcho(token)
-        listenForNotifications()
+        const echo = initEcho(token)
+        if (echo) {
+          console.log('Echo initialisé avec succès')
+          listenForNotifications()
+        } else {
+          console.warn('Échec de l\'initialisation d\'Echo')
+          // Réessayer dans 5 secondes
+          setTimeout(initializeEcho, 5000)
+        }
+      } else {
+        console.warn('Pas de token d\'authentification disponible')
       }
     }
 
-    // Au montage du composant
+    // Initialiser les écouteurs d'événements et charger les notifications
     onMounted(() => {
-      // Charger les notifications
-      loadNotifications()
-      
-      // Initialiser Echo
       initializeEcho()
-      
-      // Demander la permission pour les notifications système
+      loadNotifications()
       if ('Notification' in window && Notification.permission !== 'denied') {
         Notification.requestPermission()
       }

@@ -14,32 +14,62 @@ let echoInstance = null
  */
 export function initEcho(token) {
   if (echoInstance) {
-    echoInstance.disconnect()
+    console.log('Instance Echo existante détectée')
+    return echoInstance
   }
 
-  // Créer une nouvelle instance d'Echo
-  echoInstance = new Echo({
+  const wsHost = import.meta.env.VITE_WEBSOCKET_HOST || '127.0.0.1'
+  const wsPort = parseInt(import.meta.env.VITE_WEBSOCKET_PORT || '8080')
+
+  const config = {
     broadcaster: 'pusher',
-    key: import.meta.env.VITE_PUSHER_APP_KEY || 'miage_key',
-    cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER || 'eu',
-    wsHost: import.meta.env.VITE_WEBSOCKET_HOST || window.location.hostname,
-    wsPort: parseInt(import.meta.env.VITE_WEBSOCKET_PORT || '8080'),
+    key: 'miage_key',
+    wsHost: wsHost,
+    wsPort: wsPort,
+    cluster: 'mt1',
     forceTLS: false,
-    disableStats: true,
-    enabledTransports: ['ws', 'wss'],
     encrypted: false,
-    // Indiquer qu'il s'agit d'un hôte personnalisé (important)
-    host: `${import.meta.env.VITE_WEBSOCKET_HOST || window.location.hostname}:${import.meta.env.VITE_WEBSOCKET_PORT || '8080'}`,
+    enabledTransports: ['ws'],
+    disableStats: true,
+    authEndpoint: 'http://localhost:8000/api/broadcasting/auth',
     auth: {
       headers: {
         Authorization: `Bearer ${token}`,
         Accept: 'application/json'
       }
     }
-  })
+  }
 
-  console.log('Laravel Echo initialisé avec succès')
-  return echoInstance
+  console.log('Configuration Echo:', config)
+
+  try {
+    // Créer une nouvelle instance d'Echo
+    echoInstance = new Echo(config)
+
+    // Ajouter des gestionnaires d'événements pour Pusher
+    echoInstance.connector.pusher.connection.bind('connected', () => {
+      console.log('WebSocket connecté avec succès')
+    })
+
+    echoInstance.connector.pusher.connection.bind('error', (err) => {
+      console.error('Erreur de connexion WebSocket:', err)
+      // Réinitialiser l'instance en cas d'erreur
+      echoInstance = null
+    })
+
+    echoInstance.connector.pusher.connection.bind('disconnected', () => {
+      console.log('WebSocket déconnecté')
+      // Réinitialiser l'instance en cas de déconnexion
+      echoInstance = null
+    })
+
+    console.log('Laravel Echo initialisé avec succès')
+    return echoInstance
+  } catch (error) {
+    console.error('Erreur lors de l\'initialisation d\'Echo:', error)
+    echoInstance = null
+    return null
+  }
 }
 
 /**
