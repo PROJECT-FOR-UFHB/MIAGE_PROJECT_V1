@@ -32,7 +32,7 @@
             active-class="bg-gray-100 font-semibold"
           >
             <font-awesome-icon :icon="['fas', 'folder-open']" class="mr-2 text-brandBlue" />
-            Recommandations / Thèmes
+            Lettres de recommandation
           </router-link>
         </li>
         <li>

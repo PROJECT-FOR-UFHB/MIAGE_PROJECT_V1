@@ -46,7 +46,7 @@
 
 <script setup>
 import { onMounted, ref } from 'vue'
-import { secretaireService } from '@/services'
+import { directeurMiService } from '@/services'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
@@ -64,7 +64,7 @@ onMounted(async () => {
 
 const recupDemandes = async () => {
   try {
-    const demandes = await secretaireService.getDemandesSecretaireFinancier()
+    const demandes = await directeurMiService.getDemandesDirecteurMi()
     if (demandes.data?.status) {
       tabDemandes.value = demandes.data.data
     } else {
@@ -76,6 +76,6 @@ const recupDemandes = async () => {
 }
 
 const voirDetails = (idDemande) => {
-  router.push(`/sec-admin/demandes/${idDemande}`)
+  router.push(`/directeur/demande-details/${idDemande}`)
 }
 </script>

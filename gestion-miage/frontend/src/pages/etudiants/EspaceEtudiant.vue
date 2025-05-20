@@ -178,9 +178,9 @@ const loadDashboard = async () => {
     if (response.data && response.data.status && response.data.data) {
       const data = response.data.data
       stats.total = data.total_requests || 0
-      stats.pending = data.pending_requests || 0
-      stats.approved = data.approved_requests || 0
-      stats.rejected = data.rejected_requests || 0
+      stats.pending = data.processing_count || 0
+      stats.approved = data.validated_count || 0
+      stats.rejected = data.rejected_count|| 0
     }
   } catch (error) {
     console.error('Erreur lors du chargement du tableau de bord:', error)

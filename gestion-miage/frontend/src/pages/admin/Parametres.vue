@@ -1,5 +1,5 @@
 <template>
-    <main class="bg-gray-100 min-h-screen pt-6">
+  <main class="bg-gray-100 min-h-screen pt-10">
       <div class="max-w-5xl mx-auto px-4 space-y-8">
   
         <!-- Informations générales du système -->

@@ -83,6 +83,12 @@ const routes = [
         component: () => import('@/pages/secretariat/TraiterDemande.vue'),
         meta: { headerTitle: 'Traiter la demande', headerIcon: ['fas', 'clipboard-list'], requiresRole: 'SEC' }
       },
+      {
+        path: 'secretariat/profil',
+        name: 'ProfilSecretaire',
+        component: () => import('@/pages/secretariat/MonProfil.vue'),
+        meta: { headerTitle: 'Mon profil', headerIcon: ['fas', 'user'], requiresRole: 'SEC' }
+      },
 
       // -------------------------------
       // Espace SECRÉTAIRE ADMIN (SEC_ADM)
@@ -93,14 +99,19 @@ const routes = [
         component: () => import('@/pages/secAdmin/ValidationFinanciere.vue'),
         meta: {
           headerTitle: 'Validation financière',
-          headerIcon: ['fas', 'file-invoice-dollar'],
+          headerIcon: ['fas', 'edit'],
           requiresRole: 'SAF'
         }
       },
       {
         path: 'sec-admin/demandes/:id',
         name: 'SecFinancierDemandeDetails',
-        component: () => import('@/components/secAdmin/SecFinancierDemandeDetails.vue')
+        component: () => import('@/components/secAdmin/SecFinancierDemandeDetails.vue'),
+        meta: {
+          headerTitle: 'Validation financière',
+          headerIcon: ['fas', 'edit'],
+          requiresRole: 'SAF'
+        }
       },
 
       {
@@ -137,13 +148,20 @@ const routes = [
         path: 'directeur/tableau-de-bord',
         name: 'DirecteurDashboard',
         component: () => import('@/pages/directeurMiage/Dashboard.vue'),
-        meta: { headerTitle: 'Tableau de bord', headerIcon: ['fas', 'chart-line'], requiresRole: 'DIM' }
+        meta: { headerTitle: 'Tableau de bord', headerIcon: ['fas', 'chart-pie'], requiresRole: 'DIM' }
       },
       {
         path: 'directeur/demandes-a-signer',
         name: 'DemandesASigner',
         component: () => import('@/pages/directeurMiage/DemandesASigner.vue'),
-        meta: { headerTitle: 'Demandes à signer', headerIcon: ['fas', 'file-signature'], requiresRole: 'DIM' }
+        meta: { headerTitle: 'Demandes à signer', headerIcon: ['fas', 'edit'], requiresRole: 'DIM' }
+      },
+      {
+        path: 'directeur/demande-details/:id',
+        name: 'DemandeDetails',
+        component: () => import('@/components/directeurMiage/DemandeDetails.vue'),
+        meta: { headerTitle: 'Demandes à signer', headerIcon: ['fas', 'edit'], requiresRole: 'DIM' }
+
       },
       {
         path: 'directeur/historique',
@@ -169,13 +187,13 @@ const routes = [
         path: 'responsable/tableau-de-bord',
         name: 'ResponsableDashboard',
         component: () => import('@/pages/responsableNiveau/Dashboard.vue'),
-        meta: { headerTitle: 'Tableau de bord', headerIcon: ['fas', 'chart-area'], requiresRole: 'RDN' }
+        meta: { headerTitle: 'Tableau de bord', headerIcon: ['fas', 'chart-pie'], requiresRole: 'RDN' }
       },
       {
         path: 'responsable/demandes',
         name: 'DemandesNiveau',
         component: () => import('@/pages/responsableNiveau/DemandesNiveau.vue'),
-        meta: { headerTitle: 'Demandes de mon niveau', headerIcon: ['fas', 'clipboard'], requiresRole: 'RDN' }
+        meta: { headerTitle: 'Demandes de mon niveau', headerIcon: ['fas', 'file-alt'], requiresRole: 'RDN' }
       },
       {
         path: 'responsable/historique',
@@ -213,7 +231,7 @@ const routes = [
         path: 'enseignant/historique',
         name: 'HistoriqueEnseignant',
         component: () => import('@/pages/enseignant/Historique.vue'),
-        meta: { headerTitle: 'Historique Recos / Thèmes', headerIcon: ['fas', 'folder-open'], requiresRole: 'ENS' }
+        meta: { headerTitle: 'Lettres de recommandation', headerIcon: ['fas', 'folder-open'], requiresRole: 'ENS' }
       },
       {
         path: 'enseignant/notifications',

@@ -7,35 +7,46 @@
       <nav>
         <ul class="space-y-4">
           <li>
-            <router-link to="/directeur/dashboard" class="sidebar-link">
+            <router-link to="/directeur/dashboard" class="flex items-center text-brandBlue px-3 py-2 rounded hover:bg-gray-100 transition"
+            active-class="bg-gray-100 font-semibold">
               <font-awesome-icon :icon="['fas', 'chart-pie']" class="mr-2" />
               Tableau de bord
             </router-link>
           </li>
           <li>
-            <router-link to="/directeur/demandes-a-signer" class="sidebar-link">
-              <font-awesome-icon :icon="['fas', 'pen-nib']" class="mr-2" />
+            <router-link to="/directeur/demandes-a-signer" class="flex items-center text-brandBlue px-3 py-2 rounded hover:bg-gray-100 transition"
+            active-class="bg-gray-100 font-semibold">
+              <font-awesome-icon :icon="['fas', 'edit']" class="mr-2 text-brandBlue" />
               Demandes à signer
             </router-link>
           </li>
           <li>
-            <router-link to="/directeur/historique" class="sidebar-link">
+            <router-link to="/directeur/historique" class="flex items-center text-brandBlue px-3 py-2 rounded hover:bg-gray-100 transition"
+            active-class="bg-gray-100 font-semibold">
               <font-awesome-icon :icon="['fas', 'history']" class="mr-2" />
               Historique & rapports
             </router-link>
           </li>
           <li>
-            <router-link to="/directeur/notifications" class="sidebar-link">
+            <router-link to="/directeur/notifications" class="flex items-center text-brandBlue px-3 py-2 rounded hover:bg-gray-100 transition"
+            active-class="bg-gray-100 font-semibold">
               <font-awesome-icon :icon="['fas', 'bell']" class="mr-2" />
               Notifications
             </router-link>
           </li>
           <li>
-            <router-link to="/directeur/profil" class="sidebar-link">
+            <router-link to="/directeur/profil" class="flex items-center text-brandBlue px-3 py-2 rounded hover:bg-gray-100 transition"
+            active-class="bg-gray-100 font-semibold">
               <font-awesome-icon :icon="['fas', 'user']" class="mr-2" />
               Mon profil
             </router-link>
           </li>
+          <!-- Déconnexion -->
+        <li>
+          <LogoutButton
+            class="flex items-center text-red-600 px-3 py-2 rounded hover:bg-red-50 transition-colors"
+          />
+        </li>
         </ul>
       </nav>
     </aside>
@@ -43,6 +54,7 @@
   
   <script setup>
   // Style de classe commun
+  import LogoutButton from '@/components/auth/LogoutButton.vue'
   </script>
   
   <style scoped>
@@ -50,7 +62,7 @@
     display: flex;
     align-items: center;
     padding: 0.75rem 1rem;
-    color: #2563eb;
+    color:rgb(13, 50, 129);
     border-radius: 0.5rem;
     transition: background 0.2s;
   }

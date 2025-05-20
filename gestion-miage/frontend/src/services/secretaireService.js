@@ -8,24 +8,27 @@ const secretaireService = {
   getDemandesSecretaire() {
     return apiClient.get('/demandes/dmdsec')
   },
-    /**
-   * Obtenir les demandes validée par la secrétaire
-   * @returns {Promise} - Promesse avec les données du profil étudiant
+   /**
+   * Obtenir le tableau de bord de l'étudiant connecté
+   * @returns {Promise} - Promesse avec les données du tableau de bord
    */
-  getDemandesSecretaireFinancier(){
+   getSecDashboard() {
+    return apiClient.get('/dashboard')
+  },
+
+  /**
+ * Obtenir les demandes validée par la secrétaire
+ * @returns {Promise} - Promesse avec les données du profil étudiant
+ */
+  getDemandesSecretaireFinancier() {
     return apiClient.get('/demandes/dmdsecfin')
   },
   getOneDemande(id) {
     return apiClient.get(`/demandes/${id}`)
   },
-  /*approuverDemande(id) {
-    return apiClient.post(`/validations/${id}/approve`)
+  getProfile() {
+    return apiClient.get('/profile')
   },
-  rejeterDemande(id, reason) {
-    return apiClient.post(`/validations/${id}/reject`, {
-      reason: reason
-    })
-  },*/
 
 }
 
