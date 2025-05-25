@@ -21,7 +21,7 @@
           <td class="p-3 border-b">{{ demande.libelle }}</td>
           <td class="p-3 border-b">{{ demande.date }}</td>
           <td class="p-3 border-b">
-            <button @click="ouvrirModal(demande)"
+            <button @click="voirDetails(demande.numero)"
               class="bg-brandBlue text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors">
               Voir détails
             </button>
@@ -31,8 +31,6 @@
       </tbody>
     </table>
     </div>
-    <DemandeModal v-if="demandeSelectionnee" :demande="demandeSelectionnee" @fermer="fermerModal"
-    @valider="validerDemande" />
   </main>
 </template>
 
@@ -41,7 +39,6 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import DemandeModal from '@/components/secretariat/DemandeModal.vue'
 import { secretaireService } from '@/services'
 import { useRouter } from 'vue-router'
 
@@ -65,25 +62,9 @@ const demandes = ref([
   // Autres demandes seront chargées depuis l'API
 ])
 
-// Variable pour stocker la demande actuellement sélectionnée
-const demandeSelectionnee = ref(null)
-
-// Fonction pour ouvrir le modal
-function ouvrirModal(demande) {
-  demandeSelectionnee.value = demande
-}
-
-// Fonction pour fermer le modal
-function fermerModal() {
-  demandeSelectionnee.value = null
-}
-
-// Fonction pour valider une demande
-function validerDemande() {
-  if (demandeSelectionnee.value) {
-    demandes.value = demandes.value.filter(d => d.numero !== demandeSelectionnee.value.numero)
-    demandeSelectionnee.value = null
-  }
+// Fonction pour voir les détails d'une demande
+function voirDetails(idDemande) {
+  router.push(`/secretariat/demandes/${idDemande}`)
 }
 
 // Charger les données au montage du composant
@@ -122,24 +103,12 @@ const recupDemandes = async () => {
 // Formater la date pour l'affichage
 const formatDate = (dateString) => {
   if (!dateString) return 'N/A'
-  
+
   const date = new Date(dateString)
   return new Intl.DateTimeFormat('fr-FR', {
     year: 'numeric',
     month: 'short',
     day: 'numeric'
   }).format(date)
-}
-
-// Voir les détails d'une demande (utilise le modal ou la navigation)
-const voirDetails = (idDemande) => {
-  // Trouver la demande correspondante
-  const demande = demandes.value.find(d => d.numero === idDemande)
-  if (demande) {
-    ouvrirModal(demande)
-  } else {
-    // Si pas trouvée, naviguer vers la page de détails
-    router.push(`/secretariat/demandes/${idDemande}`)
-  }
 }
 </script>
