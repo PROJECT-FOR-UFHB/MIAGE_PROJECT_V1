@@ -29,7 +29,7 @@
           @click="openNotification(notification)"
         >
           <div class="notification-content">
-            <div class="notification-title">{{ notification.titre }}</div>
+            <div class="notification-title text-black">{{ notification.titre }}</div>
             <div class="notification-message">{{ notification.message }}</div>
             <div class="notification-time">{{ formatDate(notification.created_at) }}</div>
           </div>
@@ -38,7 +38,7 @@
               <font-awesome-icon icon="check" />
             </button>
             <button @click.stop="deleteNotification(notification)" class="delete">
-              <font-awesome-icon icon="trash" />
+              <font-awesome-icon icon="trash" /> <span>X</span>
             </button>
           </div>
         </div>
@@ -75,7 +75,7 @@ export default {
           console.error('Format de réponse invalide:', response)
           notifications.value = []
         }
-        
+
         // Mettre à jour le compteur de notifications non lues
         updateUnreadCount()
       } finally {
@@ -157,11 +157,16 @@ export default {
       if (!notification.est_lu) {
         await markAsRead(notification)
       }
-      
-      if (notification.lien) {
+
+      const demandeId = notification.id_demande || (notification.demande && notification.demande.id_demande)
+      console.log('Redirection vers :', demandeId)
+
+      if (demandeId) {
+        router.push({ name: 'TraiterDemande', params: { id: demandeId } })
+      } else if (notification.lien) {
         router.push(notification.lien)
       }
-      
+
       showPanel.value = false
     }
 
@@ -241,7 +246,7 @@ export default {
       if ('Notification' in window && Notification.permission !== 'denied') {
         Notification.requestPermission()
       }
-      
+
       // Fermer le panneau quand on clique en dehors
       document.addEventListener('click', handleOutsideClick)
     })
