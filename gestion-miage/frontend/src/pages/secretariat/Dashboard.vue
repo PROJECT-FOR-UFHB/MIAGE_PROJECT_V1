@@ -145,7 +145,7 @@ onMounted(async () => {
 // Charger les statistiques
 const loadStatistics = async () => {
   try {
-    const response = await requestService.getRequestStatistics()
+    const response = await secretaireService.getSecDashboard()
     if (response.data && response.data.status && response.data.data) {
       const data = response.data.data
       stats.total = data.total_requests || 0

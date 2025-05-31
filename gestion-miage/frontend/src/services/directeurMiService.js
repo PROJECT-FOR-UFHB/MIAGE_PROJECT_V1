@@ -11,8 +11,13 @@ const directeurMiService = {
   getProfile() {
     return apiClient.get('/profile')
   },
+
+    /**
+   * Obtenir le tableau de bord du directeur Miage
+   * @returns {Promise} - Promesse avec les données du tableau de bord
+   */
   getDashboard() {
-    return apiClient.get('/dashboard')
+    return apiClient.get('/dashboard/directeurmi')
   }
 }
 export default directeurMiService

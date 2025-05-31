@@ -1,5 +1,5 @@
 <template>
-  <main class="bg-gray-100 min-h-screen pt-10 px-4 pb-10">
+  <main class="bg-gray-100 min-h-screen pt-6">
     <div class="max-w-6xl mx-auto space-y-6">
       <!-- Cartes KPI dynamiques -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -16,6 +16,12 @@
           <p class="text-3xl font-bold text-red-500">{{ stats.rejected_count }}</p>
         </div>
       </div>
+      <!-- Ajout du graphique -->
+      <DashboardChart v-if="!loading" :stats="stats" />
+      <TimeStats v-if="!loading" :stats="stats" />
+      <WeeklyAvgChart v-if="!loading" :weeklyData="stats.weekly_average" />
+
+
     </div>
   </main>
 </template>
@@ -24,24 +30,40 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import directeurMiService from '@/services/directeurMiService'
+import DashboardChart from '@/components/analyse/DashboardChart.vue'
+import TimeStats from '@/components/analyse/TimeStats.vue'
+import WeeklyAvgChart from '@/components/analyse/WeeklyAverage.vue'
 
 const stats = ref({
   total_requests: 0,
   rejected_count: 0,
   processing_count: 0,
   validated_count: 0,
+  weekly_average: 0,
+  average_time: 0,
+  max_time: 0,
   user: {}
 })
 
 const error = ref('')
-const loading = ref(false)
+const loading = ref(true)
 
 onMounted(async () => {
   loading.value = true
   try {
     const res = await directeurMiService.getDashboard()
     if (res.data?.status) {
-      stats.value = res.data.data
+      const data = res.data.data
+      stats.value.total_requests = data.total_requests || 0
+      stats.value.processing_count = data.processing_count || 0
+      stats.value.validated_count = data.validated_count || 0
+      stats.value.rejected_count = data.rejected_count|| 0
+      stats.value.weekly_average = data.weekly_average || 0
+      stats.value.average_time = data.average_time || 0
+      stats.value.max_time = data.max_time || 0
+
+      console.log(stats.value);
+
     } else {
       error.value = 'Impossible de charger les statistiques.'
     }
