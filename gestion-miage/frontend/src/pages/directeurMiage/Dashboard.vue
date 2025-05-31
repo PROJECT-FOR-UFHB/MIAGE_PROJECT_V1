@@ -1,5 +1,5 @@
 <template>
-  <main class="bg-gray-100 min-h-screen pt-6">
+  <main class="bg-gray-100 min-h-screen pt-10 px-4 pb-10">
     <div class="max-w-6xl mx-auto space-y-6">
       <!-- Cartes KPI dynamiques -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">

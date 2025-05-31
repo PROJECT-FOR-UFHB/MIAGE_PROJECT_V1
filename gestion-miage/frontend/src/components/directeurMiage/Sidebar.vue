@@ -20,13 +20,13 @@
               Demandes à signer
             </router-link>
           </li>
-          <li>
+          <!--<li>
             <router-link to="/directeur/historique" class="flex items-center text-brandBlue px-3 py-2 rounded hover:bg-gray-100 transition"
             active-class="bg-gray-100 font-semibold">
               <font-awesome-icon :icon="['fas', 'history']" class="mr-2" />
               Historique & rapports
             </router-link>
-          </li>
+          </li>-->
           <li>
             <router-link to="/directeur/notifications" class="flex items-center text-brandBlue px-3 py-2 rounded hover:bg-gray-100 transition"
             active-class="bg-gray-100 font-semibold">
