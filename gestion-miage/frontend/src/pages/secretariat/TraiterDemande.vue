@@ -386,14 +386,7 @@ const processRequest = async () => {
     // Mettre à jour l'interface
     processingSuccess.value = `La demande a été ${processing.decision === 'approved' ? 'approuvée' : 'rejetée'} avec succès.`
 
-    // Recharger les données après traitement
-    await Promise.all([
-      loadRequest(request.value.id),
-      loadValidationHistory(request.value.id)
-    ])
-
-    // Réinitialiser le formulaire
-    processing.comment = ''
+    router.push('/secretariat/demandes-recus');
 
   } catch (err) {
     console.error('Erreur lors du traitement de la demande:', err)
