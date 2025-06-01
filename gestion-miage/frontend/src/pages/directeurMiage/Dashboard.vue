@@ -15,12 +15,8 @@
           <p class="text-gray-600">❌ Rejetées</p>
           <p class="text-3xl font-bold text-red-500">{{ stats.rejected_count }}</p>
         </div>
+        <TimeStats v-if="!loading" :stats="stats" />
       </div>
-      <!-- Ajout du graphique -->
-      <DashboardChart v-if="!loading" :stats="stats" />
-      <TimeStats v-if="!loading" :stats="stats" />
-      <WeeklyAvgChart v-if="!loading" :weeklyData="stats.weekly_average" />
-
 
     </div>
   </main>
@@ -30,18 +26,14 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import directeurMiService from '@/services/directeurMiService'
-import DashboardChart from '@/components/analyse/DashboardChart.vue'
 import TimeStats from '@/components/analyse/TimeStats.vue'
-import WeeklyAvgChart from '@/components/analyse/WeeklyAverage.vue'
 
 const stats = ref({
   total_requests: 0,
   rejected_count: 0,
   processing_count: 0,
   validated_count: 0,
-  weekly_average: 0,
   average_time: 0,
-  max_time: 0,
   user: {}
 })
 
@@ -58,9 +50,7 @@ onMounted(async () => {
       stats.value.processing_count = data.processing_count || 0
       stats.value.validated_count = data.validated_count || 0
       stats.value.rejected_count = data.rejected_count|| 0
-      stats.value.weekly_average = data.weekly_average || 0
       stats.value.average_time = data.average_time || 0
-      stats.value.max_time = data.max_time || 0
 
       console.log(stats.value);
 

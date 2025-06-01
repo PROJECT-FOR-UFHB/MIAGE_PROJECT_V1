@@ -83,7 +83,7 @@ const validerDemande = async () => {
     alert('Demande validée ✅')
     router.push('/sec-admin/validation')
   } catch (err) {
-    alert('Erreur lors de la validation')
+    alert('Erreur lors de la validation',err)
   }
 }
 
@@ -96,7 +96,7 @@ const rejeterDemande = async () => {
     alert('Demande rejetée ❌')
     router.push('/sec-admin/validation')
   } catch (err) {
-    alert('Erreur lors du rejet')
+    alert('Erreur lors du rejet',err)
   }
 }
 

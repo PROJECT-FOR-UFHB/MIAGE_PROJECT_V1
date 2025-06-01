@@ -43,24 +43,7 @@ import { secretaireService } from '@/services'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
-const demandes = ref([
-  {
-    numero: 'N°AT001',
-    nomEtudiant: 'KOUADIO ANGE',
-    niveau: 'L1',
-    libelle: 'Attestation de fréquentation',
-    date: '20/03/2025'
-  },
-
-  {
-    numero: 'N°AT002',
-    nomEtudiant: 'WILLIAMS ANGEL',
-    niveau: 'M1',
-    libelle: 'Attestation de fréquentation',
-    date: '20/03/2025'
-  }
-  // Autres demandes seront chargées depuis l'API
-])
+const demandes = ref([])
 
 // Fonction pour voir les détails d'une demande
 function voirDetails(idDemande) {

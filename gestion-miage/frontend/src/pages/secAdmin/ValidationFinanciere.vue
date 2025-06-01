@@ -63,16 +63,12 @@ onMounted(async () => {
 })
 
 const recupDemandes = async () => {
-  try {
     const demandes = await secretaireService.getDemandesSecretaireFinancier()
     if (demandes.data?.status) {
       tabDemandes.value = demandes.data.data
     } else {
       throw new Error('Impossible de charger les demandes')
     }
-  } catch (err) {
-    throw err
-  }
 }
 
 const voirDetails = (idDemande) => {

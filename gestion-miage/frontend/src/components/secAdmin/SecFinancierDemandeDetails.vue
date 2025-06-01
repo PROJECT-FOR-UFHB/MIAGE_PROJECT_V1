@@ -26,29 +26,6 @@
           </div>
         </div>
 
-        <!-- Barre de progression -->
-        <h3 class="text-lg font-semibold mb-4">Progression de la validation</h3>
-        <div class="bg-gray-50 p-4 rounded mb-6">
-          <div v-for="(step, index) in steps" :key="index" class="mb-4 flex items-start">
-            <div class="mr-2 mt-1">
-              <div
-                class="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs"
-                :class="getStepStatusClass(step.status)"
-              >
-                <font-awesome-icon v-if="step.status === 'completed'" icon="check" />
-                <font-awesome-icon v-else-if="step.status === 'rejected'" icon="times" />
-                <span v-else>{{ index + 1 }}</span>
-              </div>
-              <div v-if="index < steps.length - 1" class="w-0.5 h-8 bg-gray-300 mx-auto"></div>
-            </div>
-            <div>
-              <p class="font-medium">{{ step.name }}</p>
-              <p class="text-sm text-gray-500">{{ step.date || 'En attente' }}</p>
-              <p v-if="step.comment" class="text-sm italic mt-1">"{{ step.comment }}"</p>
-            </div>
-          </div>
-        </div>
-
         <!-- Zone de traitement -->
         <div class="mb-4">
           <label class="block font-medium mb-1">Commentaire (facultatif)</label>
@@ -80,10 +57,9 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { apiClient, validationService } from '@/services'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 const route = useRoute()
 const router = useRouter()
@@ -93,48 +69,13 @@ const demande = ref(null)
 const loading = ref(true)
 const comment = ref('')
 
-const steps = reactive([
-  { name: 'Secrétariat', status: 'pending', date: null, comment: null },
-  { name: 'Service financier', status: 'pending', date: null, comment: null },
-  { name: 'Directeur MIAGE', status: 'pending', date: null, comment: null },
-  { name: 'Directeur UFR', status: 'pending', date: null, comment: null }
-])
-
 onMounted(async () => {
   try {
     const res = await apiClient.get(`/demandes/${id}`)
     if (res.data?.status) {
       demande.value = res.data.data
     }
-
-    const historyRes = await apiClient.get(`/validations/${id}/history`)
-    const validations = historyRes.data?.data?.validations || []
-
-    validations.forEach(validation => {
-      let index = -1
-      const lib = validation.statut?.statut?.toLowerCase()
-
-      if (lib.includes('secrétaire')) index = 0
-      else if (lib.includes('financier')) index = 1
-      else if (lib.includes('miage')) index = 2
-      else if (lib.includes('ufr')) index = 3
-
-      if (index >= 0) {
-        steps[index].status = lib.includes('rejete') ? 'rejected' : 'completed'
-        steps[index].date = formatDate(validation.date_validation)
-        steps[index].comment = validation.commentaires
-      }
-    })
-
-    // Activer la prochaine étape en attente
-    let found = false
-    for (const step of steps) {
-      if (step.status === 'pending' && !found) {
-        step.status = 'active'
-        found = true
-      }
-    }
-  } catch (err) {
+  }catch (err) {
     console.error(err)
   } finally {
     loading.value = false
@@ -188,12 +129,4 @@ const formatDate = (dateStr) => {
   })
 }
 
-const getStepStatusClass = (status) => {
-  switch (status) {
-    case 'completed': return 'bg-green-500'
-    case 'active': return 'bg-blue-500'
-    case 'rejected': return 'bg-red-500'
-    default: return 'bg-gray-300 text-gray-600'
-  }
-}
 </script>

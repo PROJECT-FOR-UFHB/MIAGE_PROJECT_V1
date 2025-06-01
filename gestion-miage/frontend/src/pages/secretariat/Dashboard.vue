@@ -18,25 +18,25 @@
           <!-- Demandes reçues -->
           <div class="bg-gray-50 p-4 rounded shadow flex flex-col items-center">
             <font-awesome-icon :icon="['fas', 'inbox']" class="text-brandBlue text-3xl mb-2" />
-            <p class="text-lg font-semibold">Reçues</p>
+            <p class="text-lg font-semibold">Totals des demandes reçues</p>
             <p class="text-2xl font-bold">{{ stats.total || 0 }}</p>
           </div>
           <!-- Demandes traitées -->
           <div class="bg-gray-50 p-4 rounded shadow flex flex-col items-center">
             <font-awesome-icon :icon="['fas', 'check-circle']" class="text-green-500 text-3xl mb-2" />
-            <p class="text-lg font-semibold">Traitées</p>
+            <p class="text-lg font-semibold">Demande à traiter</p>
             <p class="text-2xl font-bold">{{ stats.processed || 0 }}</p>
           </div>
           <!-- Demandes validées -->
           <div class="bg-gray-50 p-4 rounded shadow flex flex-col items-center">
             <font-awesome-icon :icon="['fas', 'thumbs-up']" class="text-green-600 text-3xl mb-2" />
-            <p class="text-lg font-semibold">Validées</p>
+            <p class="text-lg font-semibold">Demandes validées</p>
             <p class="text-2xl font-bold">{{ stats.approved || 0 }}</p>
           </div>
           <!-- Demandes rejetées -->
           <div class="bg-gray-50 p-4 rounded shadow flex flex-col items-center">
             <font-awesome-icon :icon="['fas', 'ban']" class="text-red-600 text-3xl mb-2" />
-            <p class="text-lg font-semibold">Rejetées</p>
+            <p class="text-lg font-semibold">Demandes rejetées</p>
             <p class="text-2xl font-bold">{{ stats.rejected || 0 }}</p>
           </div>
         </div>
