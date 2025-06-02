@@ -8,6 +8,7 @@ import adminService from './adminService'
 import secretaireService from './secretaireService'
 import helpers from './helpers'
 import directeurMiService from './directeurMiService'
+import dbService from './dbService'
 
 export {
   apiClient,
@@ -19,6 +20,7 @@ export {
   adminService,
   secretaireService,
   helpers,
-  directeurMiService
+  directeurMiService,
+  dbService,
 
 }

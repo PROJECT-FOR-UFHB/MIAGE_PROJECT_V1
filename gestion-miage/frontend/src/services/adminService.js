@@ -15,8 +15,8 @@ const adminService = {
    * @param {Object} userData - Les données de l'utilisateur
    * @returns {Promise} - Promesse avec les données de l'utilisateur créé
    */
-  createUser(userData) {
-    return apiClient.post('/admin/users', userData)
+  createPersonnel(userData) {
+    return apiClient.post('/admin/personnels', userData)
   },
 
   /**
@@ -140,4 +140,4 @@ const adminService = {
   }
 }
 
-export default adminService 
+export default adminService

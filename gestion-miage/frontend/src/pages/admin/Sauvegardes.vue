@@ -35,9 +35,8 @@
               <td class="p-2">{{ backup.date }}</td>
               <td class="p-2">{{ backup.taille }}</td>
               <td class="p-2 flex flex-wrap gap-2">
-                <button class="text-green-600 hover:underline" @click="restaurer(backup)">Restaurer</button>
-                <button class="text-blue-600 hover:underline" @click="telecharger(backup)">Télécharger</button>
-                <button class="text-red-600 hover:underline" @click="supprimer(backup)">Supprimer</button>
+                <button class="text-blue-600 hover:underline" @click="telecharger(backup.nom)">Télécharger</button>
+                <button class="text-red-600 hover:underline" @click="supprimer(backup.nom)">Supprimer</button>
               </td>
             </tr>
             <tr v-if="sauvegardes.length === 0">
@@ -52,37 +51,59 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import dbService from '../../services/dbService';
 
-// Liste simulée
-const sauvegardes = ref([
-  {
-    nom: 'backup_2024-05-06.sql',
-    date: '06/05/2024 - 14:32',
-    taille: '5.2 MB'
-  },
-  {
-    nom: 'backup_2024-04-25.sql',
-    date: '25/04/2024 - 10:12',
-    taille: '4.8 MB'
+const sauvegardes = ref([])
+
+// Charger les sauvegardes au montage du composant
+onMounted(async () => {
+  try {
+    const response = await dbService.getBackups();
+    sauvegardes.value = response.data.data
+    console.log(sauvegardes.value);
+
+  } catch (error) {
+    console.error('Erreur lors du chargement des sauvegardes:', error)
   }
-])
+})
 
-// Actions (mock)
-const lancerSauvegarde = () => {
-  console.log('📦 Sauvegarde lancée (mock)')
+// Actions
+const lancerSauvegarde = async () => {
+  try {
+    await dbService.createBackup();
+    // Recharger la liste des sauvegardes
+    const response = await dbService.getBackups();
+    sauvegardes.value = response.data.data
+  } catch (error) {
+    console.error('Erreur lors de la création de la sauvegarde:', error)
+  }
 }
 
-const restaurer = (backup) => {
-  console.log('🔁 Restauration demandée pour', backup.nom)
+const telecharger = async (backup) => {
+  try {
+    const response = await dbService.downloadBackup(backup);
+
+    const url = window.URL.createObjectURL(new Blob([response.data]))
+    const link = document.createElement('a')
+    link.href = url
+    link.setAttribute('download', backup)
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+  } catch (error) {
+    console.error('Erreur lors du téléchargement:', error)
+  }
 }
 
-const telecharger = (backup) => {
-  console.log('⬇️ Téléchargement de', backup.nom)
-}
+const supprimer = async (backup) => {
+  if (!confirm('Êtes-vous sûr de vouloir supprimer cette sauvegarde ?')) return
 
-const supprimer = (backup) => {
-  sauvegardes.value = sauvegardes.value.filter(b => b.nom !== backup.nom)
-  console.log('🗑️ Supprimée :', backup.nom)
+  try {
+    await dbService.deleteBackup(backup)
+    sauvegardes.value = sauvegardes.value.filter(b => b.nom !== backup)
+  } catch (error) {
+    console.error('Erreur lors de la suppression:', error)
+  }
 }
 </script>
