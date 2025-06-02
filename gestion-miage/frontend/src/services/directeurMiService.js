@@ -17,7 +17,7 @@ const directeurMiService = {
    * @returns {Promise} - Promesse avec les données du tableau de bord
    */
   getDashboard() {
-    return apiClient.get('/dashboard/directeurmi')
+    return apiClient.get('/dash/dashboard/directeurmi')
   }
 }
 export default directeurMiService

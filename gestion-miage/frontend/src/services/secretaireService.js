@@ -13,7 +13,7 @@ const secretaireService = {
    * @returns {Promise} - Promesse avec les données du tableau de bord
    */
    getSecDashboard() {
-    return apiClient.get('/dashboard/secretaire')
+    return apiClient.get('/dash/dashboard/secretaire')
   },
 
   /**

@@ -8,12 +8,8 @@
           <p class="text-3xl font-bold text-brandBlue">{{ stats.processing_count }}</p>
         </div>
         <div class="bg-white shadow rounded p-4 text-center">
-          <p class="text-gray-600">✅ Validées</p>
+          <p class="text-gray-600">✅ Signés</p>
           <p class="text-3xl font-bold text-green-600">{{ stats.validated_count }}</p>
-        </div>
-        <div class="bg-white shadow rounded p-4 text-center">
-          <p class="text-gray-600">❌ Rejetées</p>
-          <p class="text-3xl font-bold text-red-500">{{ stats.rejected_count }}</p>
         </div>
         <TimeStats v-if="!loading" :stats="stats" />
       </div>
