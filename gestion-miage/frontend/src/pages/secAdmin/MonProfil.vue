@@ -79,7 +79,7 @@ const loading = ref(false)
 onMounted(async () => {
   loading.value = true
   try {
-    const res = await apiClient.get('/profile')
+    const res = await apiClient.get('/dash/profile')
     if (res.data?.status) {
       const user = res.data.data
       form.value = {
@@ -127,7 +127,7 @@ const updateProfile = async () => {
       payload.password_confirmation = passwordForm.value.confirm
     }
 
-    const res = await apiClient.put('/profile', payload)
+    const res = await apiClient.put('/dash/profile', payload)
 
     if (res.data?.status) {
       message.value = res.data.message || 'Profil mis à jour avec succès.'
