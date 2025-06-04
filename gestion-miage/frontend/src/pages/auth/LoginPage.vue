@@ -105,7 +105,11 @@ const login = async () => {
       router.push('/responsable/tableau-de-bord')
     }
     else if (role === 'ADM') {
-      router.push('/admin/dashboard')
+      //router.push('/admin/dashboard')
+      //window.location.href = import.meta.env.VITE_CRUD_URL
+      const email = JSON.parse(sessionStorage.getItem('user')).email;
+      const base = import.meta.env.VITE_FILE_URL || 'http://localhost:8000';
+      window.location.href = `${base}/backadmin-auto-login?email=${encodeURIComponent(email)}`;
     }
     else if (role === 'DIM') {
       router.push('/directeur/tableau-de-bord')
