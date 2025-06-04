@@ -1,88 +1,299 @@
 <template>
-    <main class="bg-gray-100 min-h-screen pt-6">
-      <div class="max-w-4xl mx-auto bg-white p-6 rounded shadow">
-        <div class="flex justify-between items-center mb-4">
-          <h2 class="text-xl font-semibold">Notifications</h2>
-          <button
-            @click="marquerToutesLues"
-            class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-          >
-            Tout marquer comme lu
-          </button>
-        </div>
-  
-        <ul class="divide-y divide-gray-200">
-          <li
-            v-for="(notif, index) in notifications"
-            :key="index"
-            class="py-4 flex justify-between items-start"
-          >
-            <div>
-              <p class="font-medium text-gray-800">{{ notif.titre }}</p>
-              <p class="text-sm text-gray-600">{{ notif.message }}</p>
-              <p class="text-xs text-gray-400">{{ notif.date }}</p>
-            </div>
-  
-            <div class="flex items-center gap-2">
-              <span
-                class="inline-block w-2 h-2 rounded-full"
-                :class="notif.lu ? 'bg-gray-400' : 'bg-red-500'"
-              ></span>
-              <button
-                v-if="!notif.lu"
-                @click="marquerCommeLu(index)"
-                class="text-sm text-blue-600 hover:underline"
-              >
-                Marquer comme lu
-              </button>
-            </div>
-          </li>
-        </ul>
+  <div class="notification-center">
+    <div class="notification-icon" @click="toggleNotificationPanel">
+      <font-awesome-icon icon="bell" class="text-xl hover:text-brandGreen transition-colors" />
+      <span v-if="unreadCount > 0" class="badge">{{ unreadCount }}</span>
+    </div>
+
+    <div v-if="showPanel" class="notification-panel">
+      <div class="notification-header">
+        <h3>Notifications</h3>
+        <button v-if="notifications.length > 0" @click="markAllAsRead" class="mark-all-read">
+          Tout marquer comme lu
+        </button>
       </div>
-    </main>
-  </template>
-  
-  <script setup>
-  import { ref, onMounted } from 'vue'
-  // import { notificationService } from '@/services'
-  
-  const notifications = ref([
-    {
-      titre: 'Nouvelle demande reçue',
-      message: 'Une demande a été déposée par Koffi Jean (Licence 3)',
-      date: '2025-05-05 10:22',
-      lu: false
-    },
-    {
-      titre: 'Demande signée',
-      message: 'La demande de Léa Konan a été signée',
-      date: '2025-05-04 17:48',
-      lu: true
-    },
-    {
-      titre: 'Demande rejetée',
-      message: 'Une demande a été rejetée avec le motif : "pièce manquante"',
-      date: '2025-05-03 13:11',
-      lu: false
+
+      <div v-if="loading" class="notification-loading">
+        <font-awesome-icon icon="spinner" spin class="mr-2" /> Chargement...
+      </div>
+
+      <div v-else-if="notifications.length === 0" class="no-notifications">
+        <font-awesome-icon icon="bell-slash" class="mr-2" /> Aucune notification
+      </div>
+
+      <div v-else class="notification-list">
+        <div
+          v-for="notification in notifications"
+          :key="notification.id_notification"
+          :class="['notification-item', { 'unread': !notification.est_lu }]"
+          @click="openNotification(notification)"
+        >
+          <div class="notification-content">
+            <div class="notification-title text-black">{{ notification.titre }}</div>
+            <div class="notification-message">{{ notification.message }}</div>
+            <div class="notification-time">{{ formatDate(notification.created_at) }}</div>
+          </div>
+          <div class="notification-actions">
+            <button @click.stop="markAsRead(notification)" v-if="!notification.est_lu" class="mark-read">
+              <font-awesome-icon icon="check" />
+            </button>
+            <button @click.stop="deleteNotification(notification)" class="delete">
+              <font-awesome-icon icon="trash" /> <span>X</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import { ref, onMounted, onUnmounted, watch } from 'vue'
+import { useRouter } from 'vue-router'
+import { getEcho, initEcho } from '@/services/echo'
+import authService from '@/services/authService'
+
+import { requestService, notificationService} from '@/services'
+
+export default {
+  name: 'NotificationCenter',
+  setup() {
+    const router = useRouter()
+    const notifications = ref([])
+    const unreadCount = ref(0)
+    const showPanel = ref(false)
+    const loading = ref(false)
+
+    // Charger les notifications
+    const loadNotifications = async () => {
+      try {
+        loading.value = true
+        const response = await notificationService.getNotifications()
+        console.log('Réponse complète:', response)
+        if (response && response.status === true) {
+          notifications.value = response.notifications || []
+          console.log('Notifications chargées:', notifications.value)
+        } else {
+          console.error('Format de réponse invalide:', response)
+          notifications.value = []
+        }
+
+        // Mettre à jour le compteur de notifications non lues
+        updateUnreadCount()
+      } finally {
+        loading.value = false
+      }
     }
-  ])
-  
-  // 📥 Appel API simulé pour charger les notifications
-  onMounted(async () => {
-    // const res = await notificationService.getAll()
-    // notifications.value = res.data.data
-  })
-  
-  // 📤 Marquer une notification comme lue
-  const marquerCommeLu = (index) => {
-    notifications.value[index].lu = true
-    // await notificationService.markAsRead(notifications.value[index].id)
+
+    // Mettre à jour le compteur de notifications non lues
+    const updateUnreadCount = () => {
+      unreadCount.value = notifications.value.filter(n => !n.est_lu).length
+    }
+
+    // Formater la date
+    const formatDate = (dateString) => {
+      const date = new Date(dateString)
+      return date.toLocaleString('fr-FR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      })
+    }
+
+    // Afficher/masquer le panneau de notifications
+    const toggleNotificationPanel = () => {
+      showPanel.value = !showPanel.value
+      if (showPanel.value) {
+        loadNotifications()
+      }
+    }
+
+    // Marquer une notification comme lue
+    const markAsRead = async (notification) => {
+      try {
+        // Appeler l'API pour marquer comme lu si disponible
+        if (notificationService.markAsRead) {
+          await notificationService.markAsRead(notification.id_notification)
+        }
+        notification.est_lu = true
+        updateUnreadCount()
+      } catch (error) {
+        console.error('Erreur lors du marquage de la notification comme lue:', error)
+      }
+    }
+
+    // Marquer toutes les notifications comme lues
+    const markAllAsRead = async () => {
+      try {
+        // Appeler l'API pour marquer toutes comme lues si disponible
+        if (notificationService.markAllAsRead) {
+          await notificationService.markAllAsRead()
+        }
+        notifications.value.forEach(notification => {
+          notification.est_lu = true
+        })
+        unreadCount.value = 0
+      } catch (error) {
+        console.error('Erreur lors du marquage de toutes les notifications comme lues:', error)
+      }
+    }
+
+    // Supprimer une notification
+    const deleteNotification = async (notification) => {
+      try {
+        // Appeler l'API pour supprimer si disponible
+        if (notificationService.deleteNotification) {
+          await notificationService.deleteNotification(notification.id_notification)
+        }
+        notifications.value = notifications.value.filter(n => n.id_notification !== notification.id_notification)
+        updateUnreadCount()
+      } catch (error) {
+        console.error('Erreur lors de la suppression de la notification:', error)
+      }
+    }
+
+    // Ouvrir une notification
+    const openNotification = async (notification) => {
+  if (!notification.est_lu) {
+    await markAsRead(notification)
   }
-  
-  // 📤 Marquer toutes les notifications comme lues
-  const marquerToutesLues = () => {
-    notifications.value.forEach(n => n.lu = true)
-    // await notificationService.markAllAsRead()
+
+  const demandeId = notification.id_demande || (notification.demande && notification.demande.id_demande)
+  const role = authService.getUserRole()
+
+  if (!demandeId) {
+    console.warn('Aucun ID de demande trouvé dans la notification')
+    return
   }
-  </script>
-  
+
+  // Redirection en fonction du rôle
+  switch (role) {
+    case 'SEC': // Secrétaire pédagogique
+      router.push({ name: 'TraiterDemande', params: { id: demandeId } })
+      break
+    case 'SAF': // Secrétaire administratif/financier
+      router.push({ name: 'SecFinancierDemandeDetails', params: { id: demandeId } })
+      break
+    case 'DIM': // Directeur MIAGE
+      router.push({ name: 'DemandeDetails', params: { id: demandeId } })
+      break
+    
+    default:
+      console.warn('Rôle non pris en charge pour la redirection')
+  }
+
+  showPanel.value = false
+}
+
+
+    // Écouter les événements de notification en temps réel
+    const listenForNotifications = () => {
+      const echo = getEcho()
+      if (!echo) {
+        console.warn('Echo n\'est pas initialisé, impossible d\'écouter les notifications en temps réel')
+        // Réessayer dans 5 secondes
+        setTimeout(() => {
+          console.log('Tentative de reconnexion à Echo...')
+          initializeEcho()
+        }, 5000)
+        return
+      }
+
+      // Écouter le canal public des demandes
+      echo.channel('demandes')
+        .listen('.App\\Events\\DemandeStatusChanged', (e) => {
+          console.log('Événement de changement de statut reçu:', e)
+          // Recharger les notifications
+          loadNotifications()
+          // Afficher une notification système
+          showSystemNotification('Notification', e.message || 'Une demande a changé de statut')
+        })
+        .listen('.App\\Events\\NewNotification', (e) => {
+          console.log('Nouvelle notification reçue:', e)
+          // Recharger les notifications
+          loadNotifications()
+          // Afficher une notification système
+          showSystemNotification('Nouvelle notification', e.message || 'Vous avez une nouvelle notification')
+        })
+        .error((error) => {
+          console.error('Erreur de connexion WebSocket:', error)
+        })
+
+      console.log('Écoute des notifications en temps réel activée')
+    }
+
+    // Afficher une notification système
+    const showSystemNotification = (title, body) => {
+      if ('Notification' in window) {
+        if (Notification.permission === 'granted') {
+          new Notification(title, { body })
+        } else if (Notification.permission !== 'denied') {
+          Notification.requestPermission().then(permission => {
+            if (permission === 'granted') {
+              new Notification(title, { body })
+            }
+          })
+        }
+      }
+    }
+
+    // Initialiser Echo si un token est disponible
+    const initializeEcho = () => {
+      const token = sessionStorage.getItem('auth_token')
+      if (token) {
+        const echo = initEcho(token)
+        if (echo) {
+          console.log('Echo initialisé avec succès')
+          listenForNotifications()
+        } else {
+          console.warn('Échec de l\'initialisation d\'Echo')
+          // Réessayer dans 5 secondes
+          setTimeout(initializeEcho, 5000)
+        }
+      } else {
+        console.warn('Pas de token d\'authentification disponible')
+      }
+    }
+
+    // Initialiser les écouteurs d'événements et charger les notifications
+    onMounted(() => {
+      initializeEcho()
+      loadNotifications()
+      if ('Notification' in window && Notification.permission !== 'denied') {
+        Notification.requestPermission()
+      }
+
+      // Fermer le panneau quand on clique en dehors
+      document.addEventListener('click', handleOutsideClick)
+    })
+
+    // Gérer les clics en dehors du panneau de notifications
+    const handleOutsideClick = (e) => {
+      const notificationCenter = document.querySelector('.notification-center')
+      if (notificationCenter && !notificationCenter.contains(e.target)) {
+        showPanel.value = false
+      }
+    }
+
+    // Au démontage du composant
+    onUnmounted(() => {
+      document.removeEventListener('click', handleOutsideClick)
+    })
+
+    return {
+      notifications,
+      unreadCount,
+      showPanel,
+      loading,
+      toggleNotificationPanel,
+      markAsRead,
+      markAllAsRead,
+      deleteNotification,
+      openNotification,
+      formatDate
+    }
+  }
+}
+</script>

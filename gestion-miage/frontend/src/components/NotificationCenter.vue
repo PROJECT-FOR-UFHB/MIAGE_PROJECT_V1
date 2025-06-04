@@ -56,6 +56,8 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import notificationService from '../services/notificationService'
 import { getEcho, initEcho } from '../services/echo'
+import authService from '@/services/authService'
+
 
 export default {
   name: 'NotificationCenter',
@@ -162,21 +164,37 @@ export default {
 
     // Ouvrir une notification
     const openNotification = async (notification) => {
-      if (!notification.est_lu) {
-        await markAsRead(notification)
-      }
+  if (!notification.est_lu) {
+    await markAsRead(notification)
+  }
 
-      const demandeId = notification.id_demande || (notification.demande && notification.demande.id_demande)
-      console.log('Redirection vers :', demandeId)
+  const demandeId = notification.id_demande || (notification.demande && notification.demande.id_demande)
+  const role = authService.getUserRole()
 
-      if (demandeId) {
-        router.push({ name: props.alias, params: { id: demandeId } })
-      } else if (notification.lien) {
-        router.push(notification.lien)
-      }
+  if (!demandeId) {
+    console.warn('Aucun ID de demande trouvé dans la notification')
+    return
+  }
 
-      showPanel.value = false
-    }
+  // Redirection en fonction du rôle
+  switch (role) {
+    case 'SEC': // Secrétaire pédagogique
+      router.push({ name: 'TraiterDemande', params: { id: demandeId } })
+      break
+    case 'SAF': // Secrétaire administratif/financier
+      router.push({ name: 'SecFinancierDemandeDetails', params: { id: demandeId } })
+      break
+    case 'DIM': // Directeur MIAGE
+      router.push({ name: 'DemandeDetails', params: { id: demandeId } })
+      break
+    
+    default:
+      console.warn('Rôle non pris en charge pour la redirection')
+  }
+
+  showPanel.value = false
+}
+
 
     // Écouter les événements de notification en temps réel
     const listenForNotifications = () => {
