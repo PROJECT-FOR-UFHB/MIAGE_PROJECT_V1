@@ -20,16 +20,16 @@
           </router-link>
         </li>
 
-        <!-- Lien Utilisateurs -->
+        <!-- Lien CRUD -->
         <li>
-          <router-link
-            to="/admin/utilisateurs"
+          <a
+            :href="crudUrl"
+            target="_blank"
             class="flex items-center text-brandBlue px-3 py-2 rounded hover:bg-gray-100 transition-colors"
-            active-class="bg-gray-100 font-semibold"
           >
-            <font-awesome-icon :icon="['fas', 'users']" class="mr-2 text-brandBlue" />
-            Utilisateurs
-          </router-link>
+            <font-awesome-icon :icon="['fas', '']" class="mr-2 text-brandBlue" />
+            Interface CRUD
+          </a>
         </li>
 
         <!-- Lien Rôles & accès -->
@@ -105,4 +105,6 @@
 
 <script setup>
 import LogoutButton from '@/components/auth/LogoutButton.vue'
+
+const crudUrl = import.meta.env.VITE_CRUD_URL
 </script>

@@ -137,6 +137,10 @@ const adminService = {
    */
   getLogs() {
     return apiClient.get('/admin/logs')
+  },
+
+  getCrud(){
+    return apiClient.get('/backadmin/')
   }
 }
 
