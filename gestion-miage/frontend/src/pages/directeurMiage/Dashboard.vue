@@ -4,12 +4,19 @@
       <!-- Cartes KPI dynamiques -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div class="bg-white shadow rounded p-4 text-center">
-          <p class="text-gray-600">📄 En traitement</p>
+          <font-awesome-icon :icon="['fas', 'hourglass-half']" class="text-brandBlue text-3xl mb-2" />
+          <p class="text-lg font-semibold">Demandes en attente de traitement</p>
           <p class="text-3xl font-bold text-brandBlue">{{ stats.processing_count }}</p>
         </div>
         <div class="bg-white shadow rounded p-4 text-center">
-          <p class="text-gray-600">✅ Signés</p>
+          <font-awesome-icon :icon="['fas', 'thumbs-up']" class="text-green-600 text-3xl mb-2" />
+          <p class="text-lg font-semibold">Demandes validées</p>
           <p class="text-3xl font-bold text-green-600">{{ stats.validated_count }}</p>
+        </div>
+        <div class="bg-white shadow rounded p-4 text-center">
+          <font-awesome-icon :icon="['fas', 'ban']" class="text-red-600 text-3xl mb-2" />
+          <p class="text-lg font-semibold">Demandes rejetées</p>
+          <p class="text-3xl font-bold text-red-500">{{ stats.rejected_count }}</p>
         </div>
         <TimeStats v-if="!loading" :stats="stats" />
       </div>
@@ -45,7 +52,7 @@ onMounted(async () => {
       stats.value.total_requests = data.total_requests || 0
       stats.value.processing_count = data.processing_count || 0
       stats.value.validated_count = data.validated_count || 0
-      stats.value.rejected_count = data.rejected_count|| 0
+      stats.value.rejected_count = data.rejected_count || 0
       stats.value.average_time = data.average_time || 0
 
       console.log(stats.value);

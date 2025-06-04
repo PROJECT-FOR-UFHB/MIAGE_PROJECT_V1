@@ -108,9 +108,9 @@
 
           </div>
 
-          <h2 class="text-lg font-semibold mb-4">Progression de la demande</h2>
+          <!--<h2 class="text-lg font-semibold mb-4">Progression de la demande</h2>-->
 
-          <div class="bg-gray-50 p-4 rounded">
+          <!--<div class="bg-gray-50 p-4 rounded">
             <div v-for="(step, index) in validationSteps" :key="index" class="mb-4 flex items-start">
               <div class="mr-2 mt-1">
                 <div
@@ -129,7 +129,7 @@
                 <p v-if="step.comment" class="text-sm italic mt-1">"{{ step.comment }}"</p>
               </div>
             </div>
-          </div>
+          </div>-->
         </div>
       </div>
 
