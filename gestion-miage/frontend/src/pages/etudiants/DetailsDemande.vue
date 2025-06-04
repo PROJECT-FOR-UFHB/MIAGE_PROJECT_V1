@@ -140,8 +140,7 @@ let files = []
 const validationSteps = reactive([
   { name: 'Secrétariat', status: 'pending', date: null, message: null },
   { name: 'Service financier', status: 'pending', date: null, message: null },
-  { name: 'Directeur MIAGE', status: 'pending', date: null, message: null },
-  { name: 'Directeur UFR', status: 'pending', date: null, message: null }
+  { name: 'Directeur MIAGE', status: 'pending', date: null, message: null }
 ])
 
 onMounted(async () => {
