@@ -29,7 +29,14 @@ const secretaireService = {
   getProfile() {
     return apiClient.get('/profile')
   },
-
+/**
+  * Récupérer l'état de progression de la demande
+  * @param {string} dmdId
+  * @returns {Promise}
+  */
+getRequestProgress(dmdId) {
+  return apiClient.get(`/secretariat/suivis/${dmdId}`)
+}
 }
 
 export default secretaireService;
