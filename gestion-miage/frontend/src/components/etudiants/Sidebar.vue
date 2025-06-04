@@ -26,7 +26,7 @@
         </li>
         <!--
         <li>
-           Lien Mes demandes 
+           Lien Mes demandes
           <router-link
             to="etudiants/demandes/:id"
             class="block text-brandBlue px-3 py-2 rounded hover:bg-gray-100 transition-colors flex items-center"

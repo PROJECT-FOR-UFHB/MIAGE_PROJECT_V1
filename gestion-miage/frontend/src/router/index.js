@@ -20,6 +20,7 @@ import ResetPasswordPage from '@/pages/auth/ResetPasswordPage.vue'
 
 // Service auth
 import authService from '@/services/authService'
+import CreateNewPassword from '@/pages/auth/CreateNewPassword.vue'
 
 const routes = [
   {
@@ -29,6 +30,7 @@ const routes = [
       { path: 'register', name: 'Register', component: RegisterPage, meta: { requiresGuest: true } },
       { path: 'request-password-reset', name: 'RequestPasswordReset', component: RequestPasswordResetPage, meta: { requiresGuest: true } },
       { path: 'reset-password', name: 'ResetPassword', component: ResetPasswordPage, meta: { requiresGuest: true } },
+      { path: 'create-password', name: 'CreatePassword', component: CreateNewPassword, meta: { requiresGuest: true }}
     ]
   },
 

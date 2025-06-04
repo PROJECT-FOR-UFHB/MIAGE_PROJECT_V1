@@ -12,7 +12,7 @@
 
       <!-- Droite : Notifications -->
       <div class="ml-auto flex items-center space-x-4">
-        <NotificationCenter />
+        <NotificationCenter alias="DemandeDetails" />
         <slot name="actions"></slot>
       </div>
     </div>

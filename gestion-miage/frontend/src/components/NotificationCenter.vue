@@ -2,10 +2,14 @@
   <div class="notification-center">
     <div class="notification-icon" @click="toggleNotificationPanel">
       <font-awesome-icon icon="bell" class="text-xl hover:text-brandGreen transition-colors" />
-      <span v-if="unreadCount > 0" class="badge">{{ unreadCount }}</span>
+      <span v-if="unreadCount > 0" class="badge" :style="{ backgroundColor: badgeColor }">{{ unreadCount }}</span>
     </div>
 
-    <div v-if="showPanel" class="notification-panel">
+    <div v-if="showPanel" class="notification-panel" :style="{
+      [position]: '0',
+      maxWidth: maxWidth,
+      maxHeight: maxHeight
+    }">
       <div class="notification-header">
         <h3>Notifications</h3>
         <button v-if="notifications.length > 0" @click="markAllAsRead" class="mark-all-read">
@@ -48,14 +52,18 @@
 </template>
 
 <script>
-import { ref, onMounted, onUnmounted, watch } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import notificationService from '../services/notificationService'
 import { getEcho, initEcho } from '../services/echo'
 
 export default {
   name: 'NotificationCenter',
-  setup() {
+  props: {
+    alias:{
+    type: String}
+  },
+  setup(props) {
     const router = useRouter()
     const notifications = ref([])
     const unreadCount = ref(0)
@@ -162,7 +170,7 @@ export default {
       console.log('Redirection vers :', demandeId)
 
       if (demandeId) {
-        router.push({ name: 'TraiterDemande', params: { id: demandeId } })
+        router.push({ name: props.alias, params: { id: demandeId } })
       } else if (notification.lien) {
         router.push(notification.lien)
       }

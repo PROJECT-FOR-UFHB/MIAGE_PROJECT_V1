@@ -7,13 +7,13 @@ const authService = {
         if (data.token) {
           // 1. Stocker le token
           sessionStorage.setItem('auth_token', data.token)
-          
+
           // 2. Stocker l'utilisateur complet
           sessionStorage.setItem('user', JSON.stringify(data.user))
-          
+
           // 3. Stocker l'id_role (ETU, SEC, ADM, etc.)
           sessionStorage.setItem('user_role', data.user.id_role)
-          
+
           // 4. (facultatif) Stocker user_type ('etudiant' ou 'personnel')
           sessionStorage.setItem('user_type', data.user_type)
 
@@ -28,18 +28,16 @@ const authService = {
   },
 
   registerStudent(userData) {
-    return apiClient.post('/auth/student/register', userData)
-      .then(({ data }) => {
-        if (data.token) {
-          sessionStorage.setItem('auth_token', data.token)
-          sessionStorage.setItem('user', JSON.stringify(data.user))
-          // à l'inscription, on sait que c'est ETU
-          sessionStorage.setItem('user_role', 'ETU')
-          sessionStorage.setItem('user_type', 'etudiant')
-          sessionStorage.setItem('user_id', data.user.id_personnel)
-        }
-        return data
-      })
+    return apiClient.post('/auth/student/register', userData);
+      /**/
+  },
+
+  verifOtp (userData) {
+    return apiClient.post('/auth/student/register-verification',userData)
+  },
+
+  createNewPassword(userData){
+    return apiClient.post('/auth/student/register-create-password',userData)
   },
 
   logout() {
@@ -74,6 +72,10 @@ const authService = {
    */
   getUserType() {
     return sessionStorage.getItem('user_type')
+  },
+
+  requestPasswordReset (email){
+    return apiClient.post('/auth/password/reset-request',{email:email});
   }
 }
 
