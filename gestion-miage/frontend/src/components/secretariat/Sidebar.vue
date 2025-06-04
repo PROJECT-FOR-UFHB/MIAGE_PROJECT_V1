@@ -32,6 +32,18 @@
           </router-link>
         </li>
 
+        <!-- Lien Demandes traitees -->
+        <li>
+          <router-link
+            to="/secretariat/demandes-traitees"
+            class="flex items-center text-gray-800 px-3 py-2 rounded hover:bg-gray-100 transition-colors"
+            active-class="bg-gray-100 font-semibold"
+          >
+            <font-awesome-icon :icon="['fas', 'clipboard-list']" class="mr-2 text-brandBlue" />
+            Demandes traitées
+          </router-link>
+        </li>
+
         <!-- (Lien Profil désactivé pour l’instant) -->
         
         <li>

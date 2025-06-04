@@ -38,7 +38,7 @@ const kpi = ref({
 
 onMounted(async () => {
   try {
-    const res = await secretaireService.getSecDashboard()
+    const res = await secretaireService.getSecFDashboard()
     if (res.data?.status) {
       kpi.value = {
         pending: res.data.data.processing_count,

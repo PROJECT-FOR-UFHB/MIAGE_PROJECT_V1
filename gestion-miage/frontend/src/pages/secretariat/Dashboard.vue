@@ -25,7 +25,7 @@
           <div class="bg-gray-50 p-4 rounded shadow flex flex-col items-center">
             <font-awesome-icon :icon="['fas', 'check-circle']" class="text-green-500 text-3xl mb-2" />
             <p class="text-lg font-semibold">Demande à traiter</p>
-            <p class="text-2xl font-bold">{{ stats.processed || 0 }}</p>
+            <p class="text-2xl font-bold">{{ stats.pending || 0 }}</p>
           </div>
           <!-- Demandes validées -->
           <div class="bg-gray-50 p-4 rounded shadow flex flex-col items-center">
@@ -121,7 +121,7 @@ const loading = ref(true)
 const error = ref('')
 const stats = reactive({
   total: 0,
-  processed: 0,
+  pending: 0,
   approved: 0,
   rejected: 0
 })

@@ -10,6 +10,7 @@ import EspaceEtudiant from '@/pages/etudiants/EspaceEtudiant.vue'
 
 // Pages secrétariat
 import DemandesRecues from '@/pages/secretariat/DemandesRecues.vue'
+import DemandesTraitees from '@/pages/secretariat/DemandesTraitees.vue'
 import Dashboard from '@/pages/secretariat/Dashboard.vue'
 
 // Auth
@@ -82,6 +83,12 @@ const routes = [
         name: 'DemandesRecues',
         component: DemandesRecues,
         meta: { headerTitle: 'Demandes reçues', headerIcon: ['fas', 'clipboard-list'], requiresRole: 'SEC' }
+      },
+      {
+        path: 'secretariat/demandes-traitees',
+        name: 'DemandesTraitees',
+        component: DemandesTraitees,
+        meta: { headerTitle: 'Demandes traitees', headerIcon: ['fas', 'clipboard-list'], requiresRole: 'SEC' }
       },
       {
         path: 'secretariat/demandes/:id',
