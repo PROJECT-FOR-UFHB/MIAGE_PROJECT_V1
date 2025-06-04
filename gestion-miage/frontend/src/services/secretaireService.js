@@ -13,7 +13,7 @@ const secretaireService = {
    * @returns {Promise} - Promesse avec les données du profil étudiant
    */
   getDemandesSecretaireTraite() {
-    return apiClient.get('/demandes/dmdtraitsec')
+    return apiClient.get('/dmdtraitsec')
   },
    /**
    * Obtenir le tableau de bord de la secretaire connecté

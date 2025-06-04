@@ -62,8 +62,11 @@ onMounted(async () => {
 // Charger les demandes des étudiants depuis l'API
 const recupDemandes = async () => {
   try {
+    console.log('Début de la récupération des demandes...')
     const response = await secretaireService.getDemandesSecretaireTraite()
+    console.log('Réponse brute de l’API:', response)
     if (response.data && response.data.status) {
+      console.log('Statut OK, données reçues:', response.data.data)
       // Mettre à jour les demandes avec les données de l'API
       demandes.value = response.data.data.map(item => ({
         numero: item.id_demande,
@@ -74,7 +77,9 @@ const recupDemandes = async () => {
         // Conserver les données originales pour le traitement
         original: item
       }))
+      console.log('Demandes formatées:', demandes.value)
     } else {
+      console.error('Réponse inattendue:', response.data)
       throw new Error('Impossible de charger les demandes')
     }
   } catch (err) {
